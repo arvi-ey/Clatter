@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Alert, Dimensions, TextInput, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Alert, Dimensions, TextInput, Image, TouchableOpacity, } from 'react-native'
 import React from 'react'
 import { colors } from './Theme'
 import Button from '../common/Button'
@@ -9,7 +9,6 @@ import { useState, useEffect } from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native'
 const { height, width } = Dimensions.get('window')
-
 const Register = () => {
     const [hidePassword, setHidepassword] = useState(true)
     const [focusEmail, setFocuEmail] = useState(false)
@@ -19,6 +18,7 @@ const Register = () => {
     const [conFirmPass, setConfirmPass] = useState("")
     const [hideConfirmPass, setHideConfirmPass] = useState(false)
     const [focusName, setFocusName] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [data, setData] = useState({
         name: "",
         email: "",
@@ -88,10 +88,45 @@ const Register = () => {
             if (!passwordValid) {
                 return
             } else {
-                console.log('Data:', data);
+                CreateUser()
             }
         }
     }
+
+    const CreateUser = () => {
+        setLoading(true);
+        fetch(`http://192.168.29.223:5000/createuser`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                console.log('Response:', responseData);
+                setTimeout(() => {
+                    setLoading(false);
+                    Navigation.goBack()
+                }, 900)
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                setLoading(false);
+                Alert.alert('Error', 'Failed to create user');
+            });
+    };
+
+
+
+
+
+
     return (
         <View style={styles.container} >
             <TouchableOpacity style={{ position: "absolute", top: 10, left: 15 }} onPress={() => Navigation.goBack()} >
@@ -172,11 +207,14 @@ const Register = () => {
                 </TouchableOpacity>
             </View>
             <Button
-                buttonStyle={styles.buttonStyle}
+                buttonStyle={loading === true ? styles.loadingButtonStyle : styles.buttonStyle}
                 title="Sign up"
                 textStyle={styles.textStyle}
                 activeOpacity={0.8}
                 press={HandleSignUp}
+                loading={loading}
+                loaderColor={colors.MAIN_COLOR}
+                loaderSize="large"
             />
         </View>
     )
@@ -238,6 +276,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: "row",
         gap: 50
+    },
+    loadingButtonStyle: {
+        width: width - 60,
+        backgroundColor: colors.WHITE,
+        borderRadius: 10,
+        paddingVertical: 15,
+        justifyContent: "center",
+        alignItems: "center",
+        borderWidth: 2,
+        borderColor: colors.MAIN_COLOR
+
     }
 })
 export default Register

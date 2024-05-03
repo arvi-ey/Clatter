@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import { colors } from "./Theme"
 import { AntDesign } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState, useEffect } from 'react';
 const { width, height } = Dimensions.get('window');
 
 const slides = [
@@ -58,7 +60,6 @@ const Onboardingpage = ({ navigation }) => {
         const currentIndex = Math.round(contentOffsetX / width);
         setCurrentSlideIndex(currentIndex);
     };
-
     const goToNextSlide = () => {
         const nextSlideIndex = currentSlideIndex + 1;
         if (nextSlideIndex != slides.length) {
@@ -67,6 +68,11 @@ const Onboardingpage = ({ navigation }) => {
             setCurrentSlideIndex(currentSlideIndex + 1);
         }
     };
+
+    const getStarted = async () => {
+        await AsyncStorage.setItem("loaded", "App loaded")
+        navigation.replace("Signin")
+    }
 
     const skip = () => {
         const lastSlideIndex = slides.length - 1;
@@ -111,7 +117,7 @@ const Onboardingpage = ({ navigation }) => {
                         <View style={{ height: 50 }}>
                             <TouchableOpacity
                                 style={styles.btn}
-                                onPress={() => navigation.navigate('Signin')}
+                                onPress={getStarted}
                             >
                                 <Text style={{ fontWeight: 'bold', fontSize: 15, color: colors.WHITE }}>
                                     GET STARTED

@@ -1,17 +1,17 @@
-import { StyleSheet, Text, View, Platform, Dimensions, TextInput, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Platform, Dimensions, TextInput, Image, TouchableOpacity, Alert } from 'react-native'
 import React from 'react'
 import { colors } from './Theme'
 import Button from '../common/Button'
 import GoogleIcon from "../assets/google.png"
 import AppleIcon from "../assets/Apple.png"
 import FacebookIcon from "../assets/Facebook.png"
-import { AntDesign } from '@expo/vector-icons';
-import { FontAwesome5 } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const { height, width } = Dimensions.get('window')
 
 
@@ -20,6 +20,8 @@ const Signinpage = () => {
     const [hidePassword, setHidepassword] = useState(true)
     const [focusEmail, setFocuEmail] = useState(false)
     const [focusPassword, setFocusPassword] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [isloggedIn, setIsloggedIn] = useState(false)
     const [data, setData] = useState({
         email: "",
         password: ""
@@ -30,6 +32,47 @@ const Signinpage = () => {
     }
     const handlePassword = (value) => {
         setData({ ...data, password: value })
+    }
+
+
+
+
+
+
+
+
+
+    const HandleSignIn = () => {
+        const { email, password } = data
+        const emailRegex = /^([a-z0-9._%+-]+)@([a-z0-9.-]+\.[a-z]{2,})$/;
+        if (!email.trim()) Alert.alert("Enter Email id")
+        else if (!emailRegex.test(email)) Alert.alert("Enter Email Correctly")
+        else if (!password.trim()) Alert.alert("Enter Password")
+        else {
+            SignIn()
+        }
+    }
+
+    const SignIn = async () => {
+        setLoading(true)
+        try {
+            const response = await axios.post('http://192.168.29.223:5000/signin', data)
+            console.log(response.data)
+            if (response.data === "Email dosen't exist") Alert.alert(response.data)
+            else if (response.data === "Password is incorrect") Alert.alert(response.data)
+            else {
+                await AsyncStorage.setItem("token", response.data)
+                Navigation.replace("Profile")
+            }
+        }
+        catch (error) {
+            console.log(error)
+        }
+        finally {
+            setLoading(false)
+        }
+
+
     }
 
     return (
@@ -65,17 +108,19 @@ const Signinpage = () => {
                 </TouchableOpacity>
             </View>
             <Button
-                buttonStyle={styles.buttonStyle}
+                buttonStyle={loading ? styles.loadingButtonStyle : styles.buttonStyle}
                 title="Sign IN"
                 textStyle={styles.textStyle}
                 activeOpacity={0.8}
+                loading={loading}
+                loaderColor={colors.MAIN_COLOR}
+                loaderSize="large"
+                press={HandleSignIn}
             />
             <View>
                 <Text style={{ color: colors.GREY }}>Or Login with..</Text>
             </View>
             <View style={styles.socialLogin}>
-                {/* <AntDesign name={Platform.OS === "android" ? "google" : "apple1"} size={40} color={colors.BLACK} />
-                <FontAwesome5 name="facebook-f" size={35} color={colors.BLACK} /> */}
                 <Image source={Platform.OS === "android" ? GoogleIcon : AppleIcon} height={60} width={60} />
                 <Image source={FacebookIcon} height={60} width={60} />
             </View>
@@ -85,7 +130,7 @@ const Signinpage = () => {
                     <Text style={{ color: colors.MAIN_COLOR, fontWeight: "bold" }}>Register now</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </View >
     )
 }
 const styles = StyleSheet.create({
@@ -145,6 +190,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: "row",
         gap: 50
+    },
+    loadingButtonStyle: {
+        width: width - 60,
+        backgroundColor: colors.WHITE,
+        borderRadius: 10,
+        paddingVertical: 15,
+        justifyContent: "center",
+        alignItems: "center",
+        borderWidth: 2,
+        borderColor: colors.MAIN_COLOR
+
     }
 })
 export default Signinpage
