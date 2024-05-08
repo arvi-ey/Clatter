@@ -7,5 +7,6 @@ export const colors = {
     TAB_ICON: "#000000",
     SECONDARY_COLOR: "#C5B1FF",
     TAB_HEADER: "#fffafa",
-    CHAT_DESC: "#6E6D7A"
+    CHAT_DESC: "#6E6D7A",
+    ERROR_TEXT: "#e60023"
 }

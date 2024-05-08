@@ -19,6 +19,7 @@
     "expo-status-bar": "~1.11.1",
     "express": "^4.19.2",
     "firebase": "^10.11.0",
+    "lottie-react-native": "^6.7.2",
     "nodemon": "^3.1.0",
     "react": "18.2.0",
     "react-native": "0.73.6",

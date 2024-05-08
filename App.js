@@ -1,23 +1,27 @@
-import { StyleSheet, Text, View, Platform } from 'react-native';
+import { StyleSheet, Text, View, Platform, ActivityIndicator, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Onboardingpage from './components/Onboardingpage';
 import Signinpage from './components/Signinpage';
 import Register from './components/Register';
 import Profile from './components/Profile';
-import FirstScreen from './components/FirstScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
+import LottieView from 'lottie-react-native';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
   const [firstLoad, setFirstLoad] = useState(false)
   const [isloggedIn, setIsloggedIn] = useState(false)
+  const [isloading, setisLoading] = useState(true)
 
 
   useEffect(() => {
     AppLoaded()
     AsyncStorageData()
+    setTimeout(() => {
+      // setisLoading(false)
+    }, 3000)
   }, [])
 
   const AppLoaded = async () => {
@@ -36,6 +40,15 @@ export default function App() {
       console.log(err)
     }
   }
+
+  if (isloading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
+        <LottieView style={{ height: 300, width: 300 }} source={require('./assets/logo.json')} autoPlay loop />
+      </View>
+    )
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator

@@ -21,17 +21,28 @@ server.get("/", (req, res) => {
 server.post("/createuser", async (req, res) => {
     let { name, email, number, password } = req.body;
     try {
-        bcrypt.genSalt(10, async function (err, salt) {
-            bcrypt.hash(password, salt, async (err, hash) => {
-                const userresult = await userModel.create({
-                    name, email, number, password: hash
-                })
-                res.send(userresult)
+
+        const emailResult = await userModel.findOne({ email: email })
+        if (emailResult) {
+            res.send("Email already exists")
+            return
+        }
+        const mobileResult = await userModel.findOne({ number: number })
+        if (mobileResult) {
+            res.send("Mobile number already exists")
+            return
+        }
+        if (!emailResult && !mobileResult) {
+            bcrypt.genSalt(10, async function (err, salt) {
+                bcrypt.hash(password, salt, async (err, hash) => {
+                    const userresult = await userModel.create({
+                        name, email, number, password: hash
+                    })
+                    res.send(userresult)
+                });
+                // const token = jwt.sign({ email }, "sssshhhhh")
             });
-            // const token = jwt.sign({ email }, "sssshhhhh")
-        });
-
-
+        }
     }
     catch (er) {
         res.send(er)
@@ -41,7 +52,7 @@ server.post("/createuser", async (req, res) => {
 
 server.post("/signin", async (req, res) => {
     const user = await userModel.findOne({ email: req.body.email })
-    if (!user) res.send("Email dosen't exist")
+    if (!user) return res.send("Email dosen't exist")
     else {
         bcrypt.compare(req.body.password, user.password, (err, result) => {
             if (result) {

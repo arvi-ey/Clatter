@@ -8,6 +8,7 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { useState, useEffect } from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native'
+import axios from 'axios';
 const { height, width } = Dimensions.get('window')
 const Register = () => {
     const [hidePassword, setHidepassword] = useState(true)
@@ -88,38 +89,38 @@ const Register = () => {
             if (!passwordValid) {
                 return
             } else {
-                CreateUser()
+                // CreateUser()
+                console.log(data)
             }
         }
     }
 
-    const CreateUser = () => {
-        setLoading(true);
-        fetch(`http://192.168.29.223:5000/createuser`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(responseData => {
-                console.log('Response:', responseData);
+    const CreateUser = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.post('http://192.168.29.223:5000/createuser', data);
+            console.log('Response:', response.data);
+            if (response.data === "Email already exists") {
+                Alert.alert("Email already exists")
+                setLoading(false)
+                return
+            }
+            else if (response.data === "Mobile number already exists") {
+                Alert.alert("Mobile number already exists")
+                setLoading(false)
+                return
+            } else {
                 setTimeout(() => {
                     setLoading(false);
                     Navigation.goBack()
-                }, 900)
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                setLoading(false);
-                Alert.alert('Error', 'Failed to create user');
-            });
+                }, 900);
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+            setLoading(false);
+            Alert.alert('Error', 'Failed to create user');
+        }
     };
 
 
