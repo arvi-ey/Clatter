@@ -8,6 +8,7 @@ import Profile from './components/Profile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import LottieView from 'lottie-react-native';
+import Myprofile from './components/Myprofile';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -20,8 +21,8 @@ export default function App() {
     AppLoaded()
     AsyncStorageData()
     setTimeout(() => {
-      // setisLoading(false)
-    }, 3000)
+      setisLoading(false)
+    }, 2000)
   }, [])
 
   const AppLoaded = async () => {
@@ -44,7 +45,7 @@ export default function App() {
   if (isloading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
-        <LottieView style={{ height: 300, width: 300 }} source={require('./assets/logo.json')} autoPlay loop />
+        <Image style={{ height: 300, width: 300, resizeMode: 'contain' }} source={require('./assets/logo.png')} />
       </View>
     )
   }
@@ -65,6 +66,8 @@ export default function App() {
           </>
         }
         <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+        <Stack.Screen name="Myprofile" component={Myprofile} options={{ headerShown: false }} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

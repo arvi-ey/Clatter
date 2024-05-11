@@ -80,21 +80,12 @@ const ChatScreen = () => {
             time: "10:54"
         },
     ]
-    const LogOut = async () => {
-        try {
-            const value = await AsyncStorage.removeItem("token");;
-            Navigation.replace("Signin")
-        }
-        catch (err) {
-            console.log(err)
-        }
 
-    }
 
     const ChatComponent = ({ data }) => {
         return (
             <TouchableOpacity style={{ marginTop: 10, flexDirection: "row", height: 85, padding: 5, gap: 20, alignItems: "center" }}
-                onPress={LogOut}
+            // onPress={LogOut}
             >
                 <View style={{ padding: 5, }} >
                     <Image source={{ uri: data.image }}

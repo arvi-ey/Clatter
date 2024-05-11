@@ -11,8 +11,10 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
+
 
 
 
@@ -32,7 +34,8 @@ const Profile = () => {
             tabBarShowLabel: false,
             headerStyle: {
                 backgroundColor: colors.WHITE,
-                height: 70
+                height: 80,
+
             },
             tabBarStyle: {
                 backgroundColor: colors.TAB_HEADER,
@@ -92,6 +95,7 @@ const Profile = () => {
                 )
             }} />
             <Tab.Screen name="Myprofile" component={Myprofile} options={{
+                headerShown: false,
                 tabBarIcon: ({ focused }) => (
                     <View style={{ justifyContent: "center", alignItems: "center" }} >
                         <FontAwesome name="user" size={28} color={focused ? colors.MAIN_COLOR : colors.TAB_ICON} style={{ backgroundColor: focused ? colors.SECONDARY_COLOR : null, paddingHorizontal: 18, paddingVertical: 5, borderRadius: 50 }} />
