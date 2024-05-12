@@ -8,6 +8,7 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { useState, useEffect } from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native'
+import userImage from "../assets/user.png"
 import axios from 'axios';
 const { height, width } = Dimensions.get('window')
 const Register = () => {
@@ -25,6 +26,7 @@ const Register = () => {
         email: "",
         password: "",
         number: "",
+        profile_image: userImage
 
     })
     const handleEmailChange = (value) => {
@@ -89,8 +91,8 @@ const Register = () => {
             if (!passwordValid) {
                 return
             } else {
-                // CreateUser()
-                console.log(data)
+                CreateUser()
+                // console.log(data)
             }
         }
     }

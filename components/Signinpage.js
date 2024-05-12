@@ -21,7 +21,7 @@ const Signinpage = () => {
     const [focusEmail, setFocuEmail] = useState(false)
     const [focusPassword, setFocusPassword] = useState(false)
     const [loading, setLoading] = useState(false)
-    const [isloggedIn, setIsloggedIn] = useState(false)
+    const [userId, setUserId] = useState(null)
     const [data, setData] = useState({
         email: "",
         password: ""
@@ -57,12 +57,13 @@ const Signinpage = () => {
         setLoading(true)
         try {
             const response = await axios.post('http://192.168.29.223:5000/signin', data)
-            console.log(response.data)
             if (response.data === "Email dosen't exist") Alert.alert(response.data)
             else if (response.data === "Password is incorrect") Alert.alert(response.data)
             else {
-                await AsyncStorage.setItem("token", response.data)
-                Navigation.replace("Profile")
+                await AsyncStorage.setItem("token", response.data.token)
+
+                const { name, email, _id, number } = response.data.user
+                Navigation.replace("Profile", { uid: _id, name, email, number })
             }
         }
         catch (error) {

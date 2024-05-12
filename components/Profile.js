@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatScreen from './ChatScreen';
 import CallScreen from './CallScreen';
 import StoryScreen from './StoryScreen';
@@ -11,19 +11,23 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
-import { AntDesign } from '@expo/vector-icons';
-
+import { useRoute } from '@react-navigation/native';
 const Tab = createBottomTabNavigator();
 
 
 
 
 const Profile = () => {
-    // const auth = FIREBASE_AUTH
-    // console.log(auth.currentUser.uid)
-    // const screenOptions = {
 
-    // }
+
+    const route = useRoute()
+
+
+    const { uid, email, number, name } = route.params
+    console.log(uid)
+    console.log(email)
+    console.log(number)
+    console.log(name)
 
     const [darkMode, setdarkMode] = useState(false)
 

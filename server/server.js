@@ -19,7 +19,7 @@ server.get("/", (req, res) => {
 })
 
 server.post("/createuser", async (req, res) => {
-    let { name, email, number, password } = req.body;
+    let { name, email, number, password, profile_image } = req.body;
     try {
 
         const emailResult = await userModel.findOne({ email: email })
@@ -36,7 +36,7 @@ server.post("/createuser", async (req, res) => {
             bcrypt.genSalt(10, async function (err, salt) {
                 bcrypt.hash(password, salt, async (err, hash) => {
                     const userresult = await userModel.create({
-                        name, email, number, password: hash
+                        name, email, number, profile_image, password: hash
                     })
                     res.send(userresult)
                 });
@@ -57,7 +57,7 @@ server.post("/signin", async (req, res) => {
         bcrypt.compare(req.body.password, user.password, (err, result) => {
             if (result) {
                 let token = jwt.sign({ email: req.body.email }, "sssssshh")
-                res.send(token)
+                res.send({ token, user })
             }
             else res.send("Password is incorrect")
         })
