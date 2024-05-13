@@ -5,7 +5,7 @@ import Button from '../common/Button'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native'
 import userImage from "../assets/user.png"
@@ -21,6 +21,11 @@ const Register = () => {
     const [hideConfirmPass, setHideConfirmPass] = useState(false)
     const [focusName, setFocusName] = useState(false)
     const [loading, setLoading] = useState(false)
+    const textRef = useRef(null)
+    console.log(textRef)
+    useEffect(() => {
+        textRef.current.focus()
+    }, [])
     const [data, setData] = useState({
         name: "",
         email: "",
@@ -136,11 +141,12 @@ const Register = () => {
                 <Ionicons name="chevron-back-sharp" size={44} color="black" />
             </TouchableOpacity>
             <View style={{ marginBottom: 30 }}>
-                <Text style={{ fontSize: 30, fontWeight: "bold" }} >Register</Text>
+                <Text style={{ fontSize: 30, fontFamily: "Ubuntu-Bold" }} >Register</Text>
             </View>
             <View style={(focusName || data.name.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
                 <Ionicons name="person-outline" size={24} color={(focusName || data.name.length > 0) ? colors.MAIN_COLOR : colors.BLACK} />
                 <TextInput
+                    ref={textRef}
                     onFocus={() => setFocusName(!focusName)}
                     onBlur={() => setFocusName(!focusName)}
                     style={styles.inputBox}
@@ -253,7 +259,7 @@ const styles = StyleSheet.create({
         position: "relative"
     },
     inputBox: {
-        fontWeight: '900',
+        fontFamily: "Ubuntu-Bold",
         paddingLeft: 10,
         width: "100%",
         paddingVertical: 15,
@@ -269,7 +275,7 @@ const styles = StyleSheet.create({
     },
     textStyle: {
         color: colors.WHITE,
-        fontWeight: "900",
+        fontFamily: "Ubuntu-Bold",
         fontSize: 18
     },
     socialLogin: {

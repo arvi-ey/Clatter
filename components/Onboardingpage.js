@@ -119,7 +119,7 @@ const Onboardingpage = ({ navigation }) => {
                                 style={styles.btn}
                                 onPress={getStarted}
                             >
-                                <Text style={{ fontWeight: 'bold', fontSize: 15, color: colors.WHITE }}>
+                                <Text style={{ fontFamily: "Ubuntu-Bold", fontSize: 15, color: colors.WHITE }}>
                                     GET STARTED
                                 </Text>
                                 <AntDesign name="right" size={24} color={colors.WHITE} />
@@ -141,7 +141,7 @@ const Onboardingpage = ({ navigation }) => {
                                 onPress={skip}>
                                 <Text
                                     style={{
-                                        fontWeight: 'bold',
+                                        fontFamily: "Ubuntu-Bold",
                                         fontSize: 15,
                                         color: colors.MAIN_COLOR,
                                     }}>
@@ -155,7 +155,7 @@ const Onboardingpage = ({ navigation }) => {
                                 style={[styles.btn,]}>
                                 <Text
                                     style={{
-                                        fontWeight: 'bold',
+                                        fontFamily: "Ubuntu-Bold",
                                         fontSize: 15,
                                         color: colors.WHITE
                                     }}>
@@ -194,11 +194,12 @@ const styles = StyleSheet.create({
         maxWidth: '90%',
         textAlign: 'center',
         lineHeight: 23,
+        fontFamily: "Ubuntu-Light"
     },
     title: {
         color: colors.BLACK,
         fontSize: 22,
-        fontWeight: 'bold',
+        fontFamily: "Ubuntu-Bold",
         textAlign: 'center',
     },
     image: {

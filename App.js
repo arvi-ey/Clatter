@@ -9,20 +9,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import LottieView from 'lottie-react-native';
 import Myprofile from './components/Myprofile';
+import { useFonts } from 'expo-font';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
   const [firstLoad, setFirstLoad] = useState(false)
   const [isloggedIn, setIsloggedIn] = useState(false)
   const [isloading, setisLoading] = useState(true)
-
+  const [fontsLoaded, fontError] = useFonts({
+    'Ubuntu-Bold': require('./assets/fonts/Ubuntu-Bold.ttf'),
+    'Ubuntu-Regular': require('./assets/fonts/Ubuntu-Regular.ttf'),
+    'Ubuntu-Medium': require('./assets/fonts/Ubuntu-Medium.ttf'),
+    'Ubuntu-Light': require('./assets/fonts/Ubuntu-Light.ttf'),
+    'Ubuntu-Regular': require('./assets/fonts/Ubuntu-Regular.ttf'),
+  });
 
   useEffect(() => {
     AppLoaded()
     AsyncStorageData()
     setTimeout(() => {
       setisLoading(false)
-    }, 2000)
+    }, 3000)
   }, [])
 
   const AppLoaded = async () => {
@@ -42,7 +49,7 @@ export default function App() {
     }
   }
 
-  if (isloading) {
+  if (isloading && !fontsLoaded && !fontError) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
         <Image style={{ height: 300, width: 300, resizeMode: 'contain' }} source={require('./assets/logo.png')} />

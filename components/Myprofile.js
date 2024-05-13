@@ -80,9 +80,9 @@ const Myprofile = () => {
                     {item?.icon}
                 </View>
                 <View>
-                    <Text style={{ fontSize: 20, color: item.name === 'Log out' ? colors.ERROR_TEXT : colors.CHARCOLE }} >{item?.name}</Text>
+                    <Text style={{ fontSize: 20, fontFamily: "Ubuntu-Regular", color: item.name === 'Log out' ? colors.ERROR_TEXT : colors.CHARCOLE }} >{item?.name}</Text>
                     {item?.info ?
-                        <Text style={{ color: colors.CHAT_DESC }} >{item?.info}</Text>
+                        <Text style={{ color: colors.CHAT_DESC, fontFamily: "Ubuntu-Regular", }} >{item?.info}</Text>
                         : null
                     }
                 </View>
@@ -112,8 +112,8 @@ const Myprofile = () => {
                     </View>
                 </View>
                 <View style={styles.nameContainer}>
-                    <Text style={{ fontSize: 25, fontWeight: "bold" }} >Maria Lu</Text>
-                    <Text style={{ color: colors.CHAT_DESC }}>mariyaluand@gmail.com</Text>
+                    <Text style={{ fontSize: 25, fontFamily: "Ubuntu-Bold", }} >Maria Lu</Text>
+                    <Text style={{ color: colors.CHAT_DESC, fontFamily: "Ubuntu-Regular", }}>mariyaluand@gmail.com</Text>
                 </View>
                 <Button
                     title="Edit profile"
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     editProfileButton: {
         color: colors.WHITE,
         fontSize: 18,
-        fontWeight: "500"
+        fontFamily: "Ubuntu-Medium",
     },
     buttonStyle: {
         backgroundColor: colors.MAIN_COLOR,

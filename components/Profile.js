@@ -23,11 +23,11 @@ const Profile = () => {
     const route = useRoute()
 
 
-    const { uid, email, number, name } = route.params
-    console.log(uid)
-    console.log(email)
-    console.log(number)
-    console.log(name)
+    // const { uid, email, number, name } = route.params
+    // console.log(uid)
+    // console.log(email)
+    // console.log(number)
+    // console.log(name)
 
     const [darkMode, setdarkMode] = useState(false)
 
@@ -38,7 +38,7 @@ const Profile = () => {
             tabBarShowLabel: false,
             headerStyle: {
                 backgroundColor: colors.WHITE,
-                height: 80,
+                height: 80
 
             },
             tabBarStyle: {
@@ -54,6 +54,7 @@ const Profile = () => {
             },
             tabBarLabelStyle: {
                 fontSize: 12,
+                fontFamily: "Ubuntu-Regular",
                 marginBottom: 3
             },
             tabBarActiveTintColor: 'blue',
@@ -72,13 +73,13 @@ const Profile = () => {
                 ),
                 headerTitleStyle: {
                     fontSize: 30,
-                    fontWeight: "900"
+                    fontFamily: 'Ubuntu-Medium'
                 },
                 tabBarIcon: ({ focused }) => (
 
                     <View style={{ justifyContent: "center", alignItems: "center", }} >
                         <Ionicons name="chatbubbles" size={28} color={focused ? colors.MAIN_COLOR : colors.TAB_ICON} style={{ backgroundColor: focused ? colors.SECONDARY_COLOR : null, paddingHorizontal: 18, paddingVertical: 5, borderRadius: 50, }} />
-                        <Text style={{ color: focused ? colors.MAIN_COLOR : colors.TAB_ICON, fontSize: 17 }} >Chats</Text>
+                        <Text style={{ color: focused ? colors.MAIN_COLOR : colors.TAB_ICON, fontSize: 17, fontFamily: "Ubuntu-Medium" }} >Chats</Text>
                     </View>
                 )
             }} />
@@ -86,7 +87,7 @@ const Profile = () => {
                 tabBarIcon: ({ focused }) => (
                     <View style={{ justifyContent: "center", alignItems: "center" }} >
                         <Entypo name="circular-graph" size={28} color={focused ? colors.MAIN_COLOR : colors.TAB_ICON} style={{ backgroundColor: focused ? colors.SECONDARY_COLOR : null, paddingHorizontal: 18, paddingVertical: 5, borderRadius: 50 }} />
-                        <Text style={{ color: focused ? colors.MAIN_COLOR : colors.TAB_ICON, fontSize: 17 }} >Story</Text>
+                        <Text style={{ color: focused ? colors.MAIN_COLOR : colors.TAB_ICON, fontSize: 17, fontFamily: "Ubuntu-Medium" }} >Story</Text>
                     </View>
                 )
             }} />
@@ -94,7 +95,7 @@ const Profile = () => {
                 tabBarIcon: ({ focused }) => (
                     <View style={{ justifyContent: "center", alignItems: "center" }} >
                         <MaterialIcons name="call" size={28} color={focused ? colors.MAIN_COLOR : colors.TAB_ICON} style={{ backgroundColor: focused ? colors.SECONDARY_COLOR : null, paddingHorizontal: 18, paddingVertical: 5, borderRadius: 50 }} />
-                        <Text style={{ color: focused ? colors.MAIN_COLOR : colors.TAB_ICON, fontSize: 17 }} >Calls</Text>
+                        <Text style={{ color: focused ? colors.MAIN_COLOR : colors.TAB_ICON, fontSize: 17, fontFamily: "Ubuntu-Medium" }} >Calls</Text>
                     </View>
                 )
             }} />
@@ -103,7 +104,7 @@ const Profile = () => {
                 tabBarIcon: ({ focused }) => (
                     <View style={{ justifyContent: "center", alignItems: "center" }} >
                         <FontAwesome name="user" size={28} color={focused ? colors.MAIN_COLOR : colors.TAB_ICON} style={{ backgroundColor: focused ? colors.SECONDARY_COLOR : null, paddingHorizontal: 18, paddingVertical: 5, borderRadius: 50 }} />
-                        <Text style={{ color: focused ? colors.MAIN_COLOR : colors.TAB_ICON, fontSize: 17 }} >Profile</Text>
+                        <Text style={{ color: focused ? colors.MAIN_COLOR : colors.TAB_ICON, fontSize: 17, fontFamily: "Ubuntu-Medium" }} >Profile</Text>
                     </View>
                 )
             }} />

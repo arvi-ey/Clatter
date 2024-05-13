@@ -119,16 +119,16 @@ const Signinpage = () => {
                 press={HandleSignIn}
             />
             <View>
-                <Text style={{ color: colors.GREY }}>Or Login with..</Text>
+                <Text style={{ color: colors.GREY, fontFamily: "Ubuntu-Light", }}>Or Login with..</Text>
             </View>
             <View style={styles.socialLogin}>
                 <Image source={Platform.OS === "android" ? GoogleIcon : AppleIcon} height={60} width={60} />
                 <Image source={FacebookIcon} height={60} width={60} />
             </View>
             <View style={{ width: width - 60, justifyContent: 'center', alignItems: 'center', flexDirection: "row", gap: 10 }}>
-                <Text style={{ color: colors.GREY }}>New User??</Text>
+                <Text style={{ color: colors.GREY, fontFamily: "Ubuntu-Medium", }}>New User??</Text>
                 <TouchableOpacity activeOpacity={0.8} onPress={() => Navigation.navigate("Register")} >
-                    <Text style={{ color: colors.MAIN_COLOR, fontWeight: "bold" }}>Register now</Text>
+                    <Text style={{ color: colors.MAIN_COLOR, fontFamily: "Ubuntu-Bold", }}>Register now</Text>
                 </TouchableOpacity>
             </View>
         </View >
@@ -165,11 +165,11 @@ const styles = StyleSheet.create({
         position: "relative"
     },
     inputBox: {
-        fontWeight: '900',
         paddingLeft: 10,
         width: "100%",
         paddingVertical: 15,
-        fontSize: 15
+        fontSize: 15,
+        fontFamily: "Ubuntu-Bold",
     },
     buttonStyle: {
         width: width - 60,
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     },
     textStyle: {
         color: colors.WHITE,
-        fontWeight: "900",
+        fontFamily: "Ubuntu-Bold",
         fontSize: 18
     },
     socialLogin: {

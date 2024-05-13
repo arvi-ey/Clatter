@@ -84,7 +84,7 @@ const ChatScreen = () => {
 
     const ChatComponent = ({ data }) => {
         return (
-            <TouchableOpacity style={{ marginTop: 10, flexDirection: "row", height: 85, padding: 5, gap: 20, alignItems: "center" }}
+            <TouchableOpacity style={{ marginTop: 5, flexDirection: "row", height: 85, padding: 5, gap: 20, alignItems: "center" }}
             // onPress={LogOut}
             >
                 <View style={{ padding: 5, }} >
@@ -94,11 +94,11 @@ const ChatScreen = () => {
                 </View>
                 <View style={{ flex: 1 }} >
                     <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
-                        <Text style={{ fontSize: 18 }}  >{data.name}</Text>
-                        <Text style={{ marginRight: 10 }} >{data.time}</Text>
+                        <Text style={{ fontSize: 19, fontFamily: "Ubuntu-Regular" }}  >{data.name}</Text>
+                        <Text style={{ marginRight: 10, fontFamily: "Ubuntu-Regular" }} >{data.time}</Text>
                     </View>
                     <View>
-                        <Text style={{ fontSize: 15, color: colors.CHAT_DESC }}>{data.massage}</Text>
+                        <Text style={{ fontSize: 15, color: colors.CHAT_DESC, fontFamily: "Ubuntu-Regular" }}>{data.massage}</Text>
                     </View>
                 </View>
 
