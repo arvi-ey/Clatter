@@ -1,25 +1,62 @@
 import { StyleSheet, Text, View, Image, Dimensions, SafeAreaView, Platform, FlatList, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { colors } from './Theme'
 import { SimpleLineIcons } from '@expo/vector-icons';
-const { height, width } = Dimensions.get('window')
 import Button from '../common/Button';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import * as ImagePicker from 'expo-image-picker';
+const { height, width } = Dimensions.get('window')
 
 
 const Myprofile = () => {
     const Navigation = useNavigation()
-    let image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+    let imagew = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
 
 
     const size = 24
     const color = colors.CHAT_DESC
+    const [image, setImage] = useState(null);
+
+    const openCamera = async () => {
+        let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+        if (permissionResult.granted === false) {
+            alert("Permission to access camera is required!");
+            return;
+        }
+
+        let pickerResult = await ImagePicker.launchCameraAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!pickerResult.cancelled) {
+            setImage(pickerResult.uri);
+        }
+    };
+
+
+    const pickImage = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        console.log(result);
+
+        if (!result.canceled) {
+            setImage(result.assets[0].uri);
+        }
+    };
     const profileListData = [
         {
             icon: <MaterialCommunityIcons name="key-outline" size={size} color={color} />,
@@ -106,10 +143,10 @@ const Myprofile = () => {
             }}>
 
                 <View style={{ position: "relative" }} >
-                    <Image source={{ uri: image }} height={160} width={160} style={{ borderRadius: 80 }} />
-                    <View style={styles.editIcon} >
+                    <Image source={{ uri: imagew }} height={160} width={160} style={{ borderRadius: 80 }} />
+                    <TouchableOpacity style={styles.editIcon} onPress={openCamera} >
                         <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />
-                    </View>
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.nameContainer}>
                     <Text style={{ fontSize: 25, fontFamily: "Ubuntu-Bold", }} >Maria Lu</Text>

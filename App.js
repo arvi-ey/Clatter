@@ -7,7 +7,6 @@ import Register from './components/Register';
 import Profile from './components/Profile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
-import LottieView from 'lottie-react-native';
 import Myprofile from './components/Myprofile';
 import { useFonts } from 'expo-font';
 
