@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, Dimensions, SafeAreaView, Platform, FlatList, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, Dimensions, SafeAreaView, Platform, FlatList, TouchableOpacity, Alert, Linking } from 'react-native'
 import React, { useState } from 'react'
 import { colors } from './Theme'
 import { SimpleLineIcons } from '@expo/vector-icons';
@@ -15,7 +15,7 @@ const { height, width } = Dimensions.get('window')
 
 const Myprofile = () => {
     const Navigation = useNavigation()
-    let imagew = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+    // let imagew = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
 
 
     const size = 24
@@ -23,12 +23,23 @@ const Myprofile = () => {
     const [image, setImage] = useState(null);
 
     const openCamera = async () => {
-        let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-        if (permissionResult.granted === false) {
-            alert("Permission to access camera is required!");
+        const { status, canAskAgain } = await ImagePicker.requestCameraPermissionsAsync();
+        console.log(canAskAgain)
+        if (status !== 'granted') {
+            if (!canAskAgain) {
+                Alert.alert(
+                    'Permission Denied',
+                    'You have denied the camera permission and chosen not to be asked again. Please enable the camera permission from the settings.',
+                    [
+                        { text: 'ok', style: 'cancel' },
+
+                    ]
+                );
+            } else {
+
+            }
             return;
         }
-
         let pickerResult = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
@@ -36,14 +47,27 @@ const Myprofile = () => {
             quality: 1,
         });
 
-        if (!pickerResult.cancelled) {
-            setImage(pickerResult.uri);
+        if (!pickerResult.canceled) {
+            setImage(pickerResult.assets[0].uri);
+            // console.log(pickerResult.assets[0].uri)
+        }
+    };
+
+    const openSettings = () => {
+        if (Platform.OS === 'ios') {
+            Linking.openURL('app-settings:');
+        } else {
+            Linking.openSettings();
         }
     };
 
 
     const pickImage = async () => {
-        // No permissions request is necessary for launching the image library
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert('Permission Required', 'Sorry, we need camera roll permissions to make this work!');
+            return;
+        }
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,
@@ -127,13 +151,6 @@ const Myprofile = () => {
 
         )
     }
-
-
-
-
-
-
-
     return (
         <SafeAreaView style={styles.profileContainer}>
             <View style={{
@@ -143,7 +160,7 @@ const Myprofile = () => {
             }}>
 
                 <View style={{ position: "relative" }} >
-                    <Image source={{ uri: imagew }} height={160} width={160} style={{ borderRadius: 80 }} />
+                    <Image source={{ uri: image }} height={160} width={160} style={{ borderRadius: 80 }} />
                     <TouchableOpacity style={styles.editIcon} onPress={openCamera} >
                         <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />
                     </TouchableOpacity>
