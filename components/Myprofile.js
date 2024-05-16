@@ -1,42 +1,36 @@
-import { StyleSheet, Text, View, Image, Dimensions, SafeAreaView, Platform, FlatList, TouchableOpacity, Alert, Linking } from 'react-native'
-import React, { useState } from 'react'
-import { colors } from './Theme'
-import { SimpleLineIcons } from '@expo/vector-icons';
+import 'react-native-gesture-handler';
+import React, { useRef, useState, useMemo } from 'react';
+import { StyleSheet, Text, View, Image, Dimensions, SafeAreaView, Platform, FlatList, TouchableOpacity, Alert, Linking } from 'react-native';
+import { colors } from './Theme';
+import { SimpleLineIcons, MaterialCommunityIcons, MaterialIcons, Feather, AntDesign } from '@expo/vector-icons';
 import Button from '../common/Button';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Feather } from '@expo/vector-icons';
-import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
-const { height, width } = Dimensions.get('window')
+import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+const { height, width } = Dimensions.get('window');
+
 
 
 const Myprofile = () => {
-    const Navigation = useNavigation()
-    // let imagew = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-
-
-    const size = 24
-    const color = colors.CHAT_DESC
+    const Navigation = useNavigation();
+    const snapPoints = useMemo(() => ['30%'], []);
+    const sheetRef = useRef(null);
+    const size = 24;
+    const color = colors.CHAT_DESC;
     const [image, setImage] = useState(null);
 
     const openCamera = async () => {
         const { status, canAskAgain } = await ImagePicker.requestCameraPermissionsAsync();
-        console.log(canAskAgain)
         if (status !== 'granted') {
             if (!canAskAgain) {
                 Alert.alert(
                     'Permission Denied',
                     'You have denied the camera permission and chosen not to be asked again. Please enable the camera permission from the settings.',
-                    [
-                        { text: 'ok', style: 'cancel' },
-
-                    ]
+                    [{ text: 'OK', style: 'cancel' }]
                 );
-            } else {
-
             }
             return;
         }
@@ -49,7 +43,6 @@ const Myprofile = () => {
 
         if (!pickerResult.canceled) {
             setImage(pickerResult.assets[0].uri);
-            // console.log(pickerResult.assets[0].uri)
         }
     };
 
@@ -60,7 +53,6 @@ const Myprofile = () => {
             Linking.openSettings();
         }
     };
-
 
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -75,12 +67,11 @@ const Myprofile = () => {
             quality: 1,
         });
 
-        console.log(result);
-
         if (!result.canceled) {
             setImage(result.assets[0].uri);
         }
     };
+
     const profileListData = [
         {
             icon: <MaterialCommunityIcons name="key-outline" size={size} color={color} />,
@@ -116,88 +107,92 @@ const Myprofile = () => {
             icon: <AntDesign name="logout" size={size} color={colors.ERROR_TEXT} />,
             name: "Log out",
         }
-    ]
+    ];
 
     const Profilelist = ({ item }) => {
         const LogOut = async () => {
             try {
                 await AsyncStorage.removeItem("token");
-                Navigation.replace("Signin")
+                Navigation.replace("Signin");
             }
             catch (err) {
-                console.log(err)
+                console.log(err);
             }
-        }
+        };
         const ListClick = (value) => {
-            if (value === "Log out") LogOut()
-        }
+            if (value === "Log out") LogOut();
+        };
         return (
-
-            <TouchableOpacity activeOpacity={0.5} style={styles.menuContainer}
-
-                onPress={() => ListClick(item.name)}
-            >
+            <TouchableOpacity activeOpacity={0.5} style={styles.menuContainer} onPress={() => ListClick(item.name)}>
                 <View style={{ marginLeft: 15 }}>
                     {item?.icon}
                 </View>
                 <View>
-                    <Text style={{ fontSize: 20, fontFamily: "Ubuntu-Regular", color: item.name === 'Log out' ? colors.ERROR_TEXT : colors.CHARCOLE }} >{item?.name}</Text>
-                    {item?.info ?
-                        <Text style={{ color: colors.CHAT_DESC, fontFamily: "Ubuntu-Regular", }} >{item?.info}</Text>
-                        : null
-                    }
+                    <Text style={{ fontSize: 20, fontFamily: "Ubuntu-Regular", color: item.name === 'Log out' ? colors.ERROR_TEXT : colors.CHARCOLE }}>{item?.name}</Text>
+                    {item?.info ? <Text style={{ color: colors.CHAT_DESC, fontFamily: "Ubuntu-Regular" }}>{item?.info}</Text> : null}
                 </View>
             </TouchableOpacity>
+        );
+    };
 
-        )
-    }
+    const OpenButtomSheet = () => sheetRef?.current?.expand()
+    const renderBackdrop = (props) => (
+        <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />
+    );
+
     return (
-        <SafeAreaView style={styles.profileContainer}>
-            <View style={{
-                backgroundColor: colors.WHITE,
-                alignItems: "center",
-                gap: 8
-            }}>
-
-                <View style={{ position: "relative" }} >
-                    <Image source={{ uri: image }} height={160} width={160} style={{ borderRadius: 80 }} />
-                    <TouchableOpacity style={styles.editIcon} onPress={openCamera} >
-                        <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />
-                    </TouchableOpacity>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaView style={styles.profileContainer}>
+                <View style={{ backgroundColor: colors.WHITE, alignItems: "center", gap: 8 }}>
+                    <View style={{ position: "relative" }}>
+                        <Image source={{ uri: image }} height={160} width={160} style={{ borderRadius: 80 }} />
+                        <TouchableOpacity style={styles.editIcon} onPress={OpenButtomSheet}>
+                            <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.nameContainer}>
+                        <Text style={{ fontSize: 25, fontFamily: "Ubuntu-Bold" }}>Maria Lu</Text>
+                        <Text style={{ color: colors.CHAT_DESC, fontFamily: "Ubuntu-Regular" }}>mariyaluand@gmail.com</Text>
+                    </View>
+                    <Button
+                        title="Edit profile"
+                        textStyle={styles.editProfileButton}
+                        buttonStyle={styles.buttonStyle}
+                        activeOpacity={0.8}
+                    />
                 </View>
-                <View style={styles.nameContainer}>
-                    <Text style={{ fontSize: 25, fontFamily: "Ubuntu-Bold", }} >Maria Lu</Text>
-                    <Text style={{ color: colors.CHAT_DESC, fontFamily: "Ubuntu-Regular", }}>mariyaluand@gmail.com</Text>
-                </View>
-                <Button
-                    title="Edit profile"
-                    textStyle={styles.editProfileButton}
-                    buttonStyle={styles.buttonStyle}
-                    activeOpacity={0.8}
+                <FlatList
+                    data={profileListData}
+                    renderItem={Profilelist}
+                    showsVerticalScrollIndicator={false}
+                    keyExtractor={(item, index) => index}
                 />
-            </View>
+                <BottomSheet
+                    ref={sheetRef}
+                    index={-1}
+                    backgroundStyle={{ backgroundColor: colors.SECONDARY_COLOR }}
+                    enablePanDownToClose={true}
+                    snapPoints={snapPoints}
+                    backdropComponent={renderBackdrop}
+                >
+                    <BottomSheetView style={styles.contentContainer}>
+                        <Text style={styles.title}>Hello from the Bottom Sheet!</Text>
+                        <Text style={styles.subtitle}>This is a customizable bottom sheet.</Text>
+                    </BottomSheetView>
+                </BottomSheet>
+            </SafeAreaView>
+        </GestureHandlerRootView>
+    );
+};
 
-            <FlatList
-                data={profileListData}
-                renderItem={Profilelist}
-                showsVerticalScrollIndicator={false}
-                keyExtractor={(item, index) => index}
-            />
-
-        </SafeAreaView>
-    )
-}
-
-export default Myprofile
+export default Myprofile;
 
 const styles = StyleSheet.create({
-
     profileContainer: {
         flex: 1,
         backgroundColor: colors.WHITE,
         alignItems: "center",
         paddingTop: Platform.OS === 'android' ? 50 : 0
-
     },
     nameContainer: {
         width: width - 20,
@@ -217,7 +212,7 @@ const styles = StyleSheet.create({
     editProfileButton: {
         color: colors.WHITE,
         fontSize: 18,
-        fontFamily: "Ubuntu-Medium",
+        fontFamily: "Ubuntu-Medium"
     },
     buttonStyle: {
         backgroundColor: colors.MAIN_COLOR,
@@ -234,6 +229,21 @@ const styles = StyleSheet.create({
         alignItems: "center",
         flexDirection: "row",
         gap: 20,
-        marginTop: 12,
+        marginTop: 12
+    },
+    contentContainer: {
+        flex: 1,
+        alignItems: 'center',
+        padding: 16,
+        backgroundColor: colors.SECONDARY_COLOR,
+        borderRadius: 20
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold'
+    },
+    subtitle: {
+        marginTop: 10,
+        fontSize: 16
     }
-})
+});
