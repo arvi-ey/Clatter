@@ -44,6 +44,7 @@ const Myprofile = () => {
 
         if (!pickerResult.canceled) {
             setImage(pickerResult.assets[0].uri);
+            closeBottomSheet()
         }
     };
 
@@ -70,6 +71,7 @@ const Myprofile = () => {
 
         if (!result.canceled) {
             setImage(result.assets[0].uri);
+            closeBottomSheet()
         }
     };
 
@@ -137,6 +139,7 @@ const Myprofile = () => {
     };
 
     const OpenButtomSheet = () => sheetRef?.current?.expand()
+    const closeBottomSheet = () => sheetRef.current?.close();
     const renderBackdrop = (props) => (
         <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />
     );
