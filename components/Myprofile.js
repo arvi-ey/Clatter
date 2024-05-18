@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Octicons } from '@expo/vector-icons';
 
 const { height, width } = Dimensions.get('window');
 
@@ -16,7 +17,7 @@ const { height, width } = Dimensions.get('window');
 
 const Myprofile = () => {
     const Navigation = useNavigation();
-    const snapPoints = useMemo(() => ['30%'], []);
+    const snapPoints = useMemo(() => ['25%'], []);
     const sheetRef = useRef(null);
     const size = 24;
     const color = colors.CHAT_DESC;
@@ -170,15 +171,26 @@ const Myprofile = () => {
                 <BottomSheet
                     ref={sheetRef}
                     index={-1}
-                    backgroundStyle={{ backgroundColor: colors.SECONDARY_COLOR }}
+                    backgroundStyle={{ backgroundColor: colors.WHITE }}
                     enablePanDownToClose={true}
                     snapPoints={snapPoints}
                     backdropComponent={renderBackdrop}
                 >
-                    <BottomSheetView style={styles.contentContainer}>
-                        <Text style={styles.title}>Hello from the Bottom Sheet!</Text>
-                        <Text style={styles.subtitle}>This is a customizable bottom sheet.</Text>
-                    </BottomSheetView>
+                    <View style={styles.contentContainer}>
+
+                        <TouchableOpacity activeOpacity={0.8} style={{ justifyContent: 'center', alignItems: 'center' }} onPress={openCamera} >
+                            <Feather name="camera" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
+                            <Text style={{ fontFamily: "Ubuntu-Medium", color: colors.CHAT_DESC }}>Camera</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity activeOpacity={0.8} style={{ justifyContent: 'center', alignItems: 'center' }} onPress={pickImage}  >
+                            <Octicons name="image" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
+                            <Text style={{ fontFamily: "Ubuntu-Medium", color: colors.CHAT_DESC }}>Galary</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity activeOpacity={0.8} style={{ justifyContent: 'center', alignItems: 'center' }}>
+                            <AntDesign name="delete" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
+                            <Text style={{ fontFamily: "Ubuntu-Medium", color: colors.CHAT_DESC }}>Remove</Text>
+                        </TouchableOpacity>
+                    </View>
                 </BottomSheet>
             </SafeAreaView>
         </GestureHandlerRootView>
@@ -232,11 +244,13 @@ const styles = StyleSheet.create({
         marginTop: 12
     },
     contentContainer: {
-        flex: 1,
         alignItems: 'center',
         padding: 16,
-        backgroundColor: colors.SECONDARY_COLOR,
-        borderRadius: 20
+        backgroundColor: colors.WHITE,
+        borderRadius: 20,
+        flexDirection: "row",
+        justifyContent: "center",
+        gap: 50
     },
     title: {
         fontSize: 24,
@@ -245,5 +259,10 @@ const styles = StyleSheet.create({
     subtitle: {
         marginTop: 10,
         fontSize: 16
+    },
+    mediaContainer: {
+        backgroundColor: colors.SECONDARY_COLOR,
+        borderRadius: 12,
+        padding: 10
     }
 });
