@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import Myprofile from './components/Myprofile';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFonts } from 'expo-font';
+import Editprofile from './components/Editprofile';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -76,6 +77,7 @@ export default function App() {
           }
           <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
           <Stack.Screen name="Myprofile" component={Myprofile} options={{ headerShown: false }} />
+          <Stack.Screen name="Editprofile" component={Editprofile} options={{ headerShown: false }} />
 
         </Stack.Navigator>
       </NavigationContainer>

@@ -1,15 +1,12 @@
 import 'react-native-gesture-handler';
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { StyleSheet, Text, View, Image, Dimensions, SafeAreaView, Platform, FlatList, TouchableOpacity, Alert, Linking } from 'react-native';
 import { colors } from './Theme';
-import { SimpleLineIcons, MaterialCommunityIcons, MaterialIcons, Feather, AntDesign } from '@expo/vector-icons';
+import { MaterialCommunityIcons, MaterialIcons, Feather, AntDesign } from '@expo/vector-icons';
 import Button from '../common/Button';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import * as ImagePicker from 'expo-image-picker';
-import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Octicons } from '@expo/vector-icons';
+
 
 const { height, width } = Dimensions.get('window');
 
@@ -17,63 +14,11 @@ const { height, width } = Dimensions.get('window');
 
 const Myprofile = () => {
     const Navigation = useNavigation();
-    const snapPoints = useMemo(() => ['25%'], []);
-    const sheetRef = useRef(null);
     const size = 24;
     const color = colors.CHAT_DESC;
     const [image, setImage] = useState(null);
 
-    const openCamera = async () => {
-        const { status, canAskAgain } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status !== 'granted') {
-            if (!canAskAgain) {
-                Alert.alert(
-                    'Permission Denied',
-                    'You have denied the camera permission and chosen not to be asked again. Please enable the camera permission from the settings.',
-                    [{ text: 'OK', style: 'cancel' }]
-                );
-            }
-            return;
-        }
-        let pickerResult = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
 
-        if (!pickerResult.canceled) {
-            setImage(pickerResult.assets[0].uri);
-            closeBottomSheet()
-        }
-    };
-
-    const openSettings = () => {
-        if (Platform.OS === 'ios') {
-            Linking.openURL('app-settings:');
-        } else {
-            Linking.openSettings();
-        }
-    };
-
-    const pickImage = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-            Alert.alert('Permission Required', 'Sorry, we need camera roll permissions to make this work!');
-            return;
-        }
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            setImage(result.assets[0].uri);
-            closeBottomSheet()
-        }
-    };
 
     const profileListData = [
         {
@@ -138,65 +83,35 @@ const Myprofile = () => {
         );
     };
 
-    const OpenButtomSheet = () => sheetRef?.current?.expand()
-    const closeBottomSheet = () => sheetRef.current?.close();
-    const renderBackdrop = (props) => (
-        <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />
-    );
+
 
     return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaView style={styles.profileContainer}>
-                <View style={{ backgroundColor: colors.WHITE, alignItems: "center", gap: 8 }}>
-                    <View style={{ position: "relative" }}>
-                        <Image source={{ uri: image }} height={160} width={160} style={{ borderRadius: 80 }} />
-                        <TouchableOpacity style={styles.editIcon} onPress={OpenButtomSheet}>
-                            <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.nameContainer}>
-                        <Text style={{ fontSize: 25, fontFamily: "Ubuntu-Bold" }}>Maria Lu</Text>
-                        <Text style={{ color: colors.CHAT_DESC, fontFamily: "Ubuntu-Regular" }}>mariyaluand@gmail.com</Text>
-                    </View>
-                    <Button
-                        title="Edit profile"
-                        textStyle={styles.editProfileButton}
-                        buttonStyle={styles.buttonStyle}
-                        activeOpacity={0.8}
-                    />
-                </View>
-                <FlatList
-                    data={profileListData}
-                    renderItem={Profilelist}
-                    showsVerticalScrollIndicator={false}
-                    keyExtractor={(item, index) => index}
-                />
-                <BottomSheet
-                    ref={sheetRef}
-                    index={-1}
-                    backgroundStyle={{ backgroundColor: colors.WHITE }}
-                    enablePanDownToClose={true}
-                    snapPoints={snapPoints}
-                    backdropComponent={renderBackdrop}
-                >
-                    <View style={styles.contentContainer}>
 
-                        <TouchableOpacity activeOpacity={0.8} style={{ justifyContent: 'center', alignItems: 'center' }} onPress={openCamera} >
-                            <Feather name="camera" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
-                            <Text style={{ fontFamily: "Ubuntu-Medium", color: colors.CHAT_DESC }}>Camera</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={0.8} style={{ justifyContent: 'center', alignItems: 'center' }} onPress={pickImage}  >
-                            <Octicons name="image" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
-                            <Text style={{ fontFamily: "Ubuntu-Medium", color: colors.CHAT_DESC }}>Galary</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={0.8} style={{ justifyContent: 'center', alignItems: 'center' }}>
-                            <AntDesign name="delete" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
-                            <Text style={{ fontFamily: "Ubuntu-Medium", color: colors.CHAT_DESC }}>Remove</Text>
-                        </TouchableOpacity>
-                    </View>
-                </BottomSheet>
-            </SafeAreaView>
-        </GestureHandlerRootView>
+        <SafeAreaView style={styles.profileContainer}>
+            <View style={{ backgroundColor: colors.WHITE, alignItems: "center", gap: 8 }}>
+                <View style={{ position: "relative" }}>
+                    <Image source={{ uri: image }} height={160} width={160} style={{ borderRadius: 80 }} />
+                </View>
+                <View style={styles.nameContainer}>
+                    <Text style={{ fontSize: 25, fontFamily: "Ubuntu-Bold" }}>Maria Lu</Text>
+                    <Text style={{ color: colors.CHAT_DESC, fontFamily: "Ubuntu-Regular" }}>mariyaluand@gmail.com</Text>
+                </View>
+                <Button
+                    title="Edit profile"
+                    textStyle={styles.editProfileButton}
+                    buttonStyle={styles.buttonStyle}
+                    activeOpacity={0.8}
+                    press={() => Navigation.navigate('Editprofile')}
+                />
+            </View>
+            <FlatList
+                data={profileListData}
+                renderItem={Profilelist}
+                showsVerticalScrollIndicator={false}
+                keyExtractor={(item, index) => index}
+            />
+        </SafeAreaView>
+
     );
 };
 
