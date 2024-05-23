@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Platform, Dimensions, TextInput, Image, TouchableOpacity, Alert } from 'react-native'
-import React from 'react'
+import React, { useContext } from 'react'
 import { colors } from './Theme'
 import Button from '../common/Button'
 import GoogleIcon from "../assets/google.png"
@@ -8,20 +8,18 @@ import FacebookIcon from "../assets/Facebook.png"
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthContext } from './Context/Authprovider'
 const { height, width } = Dimensions.get('window')
 
 
 const Signinpage = () => {
 
+    const { SignIn, loading } = useContext(AuthContext)
     const [hidePassword, setHidepassword] = useState(true)
     const [focusEmail, setFocuEmail] = useState(false)
     const [focusPassword, setFocusPassword] = useState(false)
-    const [loading, setLoading] = useState(false)
-    const [userId, setUserId] = useState(null)
     const [data, setData] = useState({
         email: "",
         password: ""
@@ -34,14 +32,6 @@ const Signinpage = () => {
         setData({ ...data, password: value })
     }
 
-
-
-
-
-
-
-
-
     const HandleSignIn = () => {
         const { email, password } = data
         const emailRegex = /^([a-z0-9._%+-]+)@([a-z0-9.-]+\.[a-z]{2,})$/;
@@ -49,31 +39,8 @@ const Signinpage = () => {
         else if (!emailRegex.test(email)) Alert.alert("Enter Email Correctly")
         else if (!password.trim()) Alert.alert("Enter Password")
         else {
-            SignIn()
+            SignIn(data, Navigation)
         }
-    }
-
-    const SignIn = async () => {
-        setLoading(true)
-        try {
-            const response = await axios.post('http://192.168.29.223:5000/signin', data)
-            if (response.data === "Email dosen't exist") Alert.alert(response.data)
-            else if (response.data === "Password is incorrect") Alert.alert(response.data)
-            else {
-                await AsyncStorage.setItem("token", response.data.token)
-
-                const { name, email, _id, number } = response.data.user
-                Navigation.replace("Profile", { uid: _id, name, email, number })
-            }
-        }
-        catch (error) {
-            console.log(error)
-        }
-        finally {
-            setLoading(false)
-        }
-
-
     }
 
     return (

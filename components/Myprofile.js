@@ -1,12 +1,12 @@
 import 'react-native-gesture-handler';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useContext } from 'react';
 import { StyleSheet, Text, View, Image, Dimensions, SafeAreaView, Platform, FlatList, TouchableOpacity, Alert, Linking } from 'react-native';
 import { colors } from './Theme';
 import { MaterialCommunityIcons, MaterialIcons, Feather, AntDesign } from '@expo/vector-icons';
 import Button from '../common/Button';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
-
+import { AuthContext } from './Context/Authprovider';
 
 const { height, width } = Dimensions.get('window');
 
@@ -17,9 +17,10 @@ const Myprofile = () => {
     const size = 24;
     const color = colors.CHAT_DESC;
     const [image, setImage] = useState(null);
+    const { user } = useContext(AuthContext)
 
 
-
+    console.log(user)
     const profileListData = [
         {
             icon: <MaterialCommunityIcons name="key-outline" size={size} color={color} />,
@@ -60,7 +61,7 @@ const Myprofile = () => {
     const Profilelist = ({ item }) => {
         const LogOut = async () => {
             try {
-                await AsyncStorage.removeItem("token");
+                await SecureStore.deleteItemAsync("token");
                 Navigation.replace("Signin");
             }
             catch (err) {

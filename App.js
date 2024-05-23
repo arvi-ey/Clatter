@@ -12,6 +12,8 @@ import Myprofile from './components/Myprofile';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFonts } from 'expo-font';
 import Editprofile from './components/Editprofile';
+import Authprovider from './components/Context/Authprovider';
+import * as SecureStore from 'expo-secure-store';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -28,7 +30,7 @@ export default function App() {
 
   useEffect(() => {
     AppLoaded()
-    AsyncStorageData()
+    SecureStoreData()
     setTimeout(() => {
       setisLoading(false)
     }, 3000)
@@ -40,9 +42,9 @@ export default function App() {
     else setFirstLoad(false)
   }
 
-  const AsyncStorageData = async () => {
+  const SecureStoreData = async () => {
     try {
-      const value = await AsyncStorage.getItem("token");
+      const value = await SecureStore.getItemAsync("token");
       if (value !== null) setIsloggedIn(true)
 
     }
@@ -61,25 +63,28 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={{
-            animationTypeForReplace: 'pop',
-            animationEnabled: Platform.OS == 'android' ? true : true,
-          }}
-        >
-          {firstLoad === false && <Stack.Screen name="Onboarding" component={Onboardingpage} options={{ headerShown: false }} />}
-          {isloggedIn === false &&
-            <>
-              <Stack.Screen name="Signin" component={Signinpage} options={{ headerShown: false }} />
-              <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
-            </>
-          }
-          <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
-          <Stack.Screen name="Myprofile" component={Myprofile} options={{ headerShown: false }} />
-          <Stack.Screen name="Editprofile" component={Editprofile} options={{ headerShown: false }} />
 
-        </Stack.Navigator>
+      <NavigationContainer>
+        <Authprovider>
+          <Stack.Navigator
+            screenOptions={{
+              animationTypeForReplace: 'pop',
+              animationEnabled: Platform.OS == 'android' ? true : true,
+            }}
+          >
+            {firstLoad === false && <Stack.Screen name="Onboarding" component={Onboardingpage} options={{ headerShown: false }} />}
+            {isloggedIn === false &&
+              <>
+                <Stack.Screen name="Signin" component={Signinpage} options={{ headerShown: false }} />
+                <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
+              </>
+            }
+            <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+            <Stack.Screen name="Myprofile" component={Myprofile} options={{ headerShown: false }} />
+            <Stack.Screen name="Editprofile" component={Editprofile} options={{ headerShown: false }} />
+
+          </Stack.Navigator>
+        </Authprovider>
       </NavigationContainer>
     </GestureHandlerRootView>
   );

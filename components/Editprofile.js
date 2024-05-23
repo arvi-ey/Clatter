@@ -105,7 +105,7 @@ const Editprofile = () => {
                 <View style={{ alignSelf: "flex-start", flexDirection: "row" }} >
                     <Ionicons name="chevron-back" size={50} color={colors.MAIN_COLOR} onPress={() => Navigation.goBack()} />
                 </View>
-                <View style={{ alignItems: 'center', gap: 20, backgroundColor: colors.WHITE }}>
+                <View style={{ alignItems: 'center', gap: 25, backgroundColor: colors.WHITE }}>
 
                     <View style={{ backgroundColor: colors.WHITE, alignItems: "center", gap: 8, }}>
                         <View style={{ position: "relative" }}>
@@ -113,10 +113,6 @@ const Editprofile = () => {
                             <TouchableOpacity style={styles.editIcon} onPress={OpenButtomSheet}>
                                 <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />
                             </TouchableOpacity>
-                        </View>
-                        <View style={styles.nameContainer}>
-                            <Text style={{ fontSize: 25, fontFamily: "Ubuntu-Bold" }}>Maria Lu</Text>
-                            <Text style={{ color: colors.CHAT_DESC, fontFamily: "Ubuntu-Regular" }}>mariyaluand@gmail.com</Text>
                         </View>
                     </View>
                     <View style={{ gap: 25 }}>

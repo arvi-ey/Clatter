@@ -5,11 +5,10 @@ import Button from '../common/Button'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useContext } from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native'
-import userImage from "../assets/user.png"
-import axios from 'axios';
+import { AuthContext } from './Context/Authprovider';
 const { height, width } = Dimensions.get('window')
 const Register = () => {
     const [hidePassword, setHidepassword] = useState(true)
@@ -20,9 +19,9 @@ const Register = () => {
     const [conFirmPass, setConfirmPass] = useState("")
     const [hideConfirmPass, setHideConfirmPass] = useState(false)
     const [focusName, setFocusName] = useState(false)
-    const [loading, setLoading] = useState(false)
     const textRef = useRef(null)
-    console.log(textRef)
+    const { CreateUser, loading } = useContext(AuthContext)
+
     useEffect(() => {
         textRef.current.focus()
     }, [])
@@ -31,8 +30,6 @@ const Register = () => {
         email: "",
         password: "",
         number: "",
-        profile_image: userImage
-
     })
     const handleEmailChange = (value) => {
         setData({ ...data, email: value })
@@ -96,44 +93,10 @@ const Register = () => {
             if (!passwordValid) {
                 return
             } else {
-                CreateUser()
-                // console.log(data)
+                CreateUser(data, Navigation)
             }
         }
     }
-
-    const CreateUser = async () => {
-        try {
-            setLoading(true);
-            const response = await axios.post('http://192.168.29.223:5000/createuser', data);
-            console.log('Response:', response.data);
-            if (response.data === "Email already exists") {
-                Alert.alert("Email already exists")
-                setLoading(false)
-                return
-            }
-            else if (response.data === "Mobile number already exists") {
-                Alert.alert("Mobile number already exists")
-                setLoading(false)
-                return
-            } else {
-                setTimeout(() => {
-                    setLoading(false);
-                    Navigation.goBack()
-                }, 900);
-            }
-
-        } catch (error) {
-            console.error('Error:', error);
-            setLoading(false);
-            Alert.alert('Error', 'Failed to create user');
-        }
-    };
-
-
-
-
-
 
     return (
         <View style={styles.container} >
