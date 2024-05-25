@@ -7,34 +7,36 @@ import Signinpage from './components/Signinpage';
 import Register from './components/Register';
 import Profile from './components/Profile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import Myprofile from './components/Myprofile';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useFonts } from 'expo-font';
 import Editprofile from './components/Editprofile';
-import Authprovider from './components/Context/Authprovider';
+import Authprovider, { AuthContext } from './components/Context/Authprovider';
 import * as SecureStore from 'expo-secure-store';
+import * as Font from 'expo-font';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
   const [firstLoad, setFirstLoad] = useState(false)
   const [isloggedIn, setIsloggedIn] = useState(false)
-  const [isloading, setisLoading] = useState(true)
-  const [fontsLoaded, fontError] = useFonts({
-    'Ubuntu-Bold': require('./assets/fonts/Ubuntu-Bold.ttf'),
-    'Ubuntu-Regular': require('./assets/fonts/Ubuntu-Regular.ttf'),
-    'Ubuntu-Medium': require('./assets/fonts/Ubuntu-Medium.ttf'),
-    'Ubuntu-Light': require('./assets/fonts/Ubuntu-Light.ttf'),
-    'Ubuntu-Regular': require('./assets/fonts/Ubuntu-Regular.ttf'),
-  });
+  const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
     AppLoaded()
     SecureStoreData()
-    setTimeout(() => {
-      setisLoading(false)
-    }, 3000)
+    loadFonts()
   }, [])
+
+  const loadFonts = async () => {
+    await Font.loadAsync({
+      'Ubuntu-Bold': require('./assets/fonts/Ubuntu-Bold.ttf'),
+      'Ubuntu-Regular': require('./assets/fonts/Ubuntu-Regular.ttf'),
+      'Ubuntu-Medium': require('./assets/fonts/Ubuntu-Medium.ttf'),
+      'Ubuntu-Light': require('./assets/fonts/Ubuntu-Light.ttf'),
+      'Ubuntu-Regular': require('./assets/fonts/Ubuntu-Regular.ttf'),
+    });
+    setFontsLoaded(true);
+  };
 
   const AppLoaded = async () => {
     const value = await AsyncStorage.getItem("loaded")
@@ -53,7 +55,7 @@ export default function App() {
     }
   }
 
-  if (isloading && !fontsLoaded && !fontError) {
+  if (!fontsLoaded) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
         <Image style={{ height: 300, width: 300, resizeMode: 'contain' }} source={require('./assets/logo.png')} />

@@ -4,13 +4,12 @@ import axios from 'axios';
 import { Alert } from 'react-native';
 
 
-export const AuthContext = createContext();
+
+export const AuthContext = createContext({});
 
 export default AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(false)
     const [user, setuser] = useState({})
-
-
 
     const SignIn = async (data, Navigation) => {
         setLoading(true)

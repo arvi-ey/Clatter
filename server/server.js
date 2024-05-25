@@ -66,6 +66,32 @@ server.post("/signin", async (req, res) => {
 
 
 
+server.get("/getuser/:id", async (req, res) => {
+    const userid = req.params.id
+    try {
+        const user = await userModel.findOne({ _id: userid })
+        if (!user) return res.send("User does not exist")
+        else res.send(user)
+    }
+    catch (err) {
+        res.send(err.message)
+    }
+})
+
+server.patch("/edituser/:id", async (req, res) => {
+    const userid = req.params.id
+    const updatedData = req.body
+    try {
+        const user = await userModel.findByIdAndUpdate({ _id: userid }, updatedData, { new: true })
+        if (!user) return res.send('User Not Found')
+        else res.send(user).status(200)
+    }
+    catch (err) {
+        res.send(err.message).status(500)
+    }
+})
+
+
 
 server.listen(5000, () => {
     console.log(`server is listening on PORT:5000`)
