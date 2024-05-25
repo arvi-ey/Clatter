@@ -11,6 +11,51 @@ export default AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(false)
     const [user, setuser] = useState({})
 
+
+
+    useEffect(() => {
+        GetUSer()
+    }, [])
+
+
+
+
+    const GetUSer = async () => {
+        const token = await GetToken()
+        if (token) {
+            try {
+                const response = await axios.get('http://192.168.29.223:5000/getUser', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setuser(response.data.user)
+            }
+            catch (e) {
+                console.log("Message", e.message)
+
+            }
+        }
+        else {
+            console.log("Token is not set yet, Go to login")
+            return
+        }
+    }
+
+    const GetToken = async () => {
+        try {
+            const token = await SecureStore.getItemAsync("token")
+            if (token !== null) return token
+            else return null
+        }
+        catch (e) {
+            console.error(e.message)
+        }
+    }
+
+
+
+
     const SignIn = async (data, Navigation) => {
         setLoading(true)
         try {
@@ -20,9 +65,7 @@ export default AuthProvider = ({ children }) => {
             else {
                 await SecureStore.setItemAsync("token", response.data.token)
                 const { name, email, _id, number } = response.data.user
-                setuser({
-                    uid: _id, name, email, number
-                })
+                setuser({ _id, name, email, number })
                 Navigation.replace("Profile")
             }
         }
@@ -60,7 +103,7 @@ export default AuthProvider = ({ children }) => {
         }
     };
 
-    const value = { loading, SignIn, user, CreateUser }
+    const value = { loading, SignIn, user, CreateUser, }
     return (
         <AuthContext.Provider value={value} >
             {children}

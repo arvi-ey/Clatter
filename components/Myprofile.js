@@ -17,10 +17,10 @@ const Myprofile = () => {
     const size = 24;
     const color = colors.CHAT_DESC;
     const [image, setImage] = useState(null);
-    const { user } = useContext(AuthContext)
+    const { user, } = useContext(AuthContext)
 
 
-    console.log(user)
+    console.log("This is User", user)
     const profileListData = [
         {
             icon: <MaterialCommunityIcons name="key-outline" size={size} color={color} />,

@@ -6,6 +6,7 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken")
 const bodyParser = require('body-parser')
+const verifyToken = require("./middlewares/VerifyUser")
 
 server.use(cors());
 server.use(express.json())
@@ -40,7 +41,6 @@ server.post("/createuser", async (req, res) => {
                     })
                     res.send(userresult)
                 });
-                // const token = jwt.sign({ email }, "sssshhhhh")
             });
         }
     }
@@ -50,13 +50,17 @@ server.post("/createuser", async (req, res) => {
 })
 
 
+server.get('/getUser', verifyToken, (req, res) => {
+    res.status(200).json({ user: req.user })
+})
+
 server.post("/signin", async (req, res) => {
     const user = await userModel.findOne({ email: req.body.email })
     if (!user) return res.send("Email dosen't exist")
     else {
         bcrypt.compare(req.body.password, user.password, (err, result) => {
             if (result) {
-                let token = jwt.sign({ email: req.body.email }, "sssssshh")
+                let token = jwt.sign({ id: user._id, email: user.email }, "sssssshh")
                 res.send({ token, user })
             }
             else res.send("Password is incorrect")
