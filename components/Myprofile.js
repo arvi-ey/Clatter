@@ -10,6 +10,7 @@ import { AuthContext } from './Context/Authprovider';
 
 const { height, width } = Dimensions.get('window');
 
+// i am using React Native expo as a front end and Node and express as a server and Mongodb as a Database.Now i want to update profile image from react native and store it into database i want to upload image with some form data and by using multer i want to do it, Show me the code and explain also
 
 
 const Myprofile = () => {
@@ -18,9 +19,6 @@ const Myprofile = () => {
     const color = colors.CHAT_DESC;
     const [image, setImage] = useState(null);
     const { user, } = useContext(AuthContext)
-
-
-    console.log("This is User", user)
     const profileListData = [
         {
             icon: <MaterialCommunityIcons name="key-outline" size={size} color={color} />,
@@ -57,6 +55,12 @@ const Myprofile = () => {
             name: "Log out",
         }
     ];
+
+    // const response = await axios.post('http://localhost:3000/upload-profile', formData, {
+    //     headers: {
+    //         'Content-Type': 'multipart/form-data',
+    //     },
+    // });
 
     const Profilelist = ({ item }) => {
         const LogOut = async () => {

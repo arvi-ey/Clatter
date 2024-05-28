@@ -7,6 +7,8 @@ const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken")
 const bodyParser = require('body-parser')
 const verifyToken = require("./middlewares/VerifyUser")
+const multer = require('multer');
+const path = require('path');
 
 server.use(cors());
 server.use(express.json())
@@ -18,7 +20,13 @@ server.use(cookie_parser())
 server.get("/", (req, res) => {
     res.send("HELLO SERVER")
 })
-
+const storage = multer.diskStorage({
+    destination: './uploads/',
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
 server.post("/createuser", async (req, res) => {
     let { name, email, number, password, profile_image } = req.body;
     try {

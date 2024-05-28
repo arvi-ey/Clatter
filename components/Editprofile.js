@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState, useMemo, useEffect, useContext } from 'react';
 import { StyleSheet, Text, View, Image, Dimensions, SafeAreaView, Platform, TouchableOpacity, Alert, Linking, TextInput } from 'react-native';
 import { colors } from './Theme';
 import { SimpleLineIcons, Feather, AntDesign } from '@expo/vector-icons';
@@ -12,13 +12,15 @@ import { Octicons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 const { height, width } = Dimensions.get('window');
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import axios from 'axios';
+import { AuthContext } from './Context/Authprovider';
 
 
 const Editprofile = () => {
+    const { user } = useContext(AuthContext)
     const Navigation = useNavigation();
     const snapPoints = useMemo(() => ['20%'], []);
     const sheetRef = useRef(null);
-    const color = colors.CHAT_DESC;
     const [image, setImage] = useState(null);
     const [focusEmail, setFocuEmail] = useState(false)
     const [focusNumber, setFocusNumber] = useState(false)
@@ -28,7 +30,9 @@ const Editprofile = () => {
         name: "",
         email: "",
         number: "",
+        profile_image: ""
     })
+    console.log(data.number)
     const openCamera = async () => {
         const { status, canAskAgain } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== 'granted') {
@@ -77,6 +81,7 @@ const Editprofile = () => {
 
         if (!result.canceled) {
             setImage(result.assets[0].uri);
+            setData({ ...data, profile_image: result.assets[0].uri })
             closeBottomSheet()
         }
     };
@@ -95,9 +100,32 @@ const Editprofile = () => {
     const handleNameChange = (value) => {
         setData({ ...data, name: value })
     }
-    const HandleUpdate = () => {
 
+    const HandleUpdate = async () => {
+
+    };
+
+
+    useEffect(() => {
+        GetUser()
+    }, [])
+
+    const GetUser = async () => {
+        try {
+            const response = await axios.get(`http://192.168.29.223:5000/getUser/${user._id}`)
+            // console.log(response.data.number)
+            setData(response.data)
+        }
+        catch (err) {
+            console.log(err)
+        }
     }
+
+
+
+
+
+
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
