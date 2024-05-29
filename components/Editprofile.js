@@ -29,10 +29,9 @@ const Editprofile = () => {
     const [data, setData] = useState({
         name: "",
         email: "",
-        number: "",
+        number: 456,
         profile_image: ""
     })
-    console.log(data.number)
     const openCamera = async () => {
         const { status, canAskAgain } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== 'granted') {
@@ -102,7 +101,21 @@ const Editprofile = () => {
     }
 
     const HandleUpdate = async () => {
-
+        setLoading(true)
+        try {
+            const response = await axios.patch(`http://192.168.29.223:5000/edituser/${user._id}`, data)
+            if (response.data === "This email already exists") {
+                Alert.alert(response.data)
+                setLoading(false)
+                return
+            }
+        }
+        catch (err) {
+            console.error(err)
+        }
+        finally {
+            setLoading(false)
+        }
     };
 
 
@@ -113,7 +126,6 @@ const Editprofile = () => {
     const GetUser = async () => {
         try {
             const response = await axios.get(`http://192.168.29.223:5000/getUser/${user._id}`)
-            // console.log(response.data.number)
             setData(response.data)
         }
         catch (err) {

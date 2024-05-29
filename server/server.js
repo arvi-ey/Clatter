@@ -93,13 +93,20 @@ server.get("/getuser/:id", async (req, res) => {
 server.patch("/edituser/:id", async (req, res) => {
     const userid = req.params.id
     const updatedData = req.body
-    try {
-        const user = await userModel.findByIdAndUpdate({ _id: userid }, updatedData, { new: true })
-        if (!user) return res.send('User Not Found')
-        else res.send(user).status(200)
+    const checkUser = await userModel.findOne({ email: updatedData.email })
+    if (checkUser) {
+        res.send("This email already exists")
+        return
     }
-    catch (err) {
-        res.send(err.message).status(500)
+    else {
+        try {
+            const user = await userModel.findByIdAndUpdate({ _id: userid }, updatedData, { new: true })
+            if (!user) return res.send('User Not Found')
+            else res.send(user).status(200)
+        }
+        catch (err) {
+            res.send(err.message).status(500)
+        }
     }
 })
 
