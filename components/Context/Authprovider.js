@@ -14,13 +14,13 @@ export default AuthProvider = ({ children }) => {
 
 
     useEffect(() => {
-        GetUSer()
+        GetUSerOnce()
     }, [])
 
 
 
 
-    const GetUSer = async () => {
+    const GetUSerOnce = async (id) => {
         const token = await GetToken()
         if (token) {
             try {
@@ -34,6 +34,15 @@ export default AuthProvider = ({ children }) => {
             catch (e) {
                 console.log("Message", e.message)
 
+            }
+        }
+        else if (id) {
+            try {
+                const response = await axios.get(`http://192.168.29.223:5000/getUser/${user._id}`)
+                setuser(response.data)
+            }
+            catch (err) {
+                console.log(err)
             }
         }
         else {
@@ -103,7 +112,7 @@ export default AuthProvider = ({ children }) => {
         }
     };
 
-    const value = { loading, SignIn, user, CreateUser, }
+    const value = { loading, setuser, SignIn, user, CreateUser, GetUSerOnce }
     return (
         <AuthContext.Provider value={value} >
             {children}

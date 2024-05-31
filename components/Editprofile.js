@@ -17,7 +17,7 @@ import { AuthContext } from './Context/Authprovider';
 
 
 const Editprofile = () => {
-    const { user } = useContext(AuthContext)
+    const { user, GetUSerOnce, setuser } = useContext(AuthContext)
     const Navigation = useNavigation();
     const snapPoints = useMemo(() => ['20%'], []);
     const sheetRef = useRef(null);
@@ -26,12 +26,15 @@ const Editprofile = () => {
     const [focusNumber, setFocusNumber] = useState(false)
     const [focusName, setFocusName] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [initialdata, setinitialData] = useState({})
+    const [clicked, setClicked] = useState(false)
     const [data, setData] = useState({
         name: "",
         email: "",
-        number: 456,
+        number: "",
         profile_image: ""
     })
+
     const openCamera = async () => {
         const { status, canAskAgain } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== 'granted') {
@@ -101,43 +104,50 @@ const Editprofile = () => {
     }
 
     const HandleUpdate = async () => {
-        setLoading(true)
-        try {
-            const response = await axios.patch(`http://192.168.29.223:5000/edituser/${user._id}`, data)
-            if (response.data === "This email already exists") {
-                Alert.alert(response.data)
+        setClicked(true)
+        console.log("data", data)
+        console.log("user", user)
+        const differences = Object.keys(data).filter(key => data[key] !== user[key]);
+        console.log(differences)
+        if (differences.length > 0) {
+            const changedData = {}
+            differences.forEach(key => {
+                changedData[key] = data[key]
+            });
+            setLoading(true)
+            try {
+                const response = await axios.patch(`http://192.168.29.223:5000/edituser/${user._id}`, changedData)
+                if (response.data === "This email already exists") {
+                    Alert.alert(response.data)
+                    setLoading(false)
+                    return
+                }
+                setuser({ ...user, ...changedData });
+                setClicked(false);
+                Alert.alert("Profile Update")
+            }
+            catch (err) {
+                console.error(err)
+            }
+            finally {
                 setLoading(false)
-                return
             }
         }
-        catch (err) {
-            console.error(err)
-        }
-        finally {
-            setLoading(false)
+        else {
+            Alert.alert("Make Changes to Update")
         }
     };
 
-
     useEffect(() => {
-        GetUser()
-    }, [])
 
-    const GetUser = async () => {
-        try {
-            const response = await axios.get(`http://192.168.29.223:5000/getUser/${user._id}`)
-            setData(response.data)
+        if (user) {
+            setData({
+                name: user.name,
+                email: user.email,
+                number: user.number
+            })
         }
-        catch (err) {
-            console.log(err)
-        }
-    }
-
-
-
-
-
-
+    }, [user])
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
@@ -156,7 +166,7 @@ const Editprofile = () => {
                         </View>
                     </View>
                     <View style={{ gap: 25 }}>
-                        <View style={(focusName || data.name.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
+                        <View style={(focusName || data.name.length > 0) ? styles.FocusinputContainer : styles.inputContainer}>
                             <Ionicons name="person-outline" size={24} color={(focusName || data.name.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
                             <TextInput
                                 onFocus={() => setFocusName(!focusName)}
