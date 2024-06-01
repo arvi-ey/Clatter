@@ -18,9 +18,39 @@ export default AuthProvider = ({ children }) => {
     }, [])
 
 
+    const EditUser = async (data) => {
+        console.log("data", data)
+        console.log("user", user)
+        const differences = Object.keys(data).filter(key => data[key] !== user[key]);
+        console.log(differences)
+        if (differences.length > 0) {
+            const changedData = {}
+            differences.forEach(key => {
+                changedData[key] = data[key]
+            });
+            setLoading(true)
+            try {
+                const response = await axios.patch(`http://192.168.29.223:5000/edituser/${user._id}`, changedData)
+                if (response.data === "This email already exists") {
+                    Alert.alert(response.data)
+                    setLoading(false)
+                    return
+                }
+                setuser({ ...user, ...changedData });
+            }
+            catch (err) {
+                console.error(err)
+            }
+            finally {
+                setLoading(false)
+            }
+        }
+        else {
+            Alert.alert("Make Changes to Update")
+        }
+    };
 
-
-    const GetUSerOnce = async (id) => {
+    const GetUSerOnce = async () => {
         const token = await GetToken()
         if (token) {
             try {
@@ -34,15 +64,6 @@ export default AuthProvider = ({ children }) => {
             catch (e) {
                 console.log("Message", e.message)
 
-            }
-        }
-        else if (id) {
-            try {
-                const response = await axios.get(`http://192.168.29.223:5000/getUser/${user._id}`)
-                setuser(response.data)
-            }
-            catch (err) {
-                console.log(err)
             }
         }
         else {
@@ -112,7 +133,7 @@ export default AuthProvider = ({ children }) => {
         }
     };
 
-    const value = { loading, setuser, SignIn, user, CreateUser, GetUSerOnce }
+    const value = { loading, setuser, SignIn, user, CreateUser, GetUSerOnce, EditUser }
     return (
         <AuthContext.Provider value={value} >
             {children}

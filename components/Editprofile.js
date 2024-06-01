@@ -17,7 +17,7 @@ import { AuthContext } from './Context/Authprovider';
 
 
 const Editprofile = () => {
-    const { user, GetUSerOnce, setuser } = useContext(AuthContext)
+    const { user, EditUser, loading } = useContext(AuthContext)
     const Navigation = useNavigation();
     const snapPoints = useMemo(() => ['20%'], []);
     const sheetRef = useRef(null);
@@ -25,15 +25,13 @@ const Editprofile = () => {
     const [focusEmail, setFocuEmail] = useState(false)
     const [focusNumber, setFocusNumber] = useState(false)
     const [focusName, setFocusName] = useState(false)
-    const [loading, setLoading] = useState(false)
-    const [initialdata, setinitialData] = useState({})
-    const [clicked, setClicked] = useState(false)
     const [data, setData] = useState({
         name: "",
         email: "",
         number: "",
         profile_image: ""
     })
+    console.log(user)
 
     const openCamera = async () => {
         const { status, canAskAgain } = await ImagePicker.requestCameraPermissionsAsync();
@@ -102,44 +100,7 @@ const Editprofile = () => {
     const handleNameChange = (value) => {
         setData({ ...data, name: value })
     }
-
-    const HandleUpdate = async () => {
-        setClicked(true)
-        console.log("data", data)
-        console.log("user", user)
-        const differences = Object.keys(data).filter(key => data[key] !== user[key]);
-        console.log(differences)
-        if (differences.length > 0) {
-            const changedData = {}
-            differences.forEach(key => {
-                changedData[key] = data[key]
-            });
-            setLoading(true)
-            try {
-                const response = await axios.patch(`http://192.168.29.223:5000/edituser/${user._id}`, changedData)
-                if (response.data === "This email already exists") {
-                    Alert.alert(response.data)
-                    setLoading(false)
-                    return
-                }
-                setuser({ ...user, ...changedData });
-                setClicked(false);
-                Alert.alert("Profile Update")
-            }
-            catch (err) {
-                console.error(err)
-            }
-            finally {
-                setLoading(false)
-            }
-        }
-        else {
-            Alert.alert("Make Changes to Update")
-        }
-    };
-
     useEffect(() => {
-
         if (user) {
             setData({
                 name: user.name,
@@ -208,7 +169,7 @@ const Editprofile = () => {
                             title="Edit Profile"
                             textStyle={styles.textStyle}
                             activeOpacity={0.8}
-                            press={HandleUpdate}
+                            press={() => EditUser(data)}
                             loading={loading}
                             loaderColor={colors.MAIN_COLOR}
                             loaderSize="large"

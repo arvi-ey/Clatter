@@ -1,12 +1,11 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList } from 'react-native'
 import React from 'react'
 import { useContext } from 'react';
-import { ModeContext } from './Context/Modeprovider';
+import { AuthContext } from "./Context/Authprovider"
 import { colors } from './Theme'
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 const ChatScreen = () => {
-    const { darkMode } = useContext(ModeContext)
+    const { user } = useContext(AuthContext)
 
     const Navigation = useNavigation()
     const data = [
@@ -97,11 +96,11 @@ const ChatScreen = () => {
                 </View>
                 <View style={{ flex: 1 }} >
                     <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
-                        <Text style={{ fontSize: 19, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: "Ubuntu-Regular" }}  >{data.name}</Text>
-                        <Text style={{ marginRight: 10, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: "Ubuntu-Regular" }} >{data.time}</Text>
+                        <Text style={{ fontSize: 19, color: user.dark_mode ? colors.WHITE : colors.BLACK, fontFamily: "Ubuntu-Regular" }}  >{data.name}</Text>
+                        <Text style={{ marginRight: 10, color: user.dark_mode ? colors.WHITE : colors.BLACK, fontFamily: "Ubuntu-Regular" }} >{data.time}</Text>
                     </View>
                     <View>
-                        <Text style={{ fontSize: 15, color: darkMode ? colors.CHAT_DESC_DARK : colors.CHAT_DESC, fontFamily: darkMode ? "Ubuntu-Light" : "Ubuntu-Regular" }}>{data.massage}</Text>
+                        <Text style={{ fontSize: 15, color: user.dark_mode ? colors.CHAT_DESC_DARK : colors.CHAT_DESC, fontFamily: user.dark_mode ? "Ubuntu-Light" : "Ubuntu-Regular" }}>{data.massage}</Text>
                     </View>
                 </View>
 
@@ -109,7 +108,7 @@ const ChatScreen = () => {
         )
     }
     return (
-        <View style={{ backgroundColor: darkMode ? colors.BLACK : colors.WHITE, flex: 1 }} >
+        <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, flex: 1 }} >
             <FlatList
                 data={data}
                 renderItem={({ item }) => <ChatComponent data={item} />}

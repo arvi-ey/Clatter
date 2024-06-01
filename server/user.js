@@ -7,7 +7,11 @@ const userSchema = mongoose.Schema({
     email: String,
     number: String,
     profile_image: String,
-    password: String
+    password: String,
+    dark_mode: {
+        type: Boolean,
+        default: false
+    }
 })
 
 module.exports = mongoose.model("user", userSchema)

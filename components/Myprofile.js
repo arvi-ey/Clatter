@@ -8,17 +8,18 @@ import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from './Context/Authprovider';
 
+
 const { height, width } = Dimensions.get('window');
 
 // i am using React Native expo as a front end and Node and express as a server and Mongodb as a Database.Now i want to update profile image from react native and store it into database i want to upload image with some form data and by using multer i want to do it, Show me the code and explain also
 
 
 const Myprofile = () => {
+    const { user } = useContext(AuthContext)
     const Navigation = useNavigation();
     const size = 24;
-    const color = colors.CHAT_DESC;
+    const color = user.dark_mode ? colors.CHAT_DESC_DARK : colors.CHAT_DESC;
     const [image, setImage] = useState(null);
-    const { user, } = useContext(AuthContext)
     const profileListData = [
         {
             icon: <MaterialCommunityIcons name="key-outline" size={size} color={color} />,
@@ -125,7 +126,7 @@ export default Myprofile;
 const styles = StyleSheet.create({
     profileContainer: {
         flex: 1,
-        backgroundColor: colors.WHITE,
+        backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE,
         alignItems: "center",
         paddingTop: Platform.OS === 'android' ? 50 : 0
     },

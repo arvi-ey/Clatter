@@ -14,7 +14,6 @@ import Editprofile from './components/Editprofile';
 import Authprovider, { AuthContext } from './components/Context/Authprovider';
 import * as SecureStore from 'expo-secure-store';
 import * as Font from 'expo-font';
-import Modeprovider, { ModeContext } from './components/Context/Modeprovider';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -69,26 +68,24 @@ export default function App() {
 
       <NavigationContainer>
         <Authprovider>
-          <Modeprovider>
-            <Stack.Navigator
-              screenOptions={{
-                animationTypeForReplace: 'pop',
-                animationEnabled: Platform.OS == 'android' ? true : true,
-              }}
-            >
-              {firstLoad === false && <Stack.Screen name="Onboarding" component={Onboardingpage} options={{ headerShown: false }} />}
-              {isloggedIn === false &&
-                <>
-                  <Stack.Screen name="Signin" component={Signinpage} options={{ headerShown: false }} />
-                  <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
-                </>
-              }
-              <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
-              <Stack.Screen name="Myprofile" component={Myprofile} options={{ headerShown: false }} />
-              <Stack.Screen name="Editprofile" component={Editprofile} options={{ headerShown: false }} />
+          <Stack.Navigator
+            screenOptions={{
+              animationTypeForReplace: 'pop',
+              animationEnabled: Platform.OS == 'android' ? true : true,
+            }}
+          >
+            {firstLoad === false && <Stack.Screen name="Onboarding" component={Onboardingpage} options={{ headerShown: false }} />}
+            {isloggedIn === false &&
+              <>
+                <Stack.Screen name="Signin" component={Signinpage} options={{ headerShown: false }} />
+                <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
+              </>
+            }
+            <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+            <Stack.Screen name="Myprofile" component={Myprofile} options={{ headerShown: false }} />
+            <Stack.Screen name="Editprofile" component={Editprofile} options={{ headerShown: false }} />
 
-            </Stack.Navigator>
-          </Modeprovider>
+          </Stack.Navigator>
         </Authprovider>
       </NavigationContainer>
     </GestureHandlerRootView>

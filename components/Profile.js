@@ -11,21 +11,24 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
-import { ModeContext } from './Context/Modeprovider';
-const Tab = createBottomTabNavigator();
+import { AuthContext } from './Context/Authprovider';
 
 
 
 
 const Profile = () => {
-    const [darkModeon, setdarkModeon] = useState(false)
-    const { setDarkMode, darkMode } = useContext(ModeContext)
-
-
+    const Tab = createBottomTabNavigator();
+    const [darkModeon, setdarkModeon] = useState()
+    const [darkMode, setDarkMode] = useState()
+    const { user, EditUser, } = useContext(AuthContext)
+    useEffect(() => {
+        setDarkMode(user.dark_mode)
+        setdarkModeon(user.dark_mode)
+    }, [user])
 
     const SetDarkmode = () => {
         setdarkModeon(!darkModeon)
-        setDarkMode(!darkMode)
+        EditUser({ dark_mode: !darkMode })
     }
     return (
         <Tab.Navigator screenOptions={{
