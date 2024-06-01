@@ -8,6 +8,8 @@ export const colors = {
     SECONDARY_COLOR: "#C5B1FF",
     TAB_HEADER: "#fffafa",
     CHAT_DESC: "#6E6D7A",
+    CHAT_DESC_DARK: "#FAF9F6",
     ERROR_TEXT: "#e60023",
-    CHARCOLE: "#36454F"
+    CHARCOLE: "#36454F",
+    CHARCOLE_DARK: "#B4B4B4",
 }

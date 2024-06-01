@@ -1,9 +1,12 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList } from 'react-native'
 import React from 'react'
+import { useContext } from 'react';
+import { ModeContext } from './Context/Modeprovider';
 import { colors } from './Theme'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 const ChatScreen = () => {
+    const { darkMode } = useContext(ModeContext)
 
     const Navigation = useNavigation()
     const data = [
@@ -94,11 +97,11 @@ const ChatScreen = () => {
                 </View>
                 <View style={{ flex: 1 }} >
                     <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
-                        <Text style={{ fontSize: 19, fontFamily: "Ubuntu-Regular" }}  >{data.name}</Text>
-                        <Text style={{ marginRight: 10, fontFamily: "Ubuntu-Regular" }} >{data.time}</Text>
+                        <Text style={{ fontSize: 19, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: "Ubuntu-Regular" }}  >{data.name}</Text>
+                        <Text style={{ marginRight: 10, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: "Ubuntu-Regular" }} >{data.time}</Text>
                     </View>
                     <View>
-                        <Text style={{ fontSize: 15, color: colors.CHAT_DESC, fontFamily: "Ubuntu-Regular" }}>{data.massage}</Text>
+                        <Text style={{ fontSize: 15, color: darkMode ? colors.CHAT_DESC_DARK : colors.CHAT_DESC, fontFamily: darkMode ? "Ubuntu-Light" : "Ubuntu-Regular" }}>{data.massage}</Text>
                     </View>
                 </View>
 
@@ -106,7 +109,7 @@ const ChatScreen = () => {
         )
     }
     return (
-        <View style={{ backgroundColor: colors.WHITE, flex: 1 }} >
+        <View style={{ backgroundColor: darkMode ? colors.BLACK : colors.WHITE, flex: 1 }} >
             <FlatList
                 data={data}
                 renderItem={({ item }) => <ChatComponent data={item} />}

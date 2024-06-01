@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import ChatScreen from './ChatScreen';
 import CallScreen from './CallScreen';
 import StoryScreen from './StoryScreen';
@@ -11,24 +11,33 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
+import { ModeContext } from './Context/Modeprovider';
 const Tab = createBottomTabNavigator();
 
 
 
 
 const Profile = () => {
-    const [darkMode, setdarkMode] = useState(false)
+    const [darkModeon, setdarkModeon] = useState(false)
+    const { setDarkMode, darkMode } = useContext(ModeContext)
+
+
+
+    const SetDarkmode = () => {
+        setdarkModeon(!darkModeon)
+        setDarkMode(!darkMode)
+    }
     return (
         <Tab.Navigator screenOptions={{
             headerShown: true,
             tabBarShowLabel: false,
             headerStyle: {
-                backgroundColor: colors.WHITE,
+                backgroundColor: darkMode ? colors.BLACK : colors.WHITE,
                 height: 80
 
             },
             tabBarStyle: {
-                backgroundColor: colors.TAB_HEADER,
+                backgroundColor: darkMode ? colors.BLACK : colors.TAB_HEADER,
                 shadowColor: colors.WHITE,
                 elevation: 0,
                 position: 'absolute',
@@ -52,9 +61,9 @@ const Profile = () => {
                 headerTintColor: colors.MAIN_COLOR,
                 headerRight: () => (
                     <View style={{ flexDirection: "row", marginRight: 10, gap: 25 }} >
-                        <Feather name="camera" size={28} color="black" />
-                        <Ionicons name="search-outline" size={28} color="black" />
-                        <FontAwesome name={darkMode ? "toggle-on" : "toggle-off"} size={30} color="black" onPress={() => setdarkMode(!darkMode)} />
+                        <Feather name="camera" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
+                        <Ionicons name="search-outline" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
+                        <FontAwesome name={darkModeon ? "toggle-on" : "toggle-off"} size={30} color={darkMode ? colors.WHITE : colors.BLACK} onPress={SetDarkmode} />
                     </View>
                 ),
                 headerTitleStyle: {
@@ -64,24 +73,24 @@ const Profile = () => {
                 tabBarIcon: ({ focused }) => (
 
                     <View style={{ justifyContent: "center", alignItems: "center", }} >
-                        <Ionicons name="chatbubbles" size={28} color={focused ? colors.MAIN_COLOR : colors.TAB_ICON} style={{ backgroundColor: focused ? colors.SECONDARY_COLOR : null, paddingHorizontal: 18, paddingVertical: 5, borderRadius: 50, }} />
-                        <Text style={{ color: focused ? colors.MAIN_COLOR : colors.TAB_ICON, fontSize: 17, fontFamily: "Ubuntu-Medium" }} >Chats</Text>
+                        <Ionicons name="chatbubbles" size={28} color={focused && (darkMode || !darkMode) ? colors.MAIN_COLOR : (!focused && darkMode) ? colors.WHITE : colors.TAB_ICON} style={{ backgroundColor: focused ? colors.SECONDARY_COLOR : null, paddingHorizontal: 18, paddingVertical: 5, borderRadius: 50, }} />
+                        <Text style={{ color: darkMode ? colors.WHITE : colors.TAB_ICON, fontSize: 17, fontFamily: "Ubuntu-Medium" }} >Chats</Text>
                     </View>
                 )
             }} />
             <Tab.Screen name="Story" component={StoryScreen} options={{
                 tabBarIcon: ({ focused }) => (
                     <View style={{ justifyContent: "center", alignItems: "center" }} >
-                        <Entypo name="circular-graph" size={28} color={focused ? colors.MAIN_COLOR : colors.TAB_ICON} style={{ backgroundColor: focused ? colors.SECONDARY_COLOR : null, paddingHorizontal: 18, paddingVertical: 5, borderRadius: 50 }} />
-                        <Text style={{ color: focused ? colors.MAIN_COLOR : colors.TAB_ICON, fontSize: 17, fontFamily: "Ubuntu-Medium" }} >Story</Text>
+                        <Entypo name="circular-graph" size={28} color={focused && (darkMode || !darkMode) ? colors.MAIN_COLOR : (!focused && darkMode) ? colors.WHITE : colors.TAB_ICON} style={{ backgroundColor: focused ? colors.SECONDARY_COLOR : null, paddingHorizontal: 18, paddingVertical: 5, borderRadius: 50 }} />
+                        <Text style={{ color: darkMode ? colors.WHITE : colors.TAB_ICON, fontSize: 17, fontFamily: "Ubuntu-Medium" }} >Story</Text>
                     </View>
                 )
             }} />
             <Tab.Screen name="Calls" component={CallScreen} options={{
                 tabBarIcon: ({ focused }) => (
                     <View style={{ justifyContent: "center", alignItems: "center" }} >
-                        <MaterialIcons name="call" size={28} color={focused ? colors.MAIN_COLOR : colors.TAB_ICON} style={{ backgroundColor: focused ? colors.SECONDARY_COLOR : null, paddingHorizontal: 18, paddingVertical: 5, borderRadius: 50 }} />
-                        <Text style={{ color: focused ? colors.MAIN_COLOR : colors.TAB_ICON, fontSize: 17, fontFamily: "Ubuntu-Medium" }} >Calls</Text>
+                        <MaterialIcons name="call" size={28} color={focused && (darkMode || !darkMode) ? colors.MAIN_COLOR : (!focused && darkMode) ? colors.WHITE : colors.TAB_ICON} style={{ backgroundColor: focused ? colors.SECONDARY_COLOR : null, paddingHorizontal: 18, paddingVertical: 5, borderRadius: 50 }} />
+                        <Text style={{ color: darkMode ? colors.WHITE : colors.TAB_ICON, fontSize: 17, fontFamily: "Ubuntu-Medium" }} >Calls</Text>
                     </View>
                 )
             }} />
@@ -89,8 +98,8 @@ const Profile = () => {
                 headerShown: false,
                 tabBarIcon: ({ focused }) => (
                     <View style={{ justifyContent: "center", alignItems: "center" }} >
-                        <FontAwesome name="user" size={28} color={focused ? colors.MAIN_COLOR : colors.TAB_ICON} style={{ backgroundColor: focused ? colors.SECONDARY_COLOR : null, paddingHorizontal: 18, paddingVertical: 5, borderRadius: 50 }} />
-                        <Text style={{ color: focused ? colors.MAIN_COLOR : colors.TAB_ICON, fontSize: 17, fontFamily: "Ubuntu-Medium" }} >Profile</Text>
+                        <FontAwesome name="user" size={28} color={focused && (darkMode || !darkMode) ? colors.MAIN_COLOR : (!focused && darkMode) ? colors.WHITE : colors.TAB_ICON} style={{ backgroundColor: focused ? colors.SECONDARY_COLOR : null, paddingHorizontal: 18, paddingVertical: 5, borderRadius: 50 }} />
+                        <Text style={{ color: darkMode ? colors.WHITE : colors.TAB_ICON, fontSize: 17, fontFamily: "Ubuntu-Medium" }} >Profile</Text>
                     </View>
                 )
             }} />
