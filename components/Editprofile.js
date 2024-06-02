@@ -110,15 +110,32 @@ const Editprofile = () => {
         }
     }, [user])
 
+    const HandleUpdate = () => {
+        const { name, email, number } = data;
+        const emailRegex = /^([a-z0-9._%+-]+)@([a-z0-9.-]+\.[a-z]{2,})$/;
+        if (!name.trim()) {
+            Alert.alert('Please enter your name');
+        } else if (!email.trim()) {
+            Alert.alert('Please enter your email');
+        } else if (!emailRegex.test(email)) {
+            Alert.alert('Please enter a valid email address');
+        } else if (!number.trim()) {
+            Alert.alert('Please enter your mobile number');
+        }
+        else {
+            EditUser(data)
+        }
+    }
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaView style={styles.profileContainer}>
+            <SafeAreaView style={[styles.profileContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>
                 <View style={{ alignSelf: "flex-start", flexDirection: "row" }} >
                     <Ionicons name="chevron-back" size={50} color={colors.MAIN_COLOR} onPress={() => Navigation.goBack()} />
                 </View>
-                <View style={{ alignItems: 'center', gap: 25, backgroundColor: colors.WHITE }}>
+                <View style={{ alignItems: 'center', gap: 25, backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }}>
 
-                    <View style={{ backgroundColor: colors.WHITE, alignItems: "center", gap: 8, }}>
+                    <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, }}>
                         <View style={{ position: "relative" }}>
                             <Image source={{ uri: image }} height={160} width={160} style={{ borderRadius: 80 }} />
                             <TouchableOpacity style={styles.editIcon} onPress={OpenButtomSheet}>
@@ -127,12 +144,12 @@ const Editprofile = () => {
                         </View>
                     </View>
                     <View style={{ gap: 25 }}>
-                        <View style={(focusName || data.name.length > 0) ? styles.FocusinputContainer : styles.inputContainer}>
+                        <View style={[(focusName || data.name.length > 0) ? styles.FocusinputContainer : styles.inputContainer, {}]}>
                             <Ionicons name="person-outline" size={24} color={(focusName || data.name.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
                             <TextInput
                                 onFocus={() => setFocusName(!focusName)}
                                 onBlur={() => setFocusName(!focusName)}
-                                style={styles.inputBox}
+                                style={[styles.inputBox, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}
                                 value={data?.name}
                                 placeholder='Enter Name'
                                 placeholderTextColor="gray"
@@ -144,7 +161,7 @@ const Editprofile = () => {
                             <TextInput
                                 onFocus={() => setFocuEmail(!focusEmail)}
                                 onBlur={() => setFocuEmail(!focusEmail)}
-                                style={styles.inputBox}
+                                style={[styles.inputBox, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}
                                 value={data?.email}
                                 placeholder='Enter Email'
                                 placeholderTextColor="gray"
@@ -156,7 +173,7 @@ const Editprofile = () => {
                             <TextInput
                                 onFocus={() => setFocusNumber(!focusNumber)}
                                 onBlur={() => setFocusNumber(!focusNumber)}
-                                style={styles.inputBox}
+                                style={[styles.inputBox, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}
                                 value={data?.number}
                                 placeholder='Enter Mobile Number'
                                 placeholderTextColor="gray"
@@ -165,11 +182,11 @@ const Editprofile = () => {
                             />
                         </View>
                         <Button
-                            buttonStyle={loading === true ? styles.loadingButtonStyle : styles.buttonStyle}
+                            buttonStyle={[loading === true ? styles.loadingButtonStyle : styles.buttonStyle, { backgroundColor: (user.dark_mode && loading) ? colors.BLACK : ((user.dark_mode || !user.dark_mode) && !loading) ? colors.MAIN_COLOR : colors.WHITE }]}
                             title="Edit Profile"
                             textStyle={styles.textStyle}
                             activeOpacity={0.8}
-                            press={() => EditUser(data)}
+                            press={HandleUpdate}
                             loading={loading}
                             loaderColor={colors.MAIN_COLOR}
                             loaderSize="large"
@@ -215,7 +232,6 @@ export default Editprofile
 const styles = StyleSheet.create({
     profileContainer: {
         flex: 1,
-        backgroundColor: colors.WHITE,
         alignItems: "center",
         paddingTop: Platform.OS === 'android' ? 50 : 0,
         position: "relative",
@@ -316,7 +332,6 @@ const styles = StyleSheet.create({
     },
     buttonStyle: {
         width: width - 60,
-        backgroundColor: colors.MAIN_COLOR,
         borderRadius: 10,
         paddingVertical: 15,
         justifyContent: "center",
@@ -324,7 +339,6 @@ const styles = StyleSheet.create({
     },
     loadingButtonStyle: {
         width: width - 60,
-        backgroundColor: colors.WHITE,
         borderRadius: 10,
         paddingVertical: 15,
         justifyContent: "center",

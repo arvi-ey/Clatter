@@ -100,7 +100,7 @@ const ChatScreen = () => {
                         <Text style={{ marginRight: 10, color: user.dark_mode ? colors.WHITE : colors.BLACK, fontFamily: "Ubuntu-Regular" }} >{data.time}</Text>
                     </View>
                     <View>
-                        <Text style={{ fontSize: 15, color: user.dark_mode ? colors.CHAT_DESC_DARK : colors.CHAT_DESC, fontFamily: user.dark_mode ? "Ubuntu-Light" : "Ubuntu-Regular" }}>{data.massage}</Text>
+                        <Text style={{ fontSize: 15, color: user.dark_mode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: user.dark_mode ? "Ubuntu-Light" : "Ubuntu-Regular" }}>{data.massage}</Text>
                     </View>
                 </View>
 
