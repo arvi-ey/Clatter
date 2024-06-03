@@ -4,6 +4,7 @@ import { useContext } from 'react';
 import { AuthContext } from "./Context/Authprovider"
 import { colors } from './Theme'
 import { useNavigation } from '@react-navigation/native';
+import { MaterialIcons } from '@expo/vector-icons';
 const ChatScreen = () => {
     const { user } = useContext(AuthContext)
 
@@ -107,19 +108,41 @@ const ChatScreen = () => {
             </TouchableOpacity>
         )
     }
+
+    const AddChat = () => {
+
+    }
+
+
+    const AddContact = () => {
+        return (
+            <TouchableOpacity activeOpacity={0.8} style={styles.addContact} onPress={AddChat} >
+                <MaterialIcons name="chat" size={30} color={colors.WHITE} />
+            </TouchableOpacity>
+        )
+    }
     return (
-        <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, flex: 1 }} >
+        <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, flex: 1, position: "relative" }} >
             <FlatList
                 data={data}
                 renderItem={({ item }) => <ChatComponent data={item} />}
                 keyExtractor={(item, index) => index}
-
             />
-
+            {AddContact()}
         </View>
     )
 }
 
 export default ChatScreen
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    addContact: {
+        position: "absolute",
+        backgroundColor: colors.MAIN_COLOR,
+        padding: 20,
+        right: 15,
+        borderRadius: 25,
+        top: 550
+
+    }
+})

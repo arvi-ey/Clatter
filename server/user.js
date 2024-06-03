@@ -11,6 +11,9 @@ const userSchema = mongoose.Schema({
     dark_mode: {
         type: Boolean,
         default: false
+    },
+    saved_contact: {
+        type: Array,
     }
 })
 
