@@ -12,7 +12,6 @@ import { Octicons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 const { height, width } = Dimensions.get('window');
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import axios from 'axios';
 import { AuthContext } from './Context/Authprovider';
 
 

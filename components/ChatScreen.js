@@ -1,11 +1,11 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, Alert } from 'react-native'
 import React from 'react'
 import { useContext } from 'react';
 import { AuthContext } from "./Context/Authprovider"
 import { colors } from './Theme'
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
-const ChatScreen = () => {
+const ChatScreen = ({ navigation }) => {
     const { user } = useContext(AuthContext)
 
     const Navigation = useNavigation()
@@ -88,7 +88,6 @@ const ChatScreen = () => {
     const ChatComponent = ({ data }) => {
         return (
             <TouchableOpacity style={{ marginTop: 5, flexDirection: "row", height: 85, padding: 5, gap: 20, alignItems: "center" }}
-            // onPress={LogOut}
             >
                 <View style={{ padding: 5, }} >
                     <Image source={{ uri: data.image }}
@@ -111,6 +110,7 @@ const ChatScreen = () => {
 
     const AddChat = () => {
 
+        navigation.navigate("ContactList")
     }
 
 
