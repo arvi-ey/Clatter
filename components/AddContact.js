@@ -38,8 +38,8 @@ const AddContact = ({ navigation }) => {
                 <Ionicons name="chevron-back" size={40} color={colors.MAIN_COLOR} onPress={() => navigation.goBack()} />
             </View>
             <View style={{ gap: 25, alignItems: 'center', }}>
-                <View style={[(focusName || data.name.length > 0) ? styles.FocusinputContainer : styles.inputContainer, {}]}>
-                    <Ionicons name="person-outline" size={24} color={(focusName || data.name.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
+                <View style={[(focusName || data.name.length > 0) ? styles.FocusinputContainer : user.dark_mode ? styles.darkModeInput : styles.inputContainer, {}]}>
+                    <Ionicons name="person-outline" size={24} color={(focusName || data.name.length > 0) ? colors.MAIN_COLOR : user.dark_mode ? colors.WHITE : colors.CHAT_DESC} />
                     <TextInput
                         onFocus={() => setFocusName(!focusName)}
                         onBlur={() => setFocusName(!focusName)}
@@ -50,8 +50,8 @@ const AddContact = ({ navigation }) => {
                         onChangeText={handleNameChange}
                     />
                 </View>
-                <View style={(focusEmail || data.email.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
-                    <MaterialCommunityIcons name="email-outline" size={24} color={(focusEmail || data.email.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
+                <View style={(focusEmail || data.email.length > 0) ? styles.FocusinputContainer : user.dark_mode ? styles.darkModeInput : styles.inputContainer} >
+                    <MaterialCommunityIcons name="email-outline" size={24} color={(focusEmail || data.email.length > 0) ? colors.MAIN_COLOR : user.dark_mode ? colors.WHITE : colors.CHAT_DESC} />
                     <TextInput
                         onFocus={() => setFocuEmail(!focusEmail)}
                         onBlur={() => setFocuEmail(!focusEmail)}
@@ -62,8 +62,8 @@ const AddContact = ({ navigation }) => {
                         onChangeText={handleEmailChange}
                     />
                 </View>
-                <View style={(focusNumber || data.number.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
-                    <Ionicons name="phone-portrait-outline" size={24} color={(focusNumber || data.number.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
+                <View style={(focusNumber || data.number.length > 0) ? styles.FocusinputContainer : user.dark_mode ? styles.darkModeInput : styles.inputContainer} >
+                    <Ionicons name="phone-portrait-outline" size={24} color={(focusNumber || data.number.length > 0) ? colors.MAIN_COLOR : user.dark_mode ? colors.WHITE : colors.CHAT_DESC} />
                     <TextInput
                         onFocus={() => setFocusNumber(!focusNumber)}
                         onBlur={() => setFocusNumber(!focusNumber)}
@@ -111,6 +111,16 @@ const styles = StyleSheet.create({
     FocusinputContainer: {
         borderBottomWidth: 2,
         borderBottomColor: colors.MAIN_COLOR,
+        width: width - 60,
+        paddingHorizontal: 15,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        position: "relative"
+    },
+    darkModeInput: {
+        borderBottomWidth: 2,
+        borderBottomColor: colors.WHITE,
         width: width - 60,
         paddingHorizontal: 15,
         flexDirection: "row",

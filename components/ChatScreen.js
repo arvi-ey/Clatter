@@ -7,7 +7,6 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 const ChatScreen = ({ navigation }) => {
     const { user } = useContext(AuthContext)
-
     const Navigation = useNavigation()
     const data = [
         {

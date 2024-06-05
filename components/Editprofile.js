@@ -30,7 +30,6 @@ const Editprofile = () => {
         number: "",
         profile_image: ""
     })
-    console.log(user)
 
     const openCamera = async () => {
         const { status, canAskAgain } = await ImagePicker.requestCameraPermissionsAsync();
@@ -143,7 +142,7 @@ const Editprofile = () => {
                         </View>
                     </View>
                     <View style={{ gap: 25 }}>
-                        <View style={[(focusName || data.name.length > 0) ? styles.FocusinputContainer : styles.inputContainer, {}]}>
+                        <View style={[(focusName || data?.name.length > 0) ? styles.FocusinputContainer : styles.inputContainer, {}]}>
                             <Ionicons name="person-outline" size={24} color={(focusName || data.name.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
                             <TextInput
                                 onFocus={() => setFocusName(!focusName)}
@@ -155,7 +154,7 @@ const Editprofile = () => {
                                 onChangeText={handleNameChange}
                             />
                         </View>
-                        <View style={(focusEmail || data.email.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
+                        <View style={(focusEmail || data?.email.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
                             <MaterialCommunityIcons name="email-outline" size={24} color={(focusEmail || data.email.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
                             <TextInput
                                 onFocus={() => setFocuEmail(!focusEmail)}
@@ -167,7 +166,7 @@ const Editprofile = () => {
                                 onChangeText={handleEmailChange}
                             />
                         </View>
-                        <View style={(focusNumber || data.number.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
+                        <View style={(focusNumber || data?.number.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
                             <Ionicons name="phone-portrait-outline" size={24} color={(focusNumber || data.number.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
                             <TextInput
                                 onFocus={() => setFocusNumber(!focusNumber)}

@@ -12,10 +12,6 @@ import { Entypo } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { AuthContext } from './Context/Authprovider';
-
-
-
-
 const Profile = () => {
     const Tab = createBottomTabNavigator();
     const [darkModeon, setdarkModeon] = useState()
