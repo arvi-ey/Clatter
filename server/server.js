@@ -62,6 +62,28 @@ server.get('/getUser', verifyToken, (req, res) => {
     res.status(200).json({ user: req.user })
 })
 
+
+server.post('/saveContact', async (req, res) => {
+    const { email, number, userId, name } = req.body
+    const emailExist = await userModel.findOne({ email: email })
+    if (emailExist) {
+        const numberExist = await userModel.findOne({ number: number })
+        if (numberExist) {
+            const savedContact = await userModel.findByIdAndUpdate(userId, {
+                $addToSet: {
+                    saved_contact: {
+                        id: numberExist._id,
+                        saved_name: name
+                    }
+                }
+            });
+            res.send(savedContact)
+        }
+        else return res.send("No Mobile")
+    }
+    else return res.send("No Email")
+})
+
 server.post("/signin", async (req, res) => {
     const user = await userModel.findOne({ email: req.body.email })
     if (!user) return res.send("Email dosen't exist")

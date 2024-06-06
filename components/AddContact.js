@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, SafeAreaView, Platform, TouchableOpacity, TextInput } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, SafeAreaView, Platform, TouchableOpacity, TextInput, Alert } from 'react-native'
 import React from 'react'
 const { height, width } = Dimensions.get('window');
 import { useState, useEffect, useContext } from 'react';
@@ -9,6 +9,7 @@ import { Font } from '../common/font';
 import { Octicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Button from '../common/Button';
+import axios from 'axios';
 
 const AddContact = ({ navigation }) => {
     const { user } = useContext(AuthContext)
@@ -20,18 +21,65 @@ const AddContact = ({ navigation }) => {
         name: "",
         email: "",
         number: "",
-        profile_image: ""
     })
     const handleEmailChange = (value) => {
         setData({ ...data, email: value })
     }
-
     const handleNumber = (value) => {
         setData({ ...data, number: value })
     }
     const handleNameChange = (value) => {
         setData({ ...data, name: value })
     }
+    // 6598785542
+    const SaveContact = async () => {
+        const emailRegex = /^([a-z0-9._%+-]+)@([a-z0-9.-]+\.[a-z]{2,})$/;
+        if (!data.name.trim()) {
+            Alert.alert('Enter name');
+        } else if (!data.email.trim()) {
+            Alert.alert('Enter email');
+        } else if (!emailRegex.test(data.email)) {
+            Alert.alert('Enter a valid email address');
+        } else if (!data.number.trim()) {
+            Alert.alert('Enter mobile number');
+        } else if (data.number.length < 10) {
+            Alert.alert('Enter a Valid Mobile Number')
+        }
+        else {
+            setLoading(true)
+            let newUserData = {}
+            newUserData.userId = user._id,
+                newUserData.name = data.name,
+                newUserData.email = data.email,
+                newUserData.number = data.number
+            try {
+                const response = await axios.post(`http://192.168.29.222:5000/saveContact`, newUserData)
+                if (response && response.data) {
+                    if (response.data === "No Email") Alert.alert("This email does not use Clatter")
+                    else if (response.data === "No Mobile") Alert.alert("This number does not use clatter")
+                    else {
+                        setTimeout(() => {
+                            setLoading(false)
+                            navigation.goBack()
+                        }, 900)
+                    }
+                }
+                else console.error("Something Went Wrong")
+            }
+            catch (err) {
+                console.error(err)
+            }
+            finally {
+                setLoading(false)
+            }
+
+        }
+
+    }
+
+
+
+
     return (
         <SafeAreaView style={[styles.AddContactContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>
             <View style={{ alignSelf: "flex-start", flexDirection: "row" }} >
@@ -81,6 +129,7 @@ const AddContact = ({ navigation }) => {
                     textStyle={styles.textStyle}
                     activeOpacity={0.8}
                     loading={loading}
+                    press={SaveContact}
                     loaderColor={colors.MAIN_COLOR}
                     loaderSize="large"
                 />

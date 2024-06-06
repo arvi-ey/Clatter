@@ -12,9 +12,12 @@ const userSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
-    saved_contact: {
-        type: Array,
-    }
+    saved_contact: [
+        {
+            id: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+            saved_name: String
+        }
+    ]
 })
 
 module.exports = mongoose.model("user", userSchema)
