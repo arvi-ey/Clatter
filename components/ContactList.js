@@ -8,11 +8,27 @@ import { AuthContext } from './Context/Authprovider';
 import { Font } from '../common/font';
 const ContactList = ({ navigation }) => {
     const { user } = useContext(AuthContext)
+    const [savedContact, setSavedContact] = useState()
+
+
+    console.log(user.saved_contact)
+    React.useLayoutEffect(() => {
+        navigation.setOptions({
+            headerTitleStyle: {
+                fontFamily: Font.Bold,
+                fontSize: 20,
+                color: user.dark_mode ? colors.WHITE : colors.BLACK
+            },
+            headerStyle: {
+                backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE,
+            },
+            headerTintColor: user.dark_mode ? colors.WHITE : colors.BLACK
+        });
+    }, [navigation]);
+
+
     return (
         <SafeAreaView style={[styles.contactListContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]} >
-            <View style={{ alignSelf: "flex-start", flexDirection: "row" }} >
-                <Ionicons name="chevron-back" size={40} color={colors.MAIN_COLOR} onPress={() => navigation.goBack()} />
-            </View>
             <TouchableOpacity style={styles.addContact} onPress={() => navigation.navigate("AddContact")} activeOpacity={0.8} >
                 <View style={{ backgroundColor: colors.MAIN_COLOR, padding: 10, borderRadius: 50 }} >
                     <Ionicons name="person-add" size={24} color={user.dark_mode ? colors.BLACK : colors.WHITE} />
@@ -21,6 +37,8 @@ const ContactList = ({ navigation }) => {
                     Add New Contact
                 </Text>
             </TouchableOpacity>
+
+
 
         </SafeAreaView>
     )
@@ -32,7 +50,7 @@ const styles = StyleSheet.create({
     contactListContainer: {
         flex: 1,
         backgroundColor: 'red',
-        paddingTop: Platform.OS === 'android' ? 20 : 0,
+        paddingTop: Platform.OS === 'android' ? 10 : 0,
         alignItems: 'center',
         gap: 20
     },

@@ -10,7 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native'
 import { AuthContext } from './Context/Authprovider';
 const { height, width } = Dimensions.get('window')
-const Register = () => {
+const Register = ({ navigation }) => {
     const [hidePassword, setHidepassword] = useState(true)
     const [focusEmail, setFocuEmail] = useState(false)
     const [focusPassword, setFocusPassword] = useState(false)

@@ -12,16 +12,30 @@ import Button from '../common/Button';
 import axios from 'axios';
 
 const AddContact = ({ navigation }) => {
-    const { user } = useContext(AuthContext)
+    const { user, AddNewContact, loading } = useContext(AuthContext)
     const [focusEmail, setFocuEmail] = useState(false)
     const [focusNumber, setFocusNumber] = useState(false)
     const [focusName, setFocusName] = useState(false)
-    const [loading, setLoading] = useState(false)
+    // const [loading, setLoading] = useState(false)
     const [data, setData] = useState({
         name: "",
         email: "",
         number: "",
     })
+
+    React.useLayoutEffect(() => {
+        navigation.setOptions({
+            headerTitleStyle: {
+                fontFamily: Font.Medium,
+                fontSize: 25,
+                color: user.dark_mode ? colors.WHITE : colors.BLACK
+            },
+            headerStyle: {
+                backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE,
+            },
+            headerTintColor: user.dark_mode ? colors.WHITE : colors.BLACK,
+        });
+    }, [navigation]);
     const handleEmailChange = (value) => {
         setData({ ...data, email: value })
     }
@@ -32,8 +46,9 @@ const AddContact = ({ navigation }) => {
         setData({ ...data, name: value })
     }
     // 6598785542
+    // 7896541125
     const SaveContact = async () => {
-        const emailRegex = /^([a-z0-9._%+-]+)@([a-z0-9.-]+\.[a-z]{2,})$/;
+        const emailRegex = /^([a-z0-9._%78+-]+)@([a-z0-9.-]+\.[a-z]{2,})$/;
         if (!data.name.trim()) {
             Alert.alert('Enter name');
         } else if (!data.email.trim()) {
@@ -46,45 +61,12 @@ const AddContact = ({ navigation }) => {
             Alert.alert('Enter a Valid Mobile Number')
         }
         else {
-            setLoading(true)
-            let newUserData = {}
-            newUserData.userId = user._id,
-                newUserData.name = data.name,
-                newUserData.email = data.email,
-                newUserData.number = data.number
-            try {
-                const response = await axios.post(`http://192.168.29.222:5000/saveContact`, newUserData)
-                if (response && response.data) {
-                    if (response.data === "No Email") Alert.alert("This email does not use Clatter")
-                    else if (response.data === "No Mobile") Alert.alert("This number does not use clatter")
-                    else {
-                        setTimeout(() => {
-                            setLoading(false)
-                            navigation.goBack()
-                        }, 900)
-                    }
-                }
-                else console.error("Something Went Wrong")
-            }
-            catch (err) {
-                console.error(err)
-            }
-            finally {
-                setLoading(false)
-            }
-
+            AddNewContact(data, navigation)
         }
-
     }
-
-
-
 
     return (
         <SafeAreaView style={[styles.AddContactContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>
-            <View style={{ alignSelf: "flex-start", flexDirection: "row" }} >
-                <Ionicons name="chevron-back" size={40} color={colors.MAIN_COLOR} onPress={() => navigation.goBack()} />
-            </View>
             <View style={{ gap: 25, alignItems: 'center', }}>
                 <View style={[(focusName || data.name.length > 0) ? styles.FocusinputContainer : user.dark_mode ? styles.darkModeInput : styles.inputContainer, {}]}>
                     <Ionicons name="person-outline" size={24} color={(focusName || data.name.length > 0) ? colors.MAIN_COLOR : user.dark_mode ? colors.WHITE : colors.CHAT_DESC} />
@@ -142,7 +124,7 @@ export default AddContact
 
 const styles = StyleSheet.create({
     AddContactContainer: {
-        paddingTop: Platform.OS === 'android' ? 20 : 0,
+        paddingTop: Platform.OS === 'android' ? 10 : 0,
         alignItems: 'center',
         flex: 1,
         gap: 25

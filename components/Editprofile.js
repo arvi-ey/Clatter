@@ -13,11 +13,12 @@ import { Ionicons } from '@expo/vector-icons';
 const { height, width } = Dimensions.get('window');
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AuthContext } from './Context/Authprovider';
+import { Font } from '../common/font';
 
 
-const Editprofile = () => {
+const Editprofile = ({ navigation }) => {
     const { user, EditUser, loading } = useContext(AuthContext)
-    const Navigation = useNavigation();
+    // const Navigation = useNavigation();
     const snapPoints = useMemo(() => ['20%'], []);
     const sheetRef = useRef(null);
     const [image, setImage] = useState(null);
@@ -98,6 +99,19 @@ const Editprofile = () => {
     const handleNameChange = (value) => {
         setData({ ...data, name: value })
     }
+    React.useLayoutEffect(() => {
+        navigation.setOptions({
+            headerTitleStyle: {
+                fontFamily: Font.Medium,
+                fontSize: 20,
+                color: user.dark_mode ? colors.WHITE : colors.BLACK
+            },
+            headerStyle: {
+                backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE,
+            },
+            headerTintColor: user.dark_mode ? colors.WHITE : colors.BLACK,
+        });
+    }, [navigation]);
     useEffect(() => {
         if (user) {
             setData({
@@ -128,9 +142,6 @@ const Editprofile = () => {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView style={[styles.profileContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>
-                <View style={{ alignSelf: "flex-start", flexDirection: "row" }} >
-                    <Ionicons name="chevron-back" size={50} color={colors.MAIN_COLOR} onPress={() => Navigation.goBack()} />
-                </View>
                 <View style={{ alignItems: 'center', gap: 25, backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }}>
 
                     <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, }}>
@@ -202,20 +213,20 @@ const Editprofile = () => {
                 >
                     <View>
                         <View style={{ marginLeft: 15, flexDirection: "row" }}>
-                            <Text style={{ fontFamily: "Ubuntu-Bold", fontSize: 20 }} >Select Profile Photo</Text>
+                            <Text style={{ fontFamily: Font.Bold, fontSize: 20 }} >Select Profile Photo</Text>
                         </View>
                         <View style={styles.contentContainer}>
                             <TouchableOpacity activeOpacity={0.8} style={{ justifyContent: 'center', alignItems: 'center' }} onPress={openCamera} >
                                 <Feather name="camera" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
-                                <Text style={{ fontFamily: "Ubuntu-Medium", color: colors.CHAT_DESC }}>Camera</Text>
+                                <Text style={{ fontFamily: Font.Medium, color: colors.CHAT_DESC }}>Camera</Text>
                             </TouchableOpacity>
                             <TouchableOpacity activeOpacity={0.8} style={{ justifyContent: 'center', alignItems: 'center' }} onPress={pickImage}  >
                                 <Octicons name="image" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
-                                <Text style={{ fontFamily: "Ubuntu-Medium", color: colors.CHAT_DESC }}>Galary</Text>
+                                <Text style={{ fontFamily: Font.Medium, color: colors.CHAT_DESC }}>Galary</Text>
                             </TouchableOpacity>
                             <TouchableOpacity activeOpacity={0.8} style={{ justifyContent: 'center', alignItems: 'center' }}>
                                 <AntDesign name="delete" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
-                                <Text style={{ fontFamily: "Ubuntu-Medium", color: colors.CHAT_DESC }}>Remove</Text>
+                                <Text style={{ fontFamily: Font.Medium, color: colors.CHAT_DESC }}>Remove</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -253,7 +264,7 @@ const styles = StyleSheet.create({
     editProfileButton: {
         color: colors.WHITE,
         fontSize: 18,
-        fontFamily: "Ubuntu-Medium"
+        fontFamily: Font.Medium
     },
     buttonStyle: {
         backgroundColor: colors.MAIN_COLOR,
@@ -283,7 +294,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 24,
-        fontWeight: 'bold'
+        fontWeight: Font.Bold
     },
     subtitle: {
         marginTop: 10,
@@ -317,7 +328,7 @@ const styles = StyleSheet.create({
         position: "relative"
     },
     inputBox: {
-        fontFamily: "Ubuntu-Bold",
+        fontFamily: Font.Bold,
         paddingLeft: 10,
         width: "100%",
         paddingVertical: 15,
@@ -325,7 +336,7 @@ const styles = StyleSheet.create({
     },
     textStyle: {
         color: colors.WHITE,
-        fontFamily: "Ubuntu-Bold",
+        fontFamily: Font.Bold,
         fontSize: 18
     },
     buttonStyle: {
