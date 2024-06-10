@@ -63,6 +63,22 @@ server.get('/getUser', verifyToken, (req, res) => {
 })
 
 
+server.get('/getContacts/:id', async (req, res) => {
+    const id = req.params.id
+    if (id) {
+        try {
+            const getContactResult = await userModel.findById(id);
+            if (getContactResult) res.send(getContactResult)
+            else res.send("User not Found")
+        }
+        catch (err) {
+            res.send(err)
+        }
+    }
+    else return res.send("No User")
+})
+
+
 server.post('/saveContact', async (req, res) => {
     const { email, number, userId, name } = req.body
     const emailExist = await userModel.findOne({ email: email })
@@ -73,6 +89,8 @@ server.post('/saveContact', async (req, res) => {
                 $addToSet: {
                     saved_contact: {
                         id: numberExist._id,
+                        number: numberExist.number,
+                        email: numberExist.email,
                         saved_name: name
                     }
                 }

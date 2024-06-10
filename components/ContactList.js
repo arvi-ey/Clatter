@@ -6,12 +6,42 @@ import { colors } from './Theme';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from './Context/Authprovider';
 import { Font } from '../common/font';
+import axios from 'axios';
 const ContactList = ({ navigation }) => {
     const { user } = useContext(AuthContext)
-    const [savedContact, setSavedContact] = useState()
+    const [savedContact, setSavedContact] = useState([])
+    const [data, setData] = useState([])
+
+    console.log(data.userData)
 
 
-    console.log(user.saved_contact)
+
+    useEffect(() => {
+        if (user) setSavedContact(user.saved_contact)
+    }, [user])
+
+    useEffect(() => {
+        fetchContact()
+    }, [savedContact])
+
+    const fetchContact = async () => {
+        if (savedContact) {
+            let userData = []
+            for (let i = 0; i < savedContact.length; i++) {
+                let id = savedContact[i].id
+                try {
+                    const result = await axios.get(`http://192.168.29.222:5000/getContacts/${id}`)
+                    userData.push(result.data)
+                }
+                catch (err) {
+                    console.err(err)
+                }
+            }
+            setData({ ...data, userData })
+        }
+    }
+
+
     React.useLayoutEffect(() => {
         navigation.setOptions({
             headerTitleStyle: {
