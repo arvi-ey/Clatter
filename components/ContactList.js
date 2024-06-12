@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, SafeAreaView, Platform, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, SafeAreaView, Platform, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
 const { height, width } = Dimensions.get('window');
 import { useState, useEffect, useContext } from 'react';
@@ -7,14 +7,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from './Context/Authprovider';
 import { Font } from '../common/font';
 import axios from 'axios';
+import { ScrollView } from 'react-native-gesture-handler';
+import { ContactContext } from './Context/Contactprovider';
 const ContactList = ({ navigation }) => {
     const { user } = useContext(AuthContext)
+    // const { fetchContact, contacts, loading } = useContext(ContactContext)
     const [savedContact, setSavedContact] = useState([])
     const [data, setData] = useState([])
-
-    console.log(data.userData)
-
-
 
     useEffect(() => {
         if (user) setSavedContact(user.saved_contact)
@@ -29,17 +28,19 @@ const ContactList = ({ navigation }) => {
             let userData = []
             for (let i = 0; i < savedContact.length; i++) {
                 let id = savedContact[i].id
+                let saved_name = savedContact[i].saved_name
                 try {
                     const result = await axios.get(`http://192.168.29.222:5000/getContacts/${id}`)
-                    userData.push(result.data)
+                    userData.push({ ...result.data, saved_name: saved_name })
                 }
                 catch (err) {
-                    console.err(err)
+                    if (err) console.log(err)
                 }
             }
             setData({ ...data, userData })
         }
     }
+    const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
 
 
     React.useLayoutEffect(() => {
@@ -59,16 +60,33 @@ const ContactList = ({ navigation }) => {
 
     return (
         <SafeAreaView style={[styles.contactListContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]} >
-            <TouchableOpacity style={styles.addContact} onPress={() => navigation.navigate("AddContact")} activeOpacity={0.8} >
-                <View style={{ backgroundColor: colors.MAIN_COLOR, padding: 10, borderRadius: 50 }} >
-                    <Ionicons name="person-add" size={24} color={user.dark_mode ? colors.BLACK : colors.WHITE} />
-                </View>
-                <Text style={{ fontFamily: Font.Medium, fontSize: 15, color: user.dark_mode ? colors.WHITE : colors.BLACK }} >
-                    Add New Contact
-                </Text>
-            </TouchableOpacity>
+            <ScrollView>
+                <TouchableOpacity style={styles.addContact} onPress={() => navigation.navigate("AddContact")} activeOpacity={0.8} >
+                    <View style={{ backgroundColor: colors.MAIN_COLOR, padding: 10, borderRadius: 50 }} >
+                        <Ionicons name="person-add" size={24} color={user.dark_mode ? colors.BLACK : colors.WHITE} />
+                    </View>
+                    <Text style={{ fontFamily: Font.Medium, fontSize: 15, color: user.dark_mode ? colors.WHITE : colors.BLACK }} >
+                        Add New Contact
+                    </Text>
+                </TouchableOpacity>
+                {
+                    data?.userData?.map((value, key) => {
+                        return (
+                            <TouchableOpacity key={key} style={styles.Contact_Container} >
+                                <View >
+                                    <Image source={{ uri: image }}
+                                        style={{ height: 50, width: 50, borderRadius: 30, resizeMode: "cover" }}
+                                    />
+                                </View>
+                                <View>
+                                    <Text style={{ fontFamily: Font.Medium, fontSize: 15, color: user.dark_mode ? colors.WHITE : colors.BLACK }}  >{value.saved_name}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        )
+                    })
+                }
 
-
+            </ScrollView>
 
         </SafeAreaView>
     )
@@ -90,5 +108,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 20,
         paddingLeft: 10,
-    }
+    },
+    Contact_Container: {
+        width: width - 10,
+        alignItems: 'center',
+        paddingLeft: 10,
+        flexDirection: "row",
+        marginTop: 20,
+        gap: 15
+    },
 })

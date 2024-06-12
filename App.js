@@ -16,8 +16,7 @@ import * as SecureStore from 'expo-secure-store';
 import * as Font from 'expo-font';
 import AddContact from './components/AddContact';
 import ContactList from './components/ContactList';
-import { Font as font } from './common/font';
-import { colors } from './components/Theme';
+import ContactProvider from './components/Context/Contactprovider';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -72,30 +71,31 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-
       <Authprovider>
-        <NavigationContainer>
-          <Stack.Navigator
-            screenOptions={{
-              animationTypeForReplace: 'pop',
-              animationEnabled: Platform.OS == 'android' ? true : true,
-            }}
-          >
-            {firstLoad === false && <Stack.Screen name="Onboarding" component={Onboardingpage} options={{ headerShown: false }} />}
-            {isloggedIn === false &&
-              <>
-                <Stack.Screen name="Signin" component={Signinpage} options={{ headerShown: false }} />
-                <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
-              </>
-            }
-            <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
-            <Stack.Screen name="Myprofile" component={Myprofile} options={{ headerShown: false }} />
-            <Stack.Screen name="Editprofile" component={Editprofile} options={{ title: "Edit profile" }} />
-            <Stack.Screen name="ContactList" component={ContactList} options={{ title: "Select contact" }} />
-            <Stack.Screen name="AddContact" component={AddContact} options={{ title: "Add contact" }} />
+        <ContactProvider>
+          <NavigationContainer>
+            <Stack.Navigator
+              screenOptions={{
+                animationTypeForReplace: 'pop',
+                animationEnabled: Platform.OS == 'android' ? true : true,
+              }}
+            >
+              {firstLoad === false && <Stack.Screen name="Onboarding" component={Onboardingpage} options={{ headerShown: false }} />}
+              {isloggedIn === false &&
+                <>
+                  <Stack.Screen name="Signin" component={Signinpage} options={{ headerShown: false }} />
+                  <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
+                </>
+              }
+              <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+              <Stack.Screen name="Myprofile" component={Myprofile} options={{ headerShown: false }} />
+              <Stack.Screen name="Editprofile" component={Editprofile} options={{ title: "Edit profile" }} />
+              <Stack.Screen name="ContactList" component={ContactList} options={{ title: "Select contact" }} />
+              <Stack.Screen name="AddContact" component={AddContact} options={{ title: "Add contact" }} />
 
-          </Stack.Navigator>
-        </NavigationContainer>
+            </Stack.Navigator>
+          </NavigationContainer>
+        </ContactProvider>
       </Authprovider>
     </GestureHandlerRootView>
   );
