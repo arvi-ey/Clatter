@@ -30,6 +30,7 @@ export default AuthProvider = ({ children }) => {
                     Alert.alert(response.data)
                     setLoading(false)
                     return
+                    // 192.168.29.222
                 }
                 setuser({ ...user, ...changedData });
             }
@@ -45,36 +46,7 @@ export default AuthProvider = ({ children }) => {
         }
     };
 
-    const AddNewContact = async (data, navigation) => {
-        setLoading(true)
-        let newUserData = {}
-        newUserData.userId = user._id,
-            newUserData.name = data.name,
-            newUserData.email = data.email,
-            newUserData.number = data.number
-        try {
-            const response = await axios.post(`http://192.168.29.222:5000/saveContact`, newUserData)
-            if (response && response.data) {
-                console.log(response.data)
 
-                if (response.data === "No Email") Alert.alert("This email does not use Clatter")
-                else if (response.data === "No Mobile") Alert.alert("This number does not use clatter")
-                else {
-                    setTimeout(() => {
-                        setLoading(false)
-                        navigation.goBack()
-                    }, 100)
-                }
-            }
-            else console.error("Something Went Wrong")
-        }
-        catch (err) {
-            console.error(err)
-        }
-        finally {
-            setLoading(false)
-        }
-    }
     const GetUSerOnce = async () => {
         const token = await GetToken();
         if (token) {
@@ -87,15 +59,15 @@ export default AuthProvider = ({ children }) => {
                 setuser(response.data.user);
             } catch (error) {
                 if (error.response) {
-                    // console.log("Response data:", error.response.data);
-                    // console.log("Response status:", error.response.status);
-                    // console.log("Response headers:", error.response.headers);
+                    console.log("Response data:", error.response.data);
+                    console.log("Response status:", error.response.status);
+                    console.log("Response headers:", error.response.headers);
                 } else if (error.request) {
-                    // console.log("Request data:", error.request);
+                    console.log("Request data:", error.request);
                 } else {
-                    // console.log("Error message:", error.message);
+                    console.log("Error message:", error.message);
                 }
-                // console.log("Message happening", error.message);
+                console.log("Message happening", error.message);
             }
         } else {
             console.log("Token is not set yet, Go to login");
@@ -169,7 +141,7 @@ export default AuthProvider = ({ children }) => {
         }
     };
 
-    const value = { loading, setuser, SignIn, user, CreateUser, GetUSerOnce, EditUser, AddNewContact }
+    const value = { loading, setuser, SignIn, user, CreateUser, GetUSerOnce, EditUser, }
     return (
         <AuthContext.Provider value={value} >
             {children}

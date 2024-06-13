@@ -10,39 +10,11 @@ import axios from 'axios';
 import { ScrollView } from 'react-native-gesture-handler';
 import { ContactContext } from './Context/Contactprovider';
 const ContactList = ({ navigation }) => {
+    const { data } = useContext(ContactContext)
     const { user } = useContext(AuthContext)
-    // const { fetchContact, contacts, loading } = useContext(ContactContext)
-    const [savedContact, setSavedContact] = useState([])
-    const [data, setData] = useState([])
-
-    useEffect(() => {
-        if (user) setSavedContact(user.saved_contact)
-    }, [user])
-
-    useEffect(() => {
-        fetchContact()
-    }, [savedContact])
-
-    const fetchContact = async () => {
-        if (savedContact) {
-            let userData = []
-            for (let i = 0; i < savedContact.length; i++) {
-                let id = savedContact[i].id
-                let saved_name = savedContact[i].saved_name
-                try {
-                    const result = await axios.get(`http://192.168.29.222:5000/getContacts/${id}`)
-                    userData.push({ ...result.data, saved_name: saved_name })
-                }
-                catch (err) {
-                    if (err) console.log(err)
-                }
-            }
-            setData({ ...data, userData })
-        }
-    }
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
 
-
+    console.log(data)
     React.useLayoutEffect(() => {
         navigation.setOptions({
             headerTitleStyle: {

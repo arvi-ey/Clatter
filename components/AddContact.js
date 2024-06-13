@@ -10,9 +10,10 @@ import { Octicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Button from '../common/Button';
 import axios from 'axios';
-
+import { ContactContext } from './Context/Contactprovider';
 const AddContact = ({ navigation }) => {
-    const { user, AddNewContact, loading } = useContext(AuthContext)
+    const { user, } = useContext(AuthContext)
+    const { AddNewContact, loading } = useContext(ContactContext)
     const [focusEmail, setFocuEmail] = useState(false)
     const [focusNumber, setFocusNumber] = useState(false)
     const [focusName, setFocusName] = useState(false)
