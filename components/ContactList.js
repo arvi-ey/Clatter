@@ -13,8 +13,6 @@ const ContactList = ({ navigation }) => {
     const { data } = useContext(ContactContext)
     const { user } = useContext(AuthContext)
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
-
-    console.log(data)
     React.useLayoutEffect(() => {
         navigation.setOptions({
             headerTitleStyle: {
@@ -29,6 +27,10 @@ const ContactList = ({ navigation }) => {
         });
     }, [navigation]);
 
+    const GotoChat = (data) => {
+        navigation.navigate('Chatbox', data)
+
+    }
 
     return (
         <SafeAreaView style={[styles.contactListContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]} >
@@ -44,7 +46,7 @@ const ContactList = ({ navigation }) => {
                 {
                     data?.userData?.map((value, key) => {
                         return (
-                            <TouchableOpacity key={key} style={styles.Contact_Container} >
+                            <TouchableOpacity key={key} style={styles.Contact_Container} onPress={() => GotoChat(value)} >
                                 <View >
                                     <Image source={{ uri: image }}
                                         style={{ height: 50, width: 50, borderRadius: 30, resizeMode: "cover" }}

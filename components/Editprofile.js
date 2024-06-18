@@ -32,6 +32,9 @@ const Editprofile = ({ navigation }) => {
         profile_image: ""
     })
 
+
+    console.log(data.profile_image)
+
     const openCamera = async () => {
         const { status, canAskAgain } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== 'granted') {
@@ -45,7 +48,7 @@ const Editprofile = ({ navigation }) => {
             return;
         }
         let pickerResult = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
@@ -53,6 +56,7 @@ const Editprofile = ({ navigation }) => {
 
         if (!pickerResult.canceled) {
             setImage(pickerResult.assets[0].uri);
+            setData({ ...data, profile_image: pickerResult.assets[0].uri });
             closeBottomSheet()
         }
     };
@@ -117,7 +121,8 @@ const Editprofile = ({ navigation }) => {
             setData({
                 name: user.name,
                 email: user.email,
-                number: user.number
+                number: user.number,
+                profile_image: user.profile_image
             })
         }
     }, [user])
@@ -146,7 +151,7 @@ const Editprofile = ({ navigation }) => {
 
                     <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, }}>
                         <View style={{ position: "relative" }}>
-                            <Image source={{ uri: image }} height={160} width={160} style={{ borderRadius: 80 }} />
+                            <Image source={data?.profile_image} height={160} width={160} style={{ borderRadius: 80 }} />
                             <TouchableOpacity style={styles.editIcon} onPress={OpenButtomSheet}>
                                 <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />
                             </TouchableOpacity>

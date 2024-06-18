@@ -20,7 +20,6 @@ const Myprofile = () => {
     const size = 24;
     const color = user.dark_mode ? colors.CHAT_DESC_DARK : colors.CHAT_DESC;
     const [image, setImage] = useState(null);
-    console.log("My pofile page", user)
     const profileListData = [
         {
             icon: <MaterialCommunityIcons name="key-outline" size={size} color={color} />,

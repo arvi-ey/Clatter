@@ -22,11 +22,13 @@ server.get("/", (req, res) => {
 })
 const storage = multer.diskStorage({
     destination: './uploads/',
-    filename: function (req, file, cb) {
+    filename: (req, file, cb) => {
         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
 });
+
 const upload = multer({ storage: storage });
+
 server.post("/createuser", async (req, res) => {
     let { name, email, number, password, profile_image } = req.body;
     try {
@@ -130,21 +132,33 @@ server.get("/getuser/:id", async (req, res) => {
     }
 })
 
-server.patch("/edituser/:id", async (req, res) => {
-    const userid = req.params.id;
+server.patch("/edituser/:id", upload.single('profile_image'), async (req, res) => {
+    const userId = req.params.id;
     const updatedData = req.body;
+
+    if (req.file) {
+        updatedData.profile_image = `/uploads/${req.file.filename}`;
+    }
+
     try {
         if (updatedData.email) {
-            const checkUser = await userModel.findOne({ email: updatedData.email });
-            if (checkUser) return res.send("This email already exists");
+            const existingUser = await userModel.findOne({ email: updatedData.email });
+            if (existingUser) {
+                return res.send("This email already exists");
+            }
         }
-        const user = await userModel.findByIdAndUpdate(userid, updatedData, { new: true });
-        if (!user) return res.status(404).send('User Not Found');
+
+        const user = await userModel.findByIdAndUpdate(userId, updatedData, { new: true });
+        if (!user) {
+            return res.status(404).send('User Not Found');
+        }
+
         res.status(200).send(user);
     } catch (err) {
         res.status(500).send(err.message);
     }
 });
+
 
 
 

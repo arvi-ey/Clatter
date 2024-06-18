@@ -17,6 +17,7 @@ import * as Font from 'expo-font';
 import AddContact from './components/AddContact';
 import ContactList from './components/ContactList';
 import ContactProvider from './components/Context/Contactprovider';
+import Chatbox from './components/Chatbox';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -92,6 +93,7 @@ export default function App() {
               <Stack.Screen name="Editprofile" component={Editprofile} options={{ title: "Edit profile" }} />
               <Stack.Screen name="ContactList" component={ContactList} options={{ title: "Select contact" }} />
               <Stack.Screen name="AddContact" component={AddContact} options={{ title: "Add contact" }} />
+              <Stack.Screen name="Chatbox" component={Chatbox} />
 
             </Stack.Navigator>
           </NavigationContainer>
