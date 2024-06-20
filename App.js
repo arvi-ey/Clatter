@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Platform, ActivityIndicator, Image } from 'react-native';
+import { StyleSheet, Text, View, Platform, ActivityIndicator, Image, StatusBar } from 'react-native';
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -75,6 +75,7 @@ export default function App() {
       <Authprovider>
         <ContactProvider>
           <NavigationContainer>
+            {/* <StatusBar /> */}
             <Stack.Navigator
               screenOptions={{
                 animationTypeForReplace: 'pop',
