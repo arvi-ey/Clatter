@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Platform, ActivityIndicator, Image } from 'react-native';
+import { StyleSheet, Text, View, Platform, ActivityIndicator, Image, StatusBar } from 'react-native';
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -29,7 +29,9 @@ export default function App() {
   useEffect(() => {
     AppLoaded()
     SecureStoreData()
-    loadFonts()
+    setTimeout(() => {
+      loadFonts()
+    }, 1000)
   }, [])
 
   const loadFonts = async () => {
@@ -59,7 +61,6 @@ export default function App() {
       console.log(err)
     }
   }
-  console.log(user)
 
   if (!fontsLoaded) {
     return (
@@ -68,13 +69,13 @@ export default function App() {
       </View>
     )
   }
-  console.log(user)
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Authprovider>
         <ContactProvider>
           <NavigationContainer>
+            <StatusBar />
             <Stack.Navigator
               screenOptions={{
                 animationTypeForReplace: 'pop',

@@ -12,4 +12,10 @@ export const colors = {
     ERROR_TEXT: "#e60023",
     CHARCOLE: "#36454F",
     CHARCOLE_DARK: "#B4B4B4",
+    CHAT_BG_DARK: "#0C0404",
+    CHAT_BG: "#FAF9F6",
+    MASSAGE_SEND_BG: "#323232",
+    MASSAGE_BOX: "#faf0e6",
+    MASSAGE_BOX_DARK: "#303134",
+
 }
