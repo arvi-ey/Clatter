@@ -11,6 +11,7 @@ export default AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(false)
     const [user, setuser] = useState({})
 
+    const User_image = require("../../assets/User_profile.png")
     useEffect(() => {
         GetUSerOnce()
     }, [])
