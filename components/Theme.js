@@ -15,7 +15,7 @@ export const colors = {
     CHAT_BG_DARK: "#0C0404",
     CHAT_BG: "#FAF9F6",
     MASSAGE_SEND_BG: "#323232",
-    MASSAGE_BOX: "#6C7B8F",
+    MASSAGE_BOX: "#faf0e6",
     MASSAGE_BOX_DARK: "#303134",
 
 }

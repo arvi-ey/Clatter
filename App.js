@@ -29,7 +29,9 @@ export default function App() {
   useEffect(() => {
     AppLoaded()
     SecureStoreData()
-    loadFonts()
+    setTimeout(() => {
+      loadFonts()
+    }, 1000)
   }, [])
 
   const loadFonts = async () => {
@@ -59,7 +61,6 @@ export default function App() {
       console.log(err)
     }
   }
-  console.log(user)
 
   if (!fontsLoaded) {
     return (
@@ -68,14 +69,13 @@ export default function App() {
       </View>
     )
   }
-  console.log(user)
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Authprovider>
         <ContactProvider>
           <NavigationContainer>
-            {/* <StatusBar /> */}
+            <StatusBar />
             <Stack.Navigator
               screenOptions={{
                 animationTypeForReplace: 'pop',

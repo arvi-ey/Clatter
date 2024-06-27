@@ -9,6 +9,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import { FontAwesome6 } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 const { height, width } = Dimensions.get('window');
 
 
@@ -21,20 +22,32 @@ const Chatbox = ({ route, navigation }) => {
         navigation.setOptions({
             headerTitle: () => (
                 <View style={styles.HeaderStyle} >
-                    <View>
+                    <TouchableOpacity>
                         <Image source={{ uri: image }}
                             style={{ height: 45, width: 45, borderRadius: 30, resizeMode: "cover" }}
                         />
-                    </View>
-                    <View style={{ flex: 1 }} >
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{ width: "40%", }} >
                         <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]} >{ContactDetails.saved_name}</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', flex: 1, gap: 20 }} >
-                        <Ionicons name="camera-outline" size={24} color={user.dark_mode ? colors.WHITE : colors.BLACK} />
-                        <MaterialIcons name="call" size={24} color={user.dark_mode ? colors.WHITE : colors.BLACK} />
-                        <MaterialCommunityIcons name="dots-vertical" size={24} color={user.dark_mode ? colors.WHITE : colors.BLACK} />
+                    </TouchableOpacity>
+                    <View style={{ flexDirection: 'row', width: "30%", gap: 18, justifyContent: "center" }} >
+                        <TouchableOpacity>
+                            <Feather name="video" size={28} color={user.dark_mode ? colors.WHITE : colors.BLACK} />
+                        </TouchableOpacity>
+                        <TouchableOpacity>
+                            <MaterialIcons name="call" size={28} color={user.dark_mode ? colors.WHITE : colors.BLACK} />
+                        </TouchableOpacity>
+                        <TouchableOpacity>
+                            <MaterialCommunityIcons name="dots-vertical" size={28} color={user.dark_mode ? colors.WHITE : colors.BLACK} />
+                        </TouchableOpacity>
+
                     </View>
                 </View>
+            ),
+            headerLeft: () => (
+                <TouchableOpacity style={{ marginLeft: -2, width: "5%" }} onPress={() => navigation.goBack()} >
+                    <Ionicons name="arrow-back-sharp" size={24} color={user.dark_mode ? colors.WHITE : colors.BLACK} />
+                </TouchableOpacity>
             ),
             headerTitleStyle: {
                 fontFamily: Font.Bold,
@@ -44,9 +57,9 @@ const Chatbox = ({ route, navigation }) => {
             headerStyle: {
                 backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE,
             },
-            headerTintColor: user.dark_mode ? colors.WHITE : colors.BLACK
+            headerTintColor: user.dark_mode ? colors.BLACK : colors.WHITE
         });
-    }, [navigation]);
+    }, [navigation, image, user, ContactDetails, colors, Font]);
 
 
     const TypeMassage = (text) => {
@@ -75,7 +88,7 @@ const Chatbox = ({ route, navigation }) => {
                     <MaterialIcons name="attach-file" size={24} color={user.dark_mode ? colors.WHITE : colors.CHARCOLE} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setMassageText("")} style={styles.SendBox} >
-                    <MaterialIcons name={messageText.length > 0 ? "send" : "keyboard-voice"} size={24} color={user.dark_mode ? colors.WHITE : colors.CHARCOLE} />
+                    <MaterialIcons name={messageText.length > 0 ? "send" : "keyboard-voice"} size={24} color={colors.WHITE} />
                 </TouchableOpacity>
             </View>
         </View>
@@ -88,15 +101,15 @@ const styles = StyleSheet.create({
 
     HeaderStyle: {
         width: width,
-        marginRight: 100,
-        height: 50,
+        marginRight: 200,
+        height: 70,
         flexDirection: "row",
         alignItems: 'center',
-        gap: 20
+        gap: 8
     },
     HeaderTextStyle: {
-        fontFamily: Font.Bold,
-        fontSize: 20,
+        fontFamily: Font.Medium,
+        fontSize: 18,
 
     },
     ChatBackGround: {

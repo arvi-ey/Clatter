@@ -6,13 +6,20 @@ import { colors } from './Theme';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from './Context/Authprovider';
 import { Font } from '../common/font';
-import axios from 'axios';
 import { ScrollView } from 'react-native-gesture-handler';
-import { ContactContext } from './Context/Contactprovider';
 const ContactList = ({ navigation }) => {
-    const { data } = useContext(ContactContext)
-    const { user } = useContext(AuthContext)
-    const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
+    const { user, GetUSerOnce } = useContext(AuthContext)
+    const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+    const [userData, setuserData] = useState()
+
+    useEffect(() => {
+        GetUSerOnce()
+    }, [])
+    useEffect(() => {
+        if (user) setuserData(user.saved_contact)
+    }, [user])
+
+
     React.useLayoutEffect(() => {
         navigation.setOptions({
             headerTitleStyle: {
@@ -44,7 +51,7 @@ const ContactList = ({ navigation }) => {
                     </Text>
                 </TouchableOpacity>
                 {
-                    data?.userData?.map((value, key) => {
+                    userData?.map((value, key) => {
                         return (
                             <TouchableOpacity key={key} style={styles.Contact_Container} onPress={() => GotoChat(value)} >
                                 <View >

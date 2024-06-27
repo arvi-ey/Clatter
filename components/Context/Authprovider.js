@@ -19,46 +19,31 @@ export default AuthProvider = ({ children }) => {
     const EditUser = async (data) => {
         const differences = Object.keys(data).filter(key => data[key] !== user[key]);
         if (differences.length > 0) {
-            const formData = new FormData();
+            const changedData = {}
             differences.forEach(key => {
-                if (key === 'profile_image' && data[key]) {
-                    const localUri = data[key];
-                    const filename = localUri.split('/').pop();
-                    const match = /\.(\w+)$/.exec(filename);
-                    const type = match ? `image/${match[1]}` : `image`;
-
-                    formData.append('profile_image', {
-                        uri: localUri,
-                        name: filename,
-                        type: type,
-                    });
-                } else {
-                    formData.append(key, data[key]);
-                }
+                changedData[key] = data[key]
             });
-            setLoading(true);
+            setLoading(true)
             try {
-                const response = await axios.patch(`http://192.168.29.222:5000/edituser/${user._id}`, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
+                const response = await axios.patch(`http://192.168.29.222:5000/edituser/${user._id}`, changedData)
                 if (response.data === "This email already exists") {
-                    Alert.alert(response.data);
-                    setLoading(false);
-                    return;
+                    Alert.alert(response.data)
+                    setLoading(false)
+                    return
                 }
-                setuser({ ...user, ...response.data });
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoading(false);
+                setuser({ ...user, ...changedData });
             }
-        } else {
-            Alert.alert("Make Changes to Update");
+            catch (err) {
+                console.error(err)
+            }
+            finally {
+                setLoading(false)
+            }
+        }
+        else {
+            Alert.alert("Make Changes to Update")
         }
     };
-
 
     const GetUSerOnce = async () => {
         const token = await GetToken();

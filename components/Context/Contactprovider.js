@@ -6,7 +6,7 @@ import { Alert } from 'react-native';
 export const ContactContext = createContext();
 
 const ContactProvider = ({ children }) => {
-    const { user } = useContext(AuthContext);
+    const { user, GetUSerOnce } = useContext(AuthContext);
     const [savedContact, setSavedContact] = useState([])
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
@@ -39,15 +39,14 @@ const ContactProvider = ({ children }) => {
         try {
             const response = await axios.post(`http://192.168.29.222:5000/saveContact`, newUserData)
             if (response && response.data) {
-                console.log(response.data)
-
                 if (response.data === "No Email") Alert.alert("This email does not use Clatter")
                 else if (response.data === "No Mobile") Alert.alert("This number does not use clatter")
                 else {
+                    GetUSerOnce()
                     setTimeout(() => {
                         setLoading(false)
                         navigation.goBack()
-                    }, 100)
+                    }, 1500)
                 }
             }
             else console.error("Something Went Wrong")
