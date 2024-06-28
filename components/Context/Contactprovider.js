@@ -11,10 +11,19 @@ const ContactProvider = ({ children }) => {
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
 
+    useEffect(() => {
+        GetUSerOnce()
+    }, [])
+    useEffect(() => {
+        if (user) setSavedContact(user.saved_contact)
+    }, [user])
+    useEffect(() => {
+        fetchContact()
+    }, [savedContact])
 
     const fetchContact = async () => {
+        let userData = []
         if (savedContact) {
-            let userData = []
             for (let i = 0; i < savedContact.length; i++) {
                 let id = savedContact[i].id
                 let saved_name = savedContact[i].saved_name
@@ -29,6 +38,8 @@ const ContactProvider = ({ children }) => {
             setData({ ...data, userData })
         }
     }
+
+
     const AddNewContact = async (data, navigation) => {
         setLoading(true)
         let newUserData = {}
@@ -42,11 +53,12 @@ const ContactProvider = ({ children }) => {
                 if (response.data === "No Email") Alert.alert("This email does not use Clatter")
                 else if (response.data === "No Mobile") Alert.alert("This number does not use clatter")
                 else {
-                    GetUSerOnce()
+                    const UpdatedUerData = response.data.saved_contact
+                    setSavedContact(UpdatedUerData)
                     setTimeout(() => {
-                        setLoading(false)
                         navigation.goBack()
-                    }, 1500)
+                        setLoading(false)
+                    }, 2000)
                 }
             }
             else console.error("Something Went Wrong")
@@ -55,17 +67,14 @@ const ContactProvider = ({ children }) => {
             console.error(err)
         }
         finally {
-            setLoading(false)
+            setTimeout(() => {
+                setLoading(false)
+
+            }, 2000)
         }
     }
 
-    useEffect(() => {
-        if (user) setSavedContact(user.saved_contact)
-    }, [user])
 
-    useEffect(() => {
-        fetchContact()
-    }, [savedContact])
 
     value = { fetchContact, data, AddNewContact, loading }
 

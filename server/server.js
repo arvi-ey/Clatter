@@ -85,13 +85,12 @@ server.post('/saveContact', async (req, res) => {
                 $addToSet: {
                     saved_contact: {
                         id: numberExist._id,
-                        number: numberExist.number,
-                        email: numberExist.email,
                         saved_name: name
                     }
-                }
+                },
             });
-            res.send(savedContact)
+            const updatedUser = await userModel.findById(userId);
+            res.send(updatedUser);
         }
         else return res.send("No Mobile")
     }

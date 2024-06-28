@@ -55,6 +55,7 @@ export default AuthProvider = ({ children }) => {
                         Authorization: `Bearer ${token}`
                     }
                 });
+                console.log("GET USER ONCE CALLED")
                 setuser(response.data.user);
             } catch (error) {
                 if (error.response) {
