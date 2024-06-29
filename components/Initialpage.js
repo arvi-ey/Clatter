@@ -15,10 +15,11 @@ import * as Font from 'expo-font';
 import AddContact from './AddContact';
 import ContactList from './ContactList';
 import Chatbox from './Chatbox';
+import { colors } from './Theme';
 
 export default function Initialpage() {
     const Stack = createNativeStackNavigator();
-    const { GetUSerOnce, loggedIn, firstLoad } = useContext(AuthContext)
+    const { user, GetUSerOnce, loggedIn, firstLoad } = useContext(AuthContext)
     const [fontsLoaded, setFontsLoaded] = useState(false);
 
     useEffect(() => {
@@ -28,6 +29,7 @@ export default function Initialpage() {
         }, 1000)
     }, [])
 
+    console.log(user.dark_mode)
     const loadFonts = async () => {
         await Font.loadAsync({
             'Ubuntu-Bold': require('../assets/fonts/Ubuntu-Bold.ttf'),
@@ -50,7 +52,10 @@ export default function Initialpage() {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <NavigationContainer>
-                <StatusBar />
+                <StatusBar
+                    // barStyle="light-content"
+                    hidden={false}
+                />
                 <Stack.Navigator
                     screenOptions={{
                         animationTypeForReplace: 'pop',

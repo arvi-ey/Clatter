@@ -35,7 +35,6 @@ const ContactList = ({ navigation }) => {
 
     const GotoChat = (data) => {
         navigation.navigate('Chatbox', data)
-
     }
 
     return (

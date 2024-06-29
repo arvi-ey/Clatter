@@ -145,8 +145,8 @@ const Editprofile = ({ navigation }) => {
                 <View style={{ alignItems: 'center', gap: 25, backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }}>
 
                     <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, }}>
-                        <View style={{ position: "relative" }}>
-                            <Image source={{ uri: image }} height={160} width={160} style={{ borderRadius: 80 }} />
+                        <View style={{ position: "relative", }}>
+                            <Image source={{ uri: image }} height={160} width={160} style={{ borderRadius: 80, borderWidth: 2, borderColor: colors.MAIN_COLOR }} />
                             <TouchableOpacity style={styles.editIcon} onPress={OpenButtomSheet}>
                                 <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />
                             </TouchableOpacity>

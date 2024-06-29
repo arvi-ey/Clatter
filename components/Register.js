@@ -9,7 +9,9 @@ import { useState, useEffect, useRef, useContext } from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native'
 import { AuthContext } from './Context/Authprovider';
+import { Font } from '../common/font';
 const { height, width } = Dimensions.get('window')
+
 const Register = ({ navigation }) => {
     const [hidePassword, setHidepassword] = useState(true)
     const [focusEmail, setFocuEmail] = useState(false)
@@ -104,7 +106,7 @@ const Register = ({ navigation }) => {
                 <Ionicons name="chevron-back-sharp" size={44} color="black" />
             </TouchableOpacity>
             <View style={{ marginBottom: 30 }}>
-                <Text style={{ fontSize: 30, fontFamily: "Ubuntu-Bold" }} >Register</Text>
+                <Text style={{ fontSize: 30, fontFamily: Font.Bold }} >Register</Text>
             </View>
             <View style={(focusName || data.name.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
                 <Ionicons name="person-outline" size={24} color={(focusName || data.name.length > 0) ? colors.MAIN_COLOR : colors.BLACK} />
@@ -112,7 +114,7 @@ const Register = ({ navigation }) => {
                     ref={textRef}
                     onFocus={() => setFocusName(!focusName)}
                     onBlur={() => setFocusName(!focusName)}
-                    style={styles.inputBox}
+                    style={[styles.inputBox, { color: Font.Bold }]}
                     value={data?.name}
                     placeholder='Enter Name'
                     placeholderTextColor="gray"
@@ -124,7 +126,7 @@ const Register = ({ navigation }) => {
                 <TextInput
                     onFocus={() => setFocuEmail(!focusEmail)}
                     onBlur={() => setFocuEmail(!focusEmail)}
-                    style={styles.inputBox}
+                    style={[styles.inputBox, { color: Font.Bold }]}
                     value={data?.email}
                     placeholder='Enter Email'
                     placeholderTextColor="gray"
@@ -136,7 +138,7 @@ const Register = ({ navigation }) => {
                 <TextInput
                     onFocus={() => setFocusNumber(!focusNumber)}
                     onBlur={() => setFocusNumber(!focusNumber)}
-                    style={styles.inputBox}
+                    style={[styles.inputBox, { color: Font.Bold }]}
                     value={data?.number}
                     placeholder='Enter Mobile Number'
                     placeholderTextColor="gray"
@@ -149,7 +151,7 @@ const Register = ({ navigation }) => {
                 <TextInput
                     onFocus={() => setFocusPassword(!focusPassword)}
                     onBlur={() => setFocusPassword(!focusPassword)}
-                    style={styles.inputBox}
+                    style={[styles.inputBox, { color: Font.Bold }]}
                     value={data?.password}
                     onChangeText={handlePassword}
                     placeholder='Enter Password'
@@ -166,7 +168,7 @@ const Register = ({ navigation }) => {
                 <TextInput
                     onFocus={() => setFocusConfirmPass(!focusConfirmPass)}
                     onBlur={() => setFocusConfirmPass(!focusConfirmPass)}
-                    style={styles.inputBox}
+                    style={[styles.inputBox, { color: Font.Bold }]}
                     value={conFirmPass}
                     onChangeText={handleConfirmPas}
                     placeholder='Confirm your Password'

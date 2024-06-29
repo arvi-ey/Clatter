@@ -7,12 +7,8 @@ import Button from '../common/Button';
 import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from './Context/Authprovider';
-
-
+import { Font } from '../common/font';
 const { height, width } = Dimensions.get('window');
-
-// i am using React Native expo as a front end and Node and express as a server and Mongodb as a Database.Now i want to update profile image from react native and store it into database i want to upload image with some form data and by using multer i want to do it, Show me the code and explain also
-
 
 const Myprofile = () => {
     const { user } = useContext(AuthContext)
@@ -57,12 +53,6 @@ const Myprofile = () => {
         }
     ];
 
-    // const response = await axios.post('http://localhost:3000/upload-profile', formData, {
-    //     headers: {
-    //         'Content-Type': 'multipart/form-data',
-    //     },
-    // });
-
     const Profilelist = ({ item }) => {
         const LogOut = async () => {
             try {
@@ -82,8 +72,8 @@ const Myprofile = () => {
                     {item?.icon}
                 </View>
                 <View>
-                    <Text style={{ fontSize: 20, fontFamily: "Ubuntu-Regular", color: item.name === 'Log out' ? colors.ERROR_TEXT : user.dark_mode ? colors.CHAT_DESC_DARK : colors.CHARCOLE }}>{item?.name}</Text>
-                    {item?.info ? <Text style={{ color: user.dark_mode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: "Ubuntu-Regular" }}>{item?.info}</Text> : null}
+                    <Text style={{ fontSize: 20, fontFamily: Font.Regular, color: item.name === 'Log out' ? colors.ERROR_TEXT : user.dark_mode ? colors.CHAT_DESC_DARK : colors.CHARCOLE }}>{item?.name}</Text>
+                    {item?.info ? <Text style={{ color: user.dark_mode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: Font.Regular }}>{item?.info}</Text> : null}
                 </View>
             </TouchableOpacity>
         );
@@ -96,11 +86,11 @@ const Myprofile = () => {
         <SafeAreaView style={[styles.profileContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>
             <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8 }}>
                 <View style={{ position: "relative" }}>
-                    <Image source={{ uri: image }} height={160} width={160} style={{ borderRadius: 80 }} />
+                    <Image source={{ uri: image }} height={160} width={160} style={{ borderRadius: 80, borderWidth: 1, borderColor: colors.MAIN_COLOR }} />
                 </View>
                 <View style={styles.nameContainer}>
-                    <Text style={{ fontSize: 25, fontFamily: "Ubuntu-Bold", color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{user.name}</Text>
-                    <Text style={{ color: user.dark_mode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: "Ubuntu-Regular" }}>{user.email}</Text>
+                    <Text style={{ fontSize: 25, fontFamily: Font.Bold, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{user.name}</Text>
+                    <Text style={{ color: user.dark_mode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: Font.Regular }}>{user.email}</Text>
                 </View>
                 <Button
                     title="Edit profile"

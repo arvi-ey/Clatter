@@ -108,7 +108,6 @@ const ChatScreen = ({ navigation }) => {
     }
 
     const AddChat = () => {
-
         navigation.navigate("ContactList")
     }
 
