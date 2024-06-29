@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 
 
@@ -10,9 +11,12 @@ export const AuthContext = createContext({});
 export default AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(false)
     const [user, setuser] = useState({})
+    const [loggedIn, setIsloggedIn] = useState(false)
+    const [firstLoad, setFirstLoad] = useState(false)
 
     const User_image = require("../../assets/User_profile.png")
     useEffect(() => {
+        AppLoaded()
         GetUSerOnce()
     }, [])
 
@@ -79,6 +83,7 @@ export default AuthProvider = ({ children }) => {
     const GetToken = async () => {
         try {
             const token = await SecureStore.getItemAsync("token")
+            if (token) setIsloggedIn(true)
             return token ? token : null
         }
         catch (e) {
@@ -140,8 +145,13 @@ export default AuthProvider = ({ children }) => {
             Alert.alert('Error', 'Failed to create user');
         }
     };
+    const AppLoaded = async () => {
+        const value = await AsyncStorage.getItem("loaded")
+        if (value !== null) setFirstLoad(true)
+        else setFirstLoad(false)
+    }
 
-    const value = { loading, setuser, SignIn, user, CreateUser, GetUSerOnce, EditUser, }
+    const value = { loading, setuser, SignIn, user, CreateUser, GetUSerOnce, EditUser, loggedIn, firstLoad }
     return (
         <AuthContext.Provider value={value} >
             {children}

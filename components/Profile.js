@@ -23,6 +23,7 @@ const Profile = () => {
             setdarkModeon(user.dark_mode)
         }
     }, [user])
+
     useEffect(() => {
         GetUSerOnce()
     }, [])

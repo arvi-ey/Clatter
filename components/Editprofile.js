@@ -19,7 +19,7 @@ import { Font } from '../common/font';
 const Editprofile = ({ navigation }) => {
     const { user, EditUser, loading } = useContext(AuthContext)
     // const Navigation = useNavigation();
-    const snapPoints = useMemo(() => ['20%'], []);
+    const snapPoints = useMemo(() => ['25%'], []);
     const sheetRef = useRef(null);
     const [image, setImage] = useState(null);
     const [focusEmail, setFocuEmail] = useState(false)
