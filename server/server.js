@@ -148,6 +148,24 @@ server.patch("/edituser/:id", async (req, res) => {
 
 ///Send Masages Route
 
+server.get('/getmassage', async (req, res) => {
+    const { userId1, userId2 } = req.query;
+
+    try {
+        const messages = await Message.find({
+            $or: [
+                { sender: userId1, recipient: userId2 },
+                { sender: userId2, recipient: userId1 }
+            ]
+        }).sort({ timestamp: 1 }); // Sort by timestamp ascending
+
+        res.status(200).json(messages);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching messages', error });
+    }
+});
+
+
 server.post('/sendmassage', async (req, res) => {
     const { sender, recipient, content } = req.body;
 

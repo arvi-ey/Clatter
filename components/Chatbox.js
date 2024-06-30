@@ -20,6 +20,28 @@ const Chatbox = ({ route, navigation }) => {
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
     const [messageText, setMassageText] = useState("")
 
+
+
+
+    useEffect(() => {
+        getMassage()
+    }, [])
+
+
+    const getMassage = async () => {
+        const userId1 = user._id
+        const userId2 = ContactDetails._id
+        try {
+            const response = await axios.get(`http://192.168.29.222:5000/getmassage`, {
+                params: { userId1, userId2 }
+            });
+            console.log(response.data)
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+            throw error;
+        }
+    };
+
     const sendMessage = async () => {
         const sender = user._id
         const recipient = ContactDetails._id
