@@ -29,7 +29,6 @@ export default function Initialpage() {
         }, 1000)
     }, [])
 
-    console.log(user.dark_mode)
     const loadFonts = async () => {
         await Font.loadAsync({
             'Ubuntu-Bold': require('../assets/fonts/Ubuntu-Bold.ttf'),

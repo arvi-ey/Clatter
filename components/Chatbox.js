@@ -11,6 +11,7 @@ import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 const { height, width } = Dimensions.get('window');
+import axios from 'axios';
 
 
 const Chatbox = ({ route, navigation }) => {
@@ -18,6 +19,22 @@ const Chatbox = ({ route, navigation }) => {
     const ContactDetails = route.params
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
     const [messageText, setMassageText] = useState("")
+
+    const sendMessage = async () => {
+        const sender = user._id
+        const recipient = ContactDetails._id
+        const content = messageText
+        try {
+            const response = await axios.post(`http://192.168.29.222:5000/sendmassage`, { sender, recipient, content });
+            setMassageText("")
+            console.log(response.data)
+        } catch (error) {
+            console.error('Error sending message:', error);
+            throw error;
+        }
+    };
+
+
     React.useLayoutEffect(() => {
         navigation.setOptions({
             headerTitle: () => (
@@ -67,7 +84,7 @@ const Chatbox = ({ route, navigation }) => {
     }
     return (
         <View style={[styles.ChatBackGround, { backgroundColor: user.dark_mode ? colors.CHAT_BG_DARK : colors.CHAT_BG }]} >
-            <ScrollView></ScrollView>
+            <ScrollView inverted={true}></ScrollView>
             <View style={styles.MassageBox} >
                 <TextInput
                     autoCapitalize={false}
@@ -87,7 +104,7 @@ const Chatbox = ({ route, navigation }) => {
                 <TouchableOpacity style={styles.AttachMentIcon}>
                     <MaterialIcons name="attach-file" size={24} color={user.dark_mode ? colors.WHITE : colors.CHARCOLE} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => setMassageText("")} style={styles.SendBox} >
+                <TouchableOpacity onPress={sendMessage} style={styles.SendBox} >
                     <MaterialIcons name={messageText.length > 0 ? "send" : "keyboard-voice"} size={24} color={colors.WHITE} />
                 </TouchableOpacity>
             </View>

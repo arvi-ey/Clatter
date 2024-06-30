@@ -10,7 +10,8 @@ const bodyParser = require('body-parser')
 const verifyToken = require("./middlewares/VerifyUser")
 const multer = require('multer');
 const path = require('path');
-
+const Message = require('./Chat')
+const mongoose = require("mongoose");
 server.use(cors());
 server.use(express.json())
 server.use(express.urlencoded({ extended: true }))
@@ -18,10 +19,12 @@ server.use(bodyParser.json())
 server.use(bodyParser.urlencoded({ extended: false }))
 server.use(cookie_parser())
 
+
+mongoose.connect("mongodb://127.0.0.1:27017/clatter")
+
 server.get("/", (req, res) => {
     res.send("HELLO SERVER")
 })
-
 
 server.post("/createuser", async (req, res) => {
     let { name, email, number, password, profile_image } = req.body;
@@ -142,6 +145,27 @@ server.patch("/edituser/:id", async (req, res) => {
 });
 
 
+
+///Send Masages Route
+
+server.post('/sendmassage', async (req, res) => {
+    const { sender, recipient, content } = req.body;
+
+    try {
+        const newMessage = new Message({
+            sender,
+            recipient,
+            content,
+            timestamp: new Date()
+        });
+
+        await newMessage.save();
+
+        res.status(201).json(newMessage);
+    } catch (error) {
+        res.status(500).json({ message: 'Error sending message', error });
+    }
+});
 
 
 server.listen(5000, () => {
