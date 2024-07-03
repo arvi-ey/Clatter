@@ -19,6 +19,7 @@ const Chatbox = ({ route, navigation }) => {
     const ContactDetails = route.params
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
     const [messageText, setMassageText] = useState("")
+    const IP = `http://192.168.29.222:5000`
 
 
 
@@ -32,7 +33,7 @@ const Chatbox = ({ route, navigation }) => {
         const userId1 = user._id
         const userId2 = ContactDetails._id
         try {
-            const response = await axios.get(`http://192.168.29.222:5000/getmassage`, {
+            const response = await axios.get(`${IP}/massage`, {
                 params: { userId1, userId2 }
             });
             console.log(response.data)
@@ -47,7 +48,7 @@ const Chatbox = ({ route, navigation }) => {
         const recipient = ContactDetails._id
         const content = messageText
         try {
-            const response = await axios.post(`http://192.168.29.222:5000/sendmassage`, { sender, recipient, content });
+            const response = await axios.post(`${IP}/massage`, { sender, recipient, content });
             setMassageText("")
             console.log(response.data)
         } catch (error) {

@@ -10,13 +10,15 @@ const ContactProvider = ({ children }) => {
     const [savedContact, setSavedContact] = useState([])
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
-
+    const IP = `http://192.168.29.222:5000`
     useEffect(() => {
         GetUSerOnce()
     }, [])
+
     useEffect(() => {
         if (user) setSavedContact(user.saved_contact)
     }, [user])
+
     useEffect(() => {
         fetchContact()
     }, [savedContact])
@@ -28,7 +30,7 @@ const ContactProvider = ({ children }) => {
                 let id = savedContact[i].id
                 let saved_name = savedContact[i].saved_name
                 try {
-                    const result = await axios.get(`http://192.168.29.222:5000/getContacts/${id}`)
+                    const result = await axios.get(`${IP}/contact/${id}`)
                     userData.push({ ...result.data, saved_name: saved_name })
                 }
                 catch (err) {
@@ -48,7 +50,7 @@ const ContactProvider = ({ children }) => {
             newUserData.email = data.email,
             newUserData.number = data.number
         try {
-            const response = await axios.post(`http://192.168.29.222:5000/saveContact`, newUserData)
+            const response = await axios.post(`${IP}/contact`, newUserData)
             if (response && response.data) {
                 if (response.data === "No Email") Alert.alert("This email does not use Clatter")
                 else if (response.data === "No Mobile") Alert.alert("This number does not use clatter")

@@ -14,6 +14,8 @@ export default AuthProvider = ({ children }) => {
     const [loggedIn, setIsloggedIn] = useState(false)
     const [firstLoad, setFirstLoad] = useState(false)
 
+    const IP = `http://192.168.29.222:5000`
+
     const User_image = require("../../assets/User_profile.png")
 
     useEffect(() => {
@@ -31,7 +33,7 @@ export default AuthProvider = ({ children }) => {
             });
             setLoading(true)
             try {
-                const response = await axios.patch(`http://192.168.29.222:5000/edituser/${user._id}`, changedData)
+                const response = await axios.patch(`${IP}/user/${user._id}`, changedData)
                 if (response.data === "This email already exists") {
                     Alert.alert(response.data)
                     setLoading(false)
@@ -55,7 +57,7 @@ export default AuthProvider = ({ children }) => {
         const token = await GetToken();
         if (token) {
             try {
-                const response = await axios.get('http://192.168.29.222:5000/getUser', {
+                const response = await axios.get(`${IP}/user`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -99,7 +101,7 @@ export default AuthProvider = ({ children }) => {
     const SignIn = async (data, Navigation) => {
         setLoading(true)
         try {
-            const response = await axios.post('http://192.168.29.222:5000/signin', data)
+            const response = await axios.post(`${IP}/auth/signin`, data)
             if (response.data === "Email dosen't exist") Alert.alert(response.data)
             else if (response.data === "Password is incorrect") Alert.alert(response.data)
             else {
@@ -119,7 +121,7 @@ export default AuthProvider = ({ children }) => {
     const CreateUser = async (data, Navigation) => {
         try {
             setLoading(true);
-            const response = await axios.post('http://192.168.29.222:5000/createuser', data, {
+            const response = await axios.post(`${IP}/auth/signup`, data, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
