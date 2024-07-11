@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Dimensions, SafeAreaView, Platform, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import { AuthContext } from './Context/Authprovider';
 import { Font } from '../common/font';
 import { colors } from './Theme';
@@ -19,8 +19,9 @@ const Chatbox = ({ route, navigation }) => {
     const ContactDetails = route.params
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
     const [messageText, setMassageText] = useState("")
+    const [messages, setMessages] = useState()
     const IP = `http://192.168.29.222:5000`
-
+    const scrollViewRef = useRef();
 
 
 
@@ -37,6 +38,7 @@ const Chatbox = ({ route, navigation }) => {
                 params: { userId1, userId2 }
             });
             console.log(response.data)
+            setMessages(response.data)
         } catch (error) {
             console.error('Error fetching messages:', error);
             throw error;
@@ -56,6 +58,10 @@ const Chatbox = ({ route, navigation }) => {
             throw error;
         }
     };
+
+    useEffect(() => {
+        scrollViewRef.current.scrollToEnd({ animated: true });
+    }, [messages]);
 
 
     React.useLayoutEffect(() => {
@@ -107,12 +113,38 @@ const Chatbox = ({ route, navigation }) => {
     }
     return (
         <View style={[styles.ChatBackGround, { backgroundColor: user.dark_mode ? colors.CHAT_BG_DARK : colors.CHAT_BG }]} >
-            <ScrollView inverted={true}></ScrollView>
+            <ScrollView inverted={true}
+                ref={scrollViewRef}
+                onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
+                style={{}}
+            >
+
+                {
+                    messages?.map((data, key) => {
+                        return (
+                            <View key={key}
+                                style={[styles.MessageBox, {
+                                    marginBottom: 5,
+                                    alignSelf: data.sender === user._id ? "flex-end" : "flex-start", marginHorizontal: 15
+                                },]} >
+                                <Text style={[styles.MessageContent,
+                                {
+                                    color: (!user.dark_mode && data.sender !== user._id) ? colors.BLACK : colors.WHITE,
+                                    backgroundColor: (user.dark_mode && data.sender !== user._id) ?
+                                        colors.MASSAGE_BOX_DARK : (!user.dark_mode && data.sender !== user._id) ?
+                                            colors.WHITE : colors.MAIN_COLOR, width: data.content.length < 32 ? "auto" : 300
+                                }]} >{data.content}</Text>
+                            </View>
+                        )
+                    })
+                }
+
+
+            </ScrollView>
             <View style={styles.MassageBox} >
                 <TextInput
                     autoCapitalize={false}
                     autoCorrect={false}
-                    autoFocus={true}
                     scrollEnabled={true}
                     placeholder="Message"
                     value={messageText}
@@ -187,6 +219,15 @@ const styles = StyleSheet.create({
         backgroundColor: colors.MAIN_COLOR,
         padding: 8,
         borderRadius: 50
+    },
+    MessageBox: {
+    },
+    MessageContent: {
+        color: colors.WHITE,
+        fontFamily: Font.Regular,
+        fontSize: 15,
+        padding: 5,
+        borderRadius: 10
     }
 
 })
