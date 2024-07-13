@@ -13,7 +13,6 @@ import { Feather } from '@expo/vector-icons';
 const { height, width } = Dimensions.get('window');
 import axios from 'axios';
 
-
 const Chatbox = ({ route, navigation }) => {
     const { user } = useContext(AuthContext)
     const ContactDetails = route.params
@@ -23,12 +22,16 @@ const Chatbox = ({ route, navigation }) => {
     const IP = `http://192.168.29.222:5000`
     const scrollViewRef = useRef();
 
-
-
     useEffect(() => {
         getMassage()
     }, [])
 
+    const GetTime = (timestamp) => {
+        const date = new Date(timestamp);
+        const options = { hour: '2-digit', minute: '2-digit', hour12: true };
+        const formattedTime = date.toLocaleTimeString('en-US', options);
+        return formattedTime
+    }
 
     const getMassage = async () => {
         const userId1 = user._id
@@ -37,7 +40,6 @@ const Chatbox = ({ route, navigation }) => {
             const response = await axios.get(`${IP}/massage`, {
                 params: { userId1, userId2 }
             });
-            console.log(response.data)
             setMessages(response.data)
         } catch (error) {
             console.error('Error fetching messages:', error);
@@ -52,7 +54,6 @@ const Chatbox = ({ route, navigation }) => {
         try {
             const response = await axios.post(`${IP}/massage`, { sender, recipient, content });
             setMassageText("")
-            console.log(response.data)
         } catch (error) {
             console.error('Error sending message:', error);
             throw error;
@@ -62,7 +63,6 @@ const Chatbox = ({ route, navigation }) => {
     useEffect(() => {
         scrollViewRef.current.scrollToEnd({ animated: true });
     }, [messages]);
-
 
     React.useLayoutEffect(() => {
         navigation.setOptions({
@@ -86,7 +86,6 @@ const Chatbox = ({ route, navigation }) => {
                         <TouchableOpacity>
                             <MaterialCommunityIcons name="dots-vertical" size={28} color={user.dark_mode ? colors.WHITE : colors.BLACK} />
                         </TouchableOpacity>
-
                     </View>
                 </View>
             ),
@@ -118,28 +117,34 @@ const Chatbox = ({ route, navigation }) => {
                 onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
                 style={{}}
             >
-
                 {
                     messages?.map((data, key) => {
                         return (
                             <View key={key}
                                 style={[styles.MessageBox, {
+                                    flexDirection: data.content.length < 32 ? "row" : "column",
                                     marginBottom: 5,
-                                    alignSelf: data.sender === user._id ? "flex-end" : "flex-start", marginHorizontal: 15
+                                    alignSelf: data.sender === user._id ? "flex-end" : "flex-start", marginHorizontal: 15,
+                                    backgroundColor: (user.dark_mode && data.sender !== user._id) ?
+                                        colors.MASSAGE_BOX_DARK : (!user.dark_mode && data.sender !== user._id) ?
+                                            colors.WHITE : colors.MAIN_COLOR, width: data.content.length < 32 ? "auto" : 300
                                 },]} >
                                 <Text style={[styles.MessageContent,
                                 {
                                     color: (!user.dark_mode && data.sender !== user._id) ? colors.BLACK : colors.WHITE,
-                                    backgroundColor: (user.dark_mode && data.sender !== user._id) ?
-                                        colors.MASSAGE_BOX_DARK : (!user.dark_mode && data.sender !== user._id) ?
-                                            colors.WHITE : colors.MAIN_COLOR, width: data.content.length < 32 ? "auto" : 300
-                                }]} >{data.content}</Text>
+
+                                }]} >{data.content.trim()}
+
+                                </Text>
+                                <Text style={[styles.TimeText,
+                                {
+                                    color: (!user.dark_mode && data.sender !== user._id) ?
+                                        colors.CHARCOLE_DARK : colors.TIME_TEXT
+                                }]} >{GetTime(data.timestamp)}</Text>
                             </View>
                         )
                     })
                 }
-
-
             </ScrollView>
             <View style={styles.MassageBox} >
                 <TextInput
@@ -188,7 +193,6 @@ const styles = StyleSheet.create({
         flex: 1
     },
     MassageBox: {
-        // backgroundColor: "white",
         flexDirection: "row",
         width: width - 10,
         alignSelf: 'center',
@@ -197,7 +201,6 @@ const styles = StyleSheet.create({
         paddingLeft: 5,
         gap: 8,
         marginBottom: 10
-
     },
     MassageField: {
         padding: 10,
@@ -221,13 +224,20 @@ const styles = StyleSheet.create({
         borderRadius: 50
     },
     MessageBox: {
+        borderRadius: 10,
+        padding: 2
     },
     MessageContent: {
         color: colors.WHITE,
         fontFamily: Font.Regular,
         fontSize: 15,
         padding: 5,
-        borderRadius: 10
+    },
+    TimeText: {
+        alignSelf: "flex-end",
+        marginHorizontal: 10,
+        fontFamily: Font.Light,
+        fontSize: 12
     }
 
 })
