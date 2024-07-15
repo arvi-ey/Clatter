@@ -1,6 +1,10 @@
 require('dotenv').config();
+const http = require('http');
+const socketIo = require('socket.io');
 const express = require('express')
-const server = express()
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
 const cookie_parser = require("cookie-parser")
 const cors = require('cors');
 const bodyParser = require('body-parser')
@@ -12,12 +16,13 @@ const MassageRouter = require("./Route/massageRouter")
 
 
 
-server.use(cors());
-server.use(express.json())
-server.use(express.urlencoded({ extended: true }))
-server.use(bodyParser.json())
-server.use(bodyParser.urlencoded({ extended: false }))
-server.use(cookie_parser())
+
+app.use(cors());
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(cookie_parser())
 
 
 const uri = "mongodb://127.0.0.1:27017/clatter";
@@ -30,10 +35,22 @@ mongoose.connect(uri)
     });
 
 
-server.use('/user', UserRouter)
-server.use('/auth', AuthRouter)
-server.use('/contact', ContactRouter)
-server.use('/massage', MassageRouter)
+io.on('connection', (socket) => {
+    console.log(`New client connected ${socket.id}`);
+    socket.on('disconnect', () => {
+        console.log('Client disconnected');
+    });
+    socket.on('sendMessage', (message) => {
+        const { sender, recipient, content } = message
+        console.log(`${sender} ---> ${recipient}: ${content} `);
+    });
+});
+
+
+app.use('/user', UserRouter)
+app.use('/auth', AuthRouter)
+app.use('/contact', ContactRouter)
+app.use('/massage', MassageRouter)
 
 
 server.listen(5000, () => {
