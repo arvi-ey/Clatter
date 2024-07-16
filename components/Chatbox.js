@@ -27,6 +27,7 @@ const Chatbox = ({ route, navigation }) => {
         socketRef.current = io(IP);
         socketRef.current.on('connect', () => {
             console.log('Connected to server');
+            socketRef.current.emit('register', user._id);
         });
         socketRef.current.on('disconnect', () => {
             console.log('Disconnected from server');
@@ -34,6 +35,10 @@ const Chatbox = ({ route, navigation }) => {
         socketRef.current.on('receiveMessage', (message) => {
             setMessages(prevMessages => [...prevMessages, message]);
         });
+        socketRef.current.on('receiveMessage', (message) => {
+            console.log(message);
+        });
+
 
         return () => {
             socketRef.current.disconnect();
@@ -65,7 +70,6 @@ const Chatbox = ({ route, navigation }) => {
         const recipient = ContactDetails._id;
         const content = messageText;
 
-        // Emit the message to the Socket.IO server with the necessary data
         socketRef.current.emit('sendMessage', { sender, recipient, content });
 
         try {

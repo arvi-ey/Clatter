@@ -34,15 +34,49 @@ mongoose.connect(uri)
         console.error("Error connecting to MongoDB:", error);
     });
 
+const users = {};
+const userStatus = {}
 
 io.on('connection', (socket) => {
     console.log(`New client connected ${socket.id}`);
     socket.on('disconnect', () => {
         console.log('Client disconnected');
     });
-    socket.on('sendMessage', (message) => {
-        const { sender, recipient, content } = message
-        console.log(`${sender} ---> ${recipient}: ${content} `);
+    // socket.on('sendMessage', (message) => {
+    //     const { sender, recipient, content } = message
+    //     console.log(`${sender} ---> ${recipient}: ${content} `);
+    // });
+
+
+    socket.on('register', (userId) => {
+        users[userId] = socket.id;
+        userStatus[userId] = 'online';
+        console.log(`User ${userId} registered with socket ID ${socket.id}`);
+        io.emit('userStatus', { userId, status: 'online' });
+    });
+
+
+    socket.on('sendMessage', ({ sender, recipient, content }) => {
+        console.log(`${sender} ----> ${recipient} : ${content} `)
+        const recipientSocketId = users[recipient];
+        if (recipientSocketId) {
+            io.to(recipientSocketId).emit('receiveMessage', { sender, content, timestamp: Date.now() });
+        }
+    });
+
+
+
+    socket.on('disconnect', () => {
+        console.log('A user disconnected:', socket.id);
+        for (let userId in users) {
+            if (users[userId] === socket.id) {
+                delete users[userId];
+                userStatus[userId] = 'offline';
+                console.log(`User ${userId} is now offline`);
+                io.emit('userStatus', { userId, status: 'offline' });
+                break;
+            }
+        }
     });
 });
 
