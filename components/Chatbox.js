@@ -17,8 +17,10 @@ const Chatbox = ({ route, navigation }) => {
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
     const [messageText, setMassageText] = useState("");
     const [messages, setMessages] = useState([]);
+    const [typing, setTyping] = useState(false)
     const scrollViewRef = useRef();
     const socketRef = useRef(null);
+    const typingTimeoutRef = useRef(null)
 
     useEffect(() => {
         getMassage();
@@ -26,7 +28,6 @@ const Chatbox = ({ route, navigation }) => {
         // Establish a single socket connection
         socketRef.current = io(IP);
         socketRef.current.on('connect', () => {
-            console.log('Connected to server');
             socketRef.current.emit('register', user._id);
         });
         socketRef.current.on('disconnect', () => {
@@ -38,6 +39,16 @@ const Chatbox = ({ route, navigation }) => {
         socketRef.current.on('receiveMessage', (message) => {
             console.log(message);
         });
+        socketRef.current.on('typing', (data) => {
+            if (data.sender === ContactDetails._id) {
+                console.log(`${data.sender} is Typing`)
+                setTyping(true)
+                if (typingTimeoutRef.current) {
+                    clearTimeout(typingTimeoutRef.current);
+                }
+                typingTimeoutRef.current = setTimeout(() => setTyping(false), 3000);
+            }
+        })
 
 
         return () => {
@@ -45,6 +56,7 @@ const Chatbox = ({ route, navigation }) => {
         };
     }, []);
 
+    console.log("TYPING", typing)
     const GetTime = (timestamp) => {
         const date = new Date(timestamp);
         const options = { hour: '2-digit', minute: '2-digit', hour12: true };
@@ -66,18 +78,21 @@ const Chatbox = ({ route, navigation }) => {
     };
 
     const sendMessage = async () => {
-        const sender = user._id;
-        const recipient = ContactDetails._id;
-        const content = messageText;
+        if (messageText.length > 0) {
+            const sender = user._id;
+            const recipient = ContactDetails._id;
+            const content = messageText;
 
-        socketRef.current.emit('sendMessage', { sender, recipient, content });
+            socketRef.current.emit('sendMessage', { sender, recipient, content });
 
-        try {
-            const response = await axios.post(`${IP}/massage`, { sender, recipient, content });
-            setMassageText("");
-        } catch (error) {
-            console.error('Error sending message:', error);
-            throw error;
+            try {
+                await axios.post(`${IP}/massage`, { sender, recipient, content });
+                setMessages([...messages, { sender, recipient, content, timestamp: Date.now() }])
+                setMassageText("");
+            } catch (error) {
+                console.error('Error sending message:', error);
+                throw error;
+            }
         }
     };
 
@@ -94,6 +109,7 @@ const Chatbox = ({ route, navigation }) => {
                     </TouchableOpacity>
                     <TouchableOpacity style={{ width: "40%" }}>
                         <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{ContactDetails.saved_name}</Text>
+                        <Text style={{ color: colors.MAIN_COLOR }} > {typing ? "typing..." : null}</Text>
                     </TouchableOpacity>
                     <View style={{ flexDirection: 'row', width: "30%", gap: 18, justifyContent: "center" }}>
                         <TouchableOpacity>
@@ -123,10 +139,17 @@ const Chatbox = ({ route, navigation }) => {
             },
             headerTintColor: user.dark_mode ? colors.BLACK : colors.WHITE
         });
-    }, [navigation, image, user, ContactDetails, colors, Font]);
+    }, [navigation, image, user, ContactDetails, colors, Font, typing]);
 
     const TypeMassage = (text) => {
+        const sender = user._id;
+        const recipient = ContactDetails._id;
         setMassageText(text);
+        socketRef.current.emit('typing', { sender, recipient })
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+        }
+        typingTimeoutRef.current = setTimeout(() => setTyping(false), 3000);
     };
 
     return (

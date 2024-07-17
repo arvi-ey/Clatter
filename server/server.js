@@ -42,22 +42,21 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('Client disconnected');
     });
-    // socket.on('sendMessage', (message) => {
-    //     const { sender, recipient, content } = message
-    //     console.log(`${sender} ---> ${recipient}: ${content} `);
-    // });
-
 
     socket.on('register', (userId) => {
         users[userId] = socket.id;
         userStatus[userId] = 'online';
-        console.log(`User ${userId} registered with socket ID ${socket.id}`);
         io.emit('userStatus', { userId, status: 'online' });
     });
 
 
+    socket.on('typing', ({ sender, recipient }) => {
+        const recipientSocketId = users[recipient];
+        io.to(recipientSocketId).emit('typing', { sender, recipient });
+
+    })
+
     socket.on('sendMessage', ({ sender, recipient, content }) => {
-        console.log(`${sender} ----> ${recipient} : ${content} `)
         const recipientSocketId = users[recipient];
         if (recipientSocketId) {
             io.to(recipientSocketId).emit('receiveMessage', { sender, content, timestamp: Date.now() });
