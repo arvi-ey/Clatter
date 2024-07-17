@@ -17,16 +17,15 @@ const Chatbox = ({ route, navigation }) => {
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
     const [messageText, setMassageText] = useState("");
     const [messages, setMessages] = useState([]);
+    const [userStatus,setuserStatus] = useState()
+    const [typing,setTyping] = useState("")
     const scrollViewRef = useRef();
     const socketRef = useRef(null);
 
     useEffect(() => {
         getMassage();
-
-        // Establish a single socket connection
         socketRef.current = io(IP);
         socketRef.current.on('connect', () => {
-            console.log('Connected to server');
             socketRef.current.emit('register', user._id);
         });
         socketRef.current.on('disconnect', () => {
@@ -35,15 +34,22 @@ const Chatbox = ({ route, navigation }) => {
         socketRef.current.on('receiveMessage', (message) => {
             setMessages(prevMessages => [...prevMessages, message]);
         });
-        socketRef.current.on('receiveMessage', (message) => {
-            console.log(message);
-        });
-
-
+        socketRef.current.on('userStatus', (data)=>{
+            setuserStatus(data)
+        }  )
+        socketRef.current.on('typing', (data)=>{
+            if (data.sender === ContactDetails._id) {
+                setTyping("typing...")
+               console.log(`${data.sender} is ${data.status}`)
+            }
+        } )
+       
         return () => {
             socketRef.current.disconnect();
         };
     }, []);
+
+    
 
     const GetTime = (timestamp) => {
         const date = new Date(timestamp);
@@ -66,18 +72,19 @@ const Chatbox = ({ route, navigation }) => {
     };
 
     const sendMessage = async () => {
-        const sender = user._id;
-        const recipient = ContactDetails._id;
-        const content = messageText;
-
-        socketRef.current.emit('sendMessage', { sender, recipient, content });
-
-        try {
-            const response = await axios.post(`${IP}/massage`, { sender, recipient, content });
-            setMassageText("");
-        } catch (error) {
-            console.error('Error sending message:', error);
-            throw error;
+        if(messageText.length>0){
+            const sender = user._id;
+            const recipient = ContactDetails._id;
+            const content = messageText;
+            socketRef.current.emit('sendMessage', { sender, recipient, content });
+            try {
+                await axios.post(`${IP}/massage`, { sender, recipient, content });
+                setMessages([...messages,{ sender, recipient, content, timestamp:Date.now() }])
+                setMassageText("");
+            } catch (error) {
+                console.error('Error sending message:', error);
+                throw error;
+            }
         }
     };
 
@@ -92,8 +99,9 @@ const Chatbox = ({ route, navigation }) => {
                     <TouchableOpacity>
                         <Image source={{ uri: image }} style={{ height: 45, width: 45, borderRadius: 30, resizeMode: "cover" }} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={{ width: "40%" }}>
-                        <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{ContactDetails.saved_name}</Text>
+                    <TouchableOpacity style={{ width: "40%", marginTop:10 }}>
+                        <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK,}]}>{ContactDetails.saved_name}</Text>
+                        <Text style={{color:colors.MAIN_COLOR}}>{typing !== " "?typing:null} </Text>
                     </TouchableOpacity>
                     <View style={{ flexDirection: 'row', width: "30%", gap: 18, justifyContent: "center" }}>
                         <TouchableOpacity>
@@ -126,16 +134,20 @@ const Chatbox = ({ route, navigation }) => {
     }, [navigation, image, user, ContactDetails, colors, Font]);
 
     const TypeMassage = (text) => {
+            const sender = user._id;
+            const recipient = ContactDetails._id;
         setMassageText(text);
+            socketRef.current.emit('typing',{sender,recipient})
     };
 
+    console.log("Typing Status",typing)
     return (
         <View style={[styles.ChatBackGround, { backgroundColor: user.dark_mode ? colors.CHAT_BG_DARK : colors.CHAT_BG }]}>
             <ScrollView
                 ref={scrollViewRef}
                 onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
                 style={{}}>
-                {messages?.map((data, key) => {
+                { messages?.map((data, key) => {
                     return (
                         <View key={key} style={[styles.MessageBox, {
                             flexDirection: data.content.length < 32 ? "row" : "column",
@@ -194,11 +206,12 @@ const styles = StyleSheet.create({
         height: 70,
         flexDirection: "row",
         alignItems: 'center',
-        gap: 8
+        gap: 8,
     },
     HeaderTextStyle: {
         fontFamily: Font.Medium,
         fontSize: 18,
+        
     },
     ChatBackGround: {
         flex: 1
