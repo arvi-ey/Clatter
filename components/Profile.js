@@ -12,12 +12,14 @@ import { Entypo } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { AuthContext } from './Context/Authprovider';
+import { SocketContext } from './Context/SocketProvider'
 import { Font } from '../common/font';
 
 const Profile = () => {
     const Tab = createBottomTabNavigator();
     const [darkModeon, setdarkModeon] = useState()
     const [darkMode, setDarkMode] = useState()
+    const { UserOnline } = useContext(SocketContext)
     const { user, EditUser, GetUSerOnce } = useContext(AuthContext)
 
     useEffect(() => {
@@ -29,6 +31,7 @@ const Profile = () => {
 
     useEffect(() => {
         GetUSerOnce()
+        UserOnline()
     }, [])
 
     const SetDarkmode = () => {

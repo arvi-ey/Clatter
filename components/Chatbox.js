@@ -9,7 +9,7 @@ import axios from 'axios';
 import io from 'socket.io-client';
 
 const { height, width } = Dimensions.get('window');
-const IP = `http://192.168.1.83:5000`;
+const IP = `http://192.168.29.222:5000`;
 
 const Chatbox = ({ route, navigation }) => {
     const { user } = useContext(AuthContext);
@@ -25,12 +25,6 @@ const Chatbox = ({ route, navigation }) => {
     useEffect(() => {
         getMassage();
         socketRef.current = io(IP);
-        socketRef.current.on('connect', () => {
-            socketRef.current.emit('register', user._id);
-        });
-        socketRef.current.on('disconnect', () => {
-            console.log('Disconnected from server');
-        });
         socketRef.current.on('receiveMessage', (message) => {
             setMessages(prevMessages => [...prevMessages, message]);
         });
@@ -47,10 +41,7 @@ const Chatbox = ({ route, navigation }) => {
                 typingTimeoutRef.current = setTimeout(() => setTyping(false), 1000);
             }
         })
-        return () => {
-            socketRef.current.disconnect();
-        };
-    }, [user._id, ContactDetails._id]);
+    }, []);
 
     const GetTime = (timestamp) => {
         const date = new Date(timestamp);

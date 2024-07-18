@@ -6,7 +6,7 @@ import Onboardingpage from './Onboardingpage';
 import Signinpage from './Signinpage';
 import Register from './Register';
 import Profile from './Profile';
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useRef } from 'react';
 import Myprofile from './Myprofile';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Editprofile from './Editprofile';
@@ -16,11 +16,14 @@ import AddContact from './AddContact';
 import ContactList from './ContactList';
 import Chatbox from './Chatbox';
 import { colors } from './Theme';
+import io from 'socket.io-client';
 
 export default function Initialpage() {
     const Stack = createNativeStackNavigator();
     const { user, GetUSerOnce, loggedIn, firstLoad } = useContext(AuthContext)
     const [fontsLoaded, setFontsLoaded] = useState(false);
+    const IP = `http://192.168.29.222:5000`;
+    const socketRef = useRef(null);
 
     useEffect(() => {
         GetUSerOnce()

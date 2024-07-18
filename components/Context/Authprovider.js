@@ -14,7 +14,7 @@ export default AuthProvider = ({ children }) => {
     const [loggedIn, setIsloggedIn] = useState(false)
     const [firstLoad, setFirstLoad] = useState(false)
 
-    const IP = `http://192.168.1.83:5000`
+    const IP = `http://192.168.29.222:5000`
 
     const User_image = require("../../assets/User_profile.png")
 
