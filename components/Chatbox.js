@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, SafeAreaView, Platform, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, SafeAreaView, Platform, TouchableOpacity, Image, KeyboardAvoidingView } from 'react-native'
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { AuthContext } from './Context/Authprovider';
 import { Font } from '../common/font';
@@ -9,7 +9,7 @@ import axios from 'axios';
 import io from 'socket.io-client';
 
 const { height, width } = Dimensions.get('window');
-const IP = `http://192.168.29.222:5000`;
+const IP = `http://192.168.1.83:5000`;
 
 const Chatbox = ({ route, navigation }) => {
     const { user } = useContext(AuthContext);
@@ -24,8 +24,6 @@ const Chatbox = ({ route, navigation }) => {
 
     useEffect(() => {
         getMassage();
-
-        // Establish a single socket connection
         socketRef.current = io(IP);
         socketRef.current.on('connect', () => {
             socketRef.current.emit('register', user._id);
@@ -46,17 +44,14 @@ const Chatbox = ({ route, navigation }) => {
                 if (typingTimeoutRef.current) {
                     clearTimeout(typingTimeoutRef.current);
                 }
-                typingTimeoutRef.current = setTimeout(() => setTyping(false), 3000);
+                typingTimeoutRef.current = setTimeout(() => setTyping(false), 1000);
             }
         })
-
-
         return () => {
             socketRef.current.disconnect();
         };
-    }, []);
+    }, [user._id, ContactDetails._id]);
 
-    console.log("TYPING", typing)
     const GetTime = (timestamp) => {
         const date = new Date(timestamp);
         const options = { hour: '2-digit', minute: '2-digit', hour12: true };
@@ -95,7 +90,6 @@ const Chatbox = ({ route, navigation }) => {
             }
         }
     };
-
     useEffect(() => {
         scrollViewRef.current.scrollToEnd({ animated: true });
     }, [messages]);
@@ -160,48 +154,59 @@ const Chatbox = ({ route, navigation }) => {
                 style={{}}>
                 {messages?.map((data, key) => {
                     return (
-                        <View key={key} style={[styles.MessageBox, {
-                            flexDirection: data.content.length < 32 ? "row" : "column",
-                            marginBottom: 5,
-                            alignSelf: data.sender === user._id ? "flex-end" : "flex-start",
-                            marginHorizontal: 15,
-                            backgroundColor: (user.dark_mode && data.sender !== user._id) ?
-                                colors.MASSAGE_BOX_DARK : (!user.dark_mode && data.sender !== user._id) ?
-                                    colors.WHITE : colors.MAIN_COLOR,
-                            width: data.content.length < 32 ? "auto" : 300
-                        }]}>
-                            <Text style={[styles.MessageContent, {
-                                color: (!user.dark_mode && data.sender !== user._id) ? colors.BLACK : colors.WHITE,
-                            }]}>{data.content.trim()}
-                            </Text>
-                            <Text style={[styles.TimeText, {
-                                color: (!user.dark_mode && data.sender !== user._id) ?
-                                    colors.CHARCOLE_DARK : colors.TIME_TEXT
-                            }]}>{GetTime(data.timestamp)}</Text>
-                        </View>
+                        <KeyboardAvoidingView
+                            key={key}
+                            enabled
+                            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+                        >
+                            <View
+                                style={[styles.MessageBox, {
+                                    flexDirection: data.content.length < 32 ? "row" : "column",
+                                    marginBottom: 5,
+                                    alignSelf: data.sender === user._id ? "flex-end" : "flex-start",
+                                    marginHorizontal: 15,
+                                    backgroundColor: (user.dark_mode && data.sender !== user._id) ?
+                                        colors.MASSAGE_BOX_DARK : (!user.dark_mode && data.sender !== user._id) ?
+                                            colors.WHITE : colors.MAIN_COLOR,
+                                    width: data.content.length < 32 ? "auto" : 300, borderTopRightRadius: data.sender !== user._id ? 20 : 0,
+                                    borderTopLeftRadius: data.sender !== user._id ? 20 : 20, borderBottomRightRadius: data.sender !== user._id ? 20 : 20, borderBottomLeftRadius: data.sender !== user._id ? 0 : 20
+                                }]}>
+                                <Text style={[styles.MessageContent, {
+                                    color: (!user.dark_mode && data.sender !== user._id) ? colors.BLACK : colors.WHITE,
+                                }]}>{data.content.trim()}
+                                </Text>
+                                <Text style={[styles.TimeText, {
+                                    color: (!user.dark_mode && data.sender !== user._id) ?
+                                        colors.CHARCOLE_DARK : colors.TIME_TEXT
+                                }]}>{GetTime(data.timestamp)}</Text>
+                            </View>
+                        </KeyboardAvoidingView>
                     )
                 })}
             </ScrollView>
             <View style={styles.MassageBox}>
-                <TextInput
-                    autoCapitalize={false}
-                    autoCorrect={false}
-                    scrollEnabled={true}
-                    placeholder="Message"
-                    value={messageText}
-                    multiline={true}
-                    onChangeText={TypeMassage}
-                    style={[styles.MassageField, { backgroundColor: user.dark_mode ? colors.MASSAGE_BOX_DARK : colors.MASSAGE_BOX, color: user?.dark_mode ? colors.WHITE : colors.BLACK }]}
-                    placeholderTextColor={user.dark_mode ? colors.WHITE : colors.CHARCOLE}
-                />
-                <TouchableOpacity style={styles.emogiIcon}>
-                    <FontAwesome6 name="smile-beam" size={24} color={user.dark_mode ? colors.WHITE : colors.CHARCOLE} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.AttachMentIcon}>
-                    <MaterialIcons name="attach-file" size={24} color={user.dark_mode ? colors.WHITE : colors.CHARCOLE} />
-                </TouchableOpacity>
+                <View style={[styles.MassageField, { backgroundColor: user.dark_mode ? colors.MASSAGE_BOX_DARK : colors.MASSAGE_BOX, }]}>
+                    <TouchableOpacity style={styles.emogiIcon}>
+                        <FontAwesome6 name="smile-beam" size={24} color={user.dark_mode ? colors.WHITE : colors.CHARCOLE} />
+                    </TouchableOpacity>
+                    <TextInput
+                        autoCapitalize={false}
+                        autoCorrect={false}
+                        scrollEnabled={true}
+                        placeholder="Message"
+                        value={messageText}
+                        multiline={true}
+                        style={{ width: "75%", fontFamily: Font.Medium, color: user?.dark_mode ? colors.WHITE : colors.BLACK }}
+                        onChangeText={TypeMassage}
+                        placeholderTextColor={user.dark_mode ? colors.WHITE : colors.CHARCOLE}
+                    />
+                    <TouchableOpacity style={styles.AttachMentIcon}>
+                        <MaterialIcons name="attach-file" size={24} color={user.dark_mode ? colors.WHITE : colors.CHARCOLE} />
+                    </TouchableOpacity>
+                </View>
                 <TouchableOpacity onPress={sendMessage} style={styles.SendBox}>
-                    <MaterialIcons name={messageText.length > 0 ? "send" : "keyboard-voice"} size={24} color={colors.WHITE} />
+                    <MaterialIcons name={messageText.length > 0 ? "send" : "keyboard-voice"} size={30} color={colors.WHITE} />
                 </TouchableOpacity>
             </View>
         </View>
@@ -234,23 +239,28 @@ const styles = StyleSheet.create({
         position: 'relative',
         paddingLeft: 5,
         gap: 8,
-        marginBottom: 10
+        marginBottom: 10,
+        height: 60,
+        backgroundColor: 'transparent',
     },
     MassageField: {
-        padding: 10,
         width: "85%",
         borderRadius: 50,
-        fontFamily: Font.Medium,
-        paddingLeft: 45,
+        padding: 5,
         fontSize: 15,
+        height: 55,
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 7,
+        flexDirection: "row"
     },
     emogiIcon: {
-        position: 'absolute',
-        left: 15
+        // position: 'absolute',
+        // left: 15
     },
     AttachMentIcon: {
-        position: "absolute",
-        right: 80
+        // position: "absolute",
+        // right: 80
     },
     SendBox: {
         backgroundColor: colors.MAIN_COLOR,
@@ -258,8 +268,7 @@ const styles = StyleSheet.create({
         borderRadius: 50
     },
     MessageBox: {
-        borderRadius: 10,
-        padding: 2
+        padding: 8,
     },
     MessageContent: {
         color: colors.WHITE,
