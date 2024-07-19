@@ -19,7 +19,7 @@ const Profile = () => {
     const Tab = createBottomTabNavigator();
     const [darkModeon, setdarkModeon] = useState()
     const [darkMode, setDarkMode] = useState()
-    const { UserOnline } = useContext(SocketContext)
+    const {online } = useContext(SocketContext)
     const { user, EditUser, GetUSerOnce } = useContext(AuthContext)
 
     useEffect(() => {
@@ -31,9 +31,7 @@ const Profile = () => {
 
     useEffect(() => {
         GetUSerOnce()
-        UserOnline()
     }, [])
-
     const SetDarkmode = () => {
         setdarkModeon(!darkModeon)
         EditUser({ dark_mode: !darkMode })

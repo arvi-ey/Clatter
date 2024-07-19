@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, Dimensions, SafeAreaView, Platform, TouchableOpacity, Image, KeyboardAvoidingView } from 'react-native'
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { AuthContext } from './Context/Authprovider';
+import { SocketContext } from './Context/SocketProvider'
 import { Font } from '../common/font';
 import { colors } from './Theme';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons, FontAwesome6, Feather } from '@expo/vector-icons';
@@ -9,10 +10,11 @@ import axios from 'axios';
 import io from 'socket.io-client';
 
 const { height, width } = Dimensions.get('window');
-const IP = `http://192.168.29.222:5000`;
+const IP = `http://192.168.1.83:5000`;
 
 const Chatbox = ({ route, navigation }) => {
     const { user } = useContext(AuthContext);
+    const {online} = useContext(SocketContext);
     const ContactDetails = route.params;
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
     const [messageText, setMassageText] = useState("");
@@ -41,7 +43,7 @@ const Chatbox = ({ route, navigation }) => {
                 typingTimeoutRef.current = setTimeout(() => setTyping(false), 1000);
             }
         })
-    }, []);
+    }, [user,user.id,typing]);
 
     const GetTime = (timestamp) => {
         const date = new Date(timestamp);
@@ -124,7 +126,7 @@ const Chatbox = ({ route, navigation }) => {
             },
             headerTintColor: user.dark_mode ? colors.BLACK : colors.WHITE
         });
-    }, [navigation, image, user, ContactDetails, colors, Font, typing]);
+    }, [navigation, image, user, ContactDetails, colors, Font, typing,online]);
 
     const TypeMassage = (text) => {
         const sender = user._id;
