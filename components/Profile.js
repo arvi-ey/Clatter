@@ -19,7 +19,7 @@ const Profile = () => {
     const Tab = createBottomTabNavigator();
     const [darkModeon, setdarkModeon] = useState()
     const [darkMode, setDarkMode] = useState()
-    const {online } = useContext(SocketContext)
+    // const {online } = useContext(SocketContext)
     const { user, EditUser, GetUSerOnce } = useContext(AuthContext)
 
     useEffect(() => {

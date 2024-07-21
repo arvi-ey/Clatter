@@ -1,20 +1,20 @@
-import { StyleSheet, Text, View, Dimensions, SafeAreaView, Platform, TouchableOpacity, Image, KeyboardAvoidingView } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, Platform, TouchableOpacity, Image, KeyboardAvoidingView } from 'react-native'
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { AuthContext } from './Context/Authprovider';
-import { SocketContext } from './Context/SocketProvider'
 import { Font } from '../common/font';
 import { colors } from './Theme';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons, FontAwesome6, Feather } from '@expo/vector-icons';
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import axios from 'axios';
 import io from 'socket.io-client';
+import { SocketContext } from './Context/SocketProvider';
 
 const { height, width } = Dimensions.get('window');
-const IP = `http://192.168.1.83:5000`;
+const IP = `http://192.168.29.222:5000`;
 
 const Chatbox = ({ route, navigation }) => {
     const { user } = useContext(AuthContext);
-    const {online} = useContext(SocketContext);
+    // const { online } = useContext(SocketContext)
     const ContactDetails = route.params;
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
     const [messageText, setMassageText] = useState("");
@@ -23,15 +23,20 @@ const Chatbox = ({ route, navigation }) => {
     const scrollViewRef = useRef();
     const socketRef = useRef(null);
     const typingTimeoutRef = useRef(null)
+    const [userOnline, SetUserOnline] = useState()
 
     useEffect(() => {
         getMassage();
+
         socketRef.current = io(IP);
-        socketRef.current.on('receiveMessage', (message) => {
-            setMessages(prevMessages => [...prevMessages, message]);
+        socketRef.current.on('connect', () => {
+            socketRef.current.emit('register', user._id);
+        });
+        socketRef.current.on('disconnect', () => {
+            console.log('Disconnected from server');
         });
         socketRef.current.on('receiveMessage', (message) => {
-            console.log(message);
+            setMessages(prevMessages => [...prevMessages, message]);
         });
         socketRef.current.on('typing', (data) => {
             if (data.sender === ContactDetails._id) {
@@ -43,7 +48,11 @@ const Chatbox = ({ route, navigation }) => {
                 typingTimeoutRef.current = setTimeout(() => setTyping(false), 1000);
             }
         })
-    }, [user,user.id,typing]);
+    }, [user._id, ContactDetails._id]);
+
+    // useEffect(() => {
+    //     FilteredUserOnline()
+    // }, [online])
 
     const GetTime = (timestamp) => {
         const date = new Date(timestamp);
@@ -51,6 +60,20 @@ const Chatbox = ({ route, navigation }) => {
         return date.toLocaleTimeString('en-US', options);
     };
 
+    const FilteredUserOnline = () => {
+        if (online) {
+            for (let i = 0; i < online.length; i++) {
+                if (online[i].userId === ContactDetails._id) {
+                    if (online[i].status === 'online') {
+                        const data = online[i].userId
+                        SetUserOnline(data)
+                        return
+                    }
+                }
+            }
+            SetUserOnline(false);
+        }
+    }
     const getMassage = async () => {
         const userId1 = user._id;
         const userId2 = ContactDetails._id;
@@ -87,6 +110,8 @@ const Chatbox = ({ route, navigation }) => {
         scrollViewRef.current.scrollToEnd({ animated: true });
     }, [messages]);
 
+    // console.log("This is user online ", userOnline)
+
     React.useLayoutEffect(() => {
         navigation.setOptions({
             headerTitle: () => (
@@ -97,6 +122,7 @@ const Chatbox = ({ route, navigation }) => {
                     <TouchableOpacity style={{ width: "40%" }}>
                         <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{ContactDetails.saved_name}</Text>
                         <Text style={{ color: colors.MAIN_COLOR }} > {typing ? "typing..." : null}</Text>
+                        {/* <Text style={{ color: colors.MAIN_COLOR }} > {userOnline && userOnline ? "Online" : null}</Text> */}
                     </TouchableOpacity>
                     <View style={{ flexDirection: 'row', width: "30%", gap: 18, justifyContent: "center" }}>
                         <TouchableOpacity>
@@ -126,7 +152,7 @@ const Chatbox = ({ route, navigation }) => {
             },
             headerTintColor: user.dark_mode ? colors.BLACK : colors.WHITE
         });
-    }, [navigation, image, user, ContactDetails, colors, Font, typing,online]);
+    }, [navigation, image, user, ContactDetails, colors, Font, typing]);
 
     const TypeMassage = (text) => {
         const sender = user._id;

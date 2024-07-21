@@ -6,32 +6,41 @@ export const SocketContext = createContext();
 
 const SocketProvider = ({ children }) => {
     const { user } = useContext(AuthContext);
-    const [online, setOnline] = useState([]); 
+    const [online, setOnline] = useState([]);
     const socketRef = useRef(null);
-    const IP = `http://192.168.1.83:5000`;
+    const IP = `http://192.168.29.222:5000`;
 
     useEffect(() => {
         if (user && user._id) {
             socketRef.current = io(IP);
+
             socketRef.current.on('connect', () => {
                 socketRef.current.emit('register', user._id);
             });
+
             const handleUserStatus = (data) => {
-                // console.log("User status data:", data);
-                setOnline(data);
+                console.log("User status data:", data);
+                setOnline(prevOnline => {
+                    const updatedOnline = prevOnline?.filter(user => user.userId !== data.userId);
+                    if (data.status === 'online') {
+                        updatedOnline.push(data);
+                    }
+                    return updatedOnline;
+                });
             };
-            
+
             socketRef.current.on('userStatus', handleUserStatus);
 
             socketRef.current.on('disconnect', () => {
                 console.log('Disconnected from server');
             });
-            return () => {
-                if (socketRef.current) {
-                    socketRef.current.off('userStatus', handleUserStatus);
-                    socketRef.current.disconnect();
-                }
-            };
+
+            // return () => {
+            //     if (socketRef.current) {
+            //         socketRef.current.off('userStatus', handleUserStatus);
+            //         socketRef.current.disconnect();
+            //     }
+            // };
         }
     }, [user]);
 
@@ -48,6 +57,6 @@ const SocketProvider = ({ children }) => {
             {children}
         </SocketContext.Provider>
     );
-}
+};
 
 export default SocketProvider;
