@@ -16,6 +16,22 @@ const Myprofile = () => {
     const size = 24;
     const color = user.dark_mode ? colors.CHAT_DESC_DARK : colors.CHAT_DESC;
     const [image, setImage] = useState(null);
+    const [data, setData] = useState({
+        name: "",
+        email: "",
+        number: "",
+        profile_image: ""
+    })
+    useEffect(() => {
+        if (user) {
+            setData({
+                name: user.name,
+                email: user.email,
+                number: user.number,
+                profile_image: user.image?.data? `data:${user.image.contentType};base64,${user.image.data}` : null,
+            })
+        }
+    }, [user])
     const profileListData = [
         {
             icon: <MaterialCommunityIcons name="key-outline" size={size} color={color} />,
@@ -86,7 +102,7 @@ const Myprofile = () => {
         <SafeAreaView style={[styles.profileContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>
             <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8 }}>
                 <View style={{ position: "relative" }}>
-                    <Image source={{ uri: image }} height={160} width={160} style={{ borderRadius: 80, borderWidth: 1 }} />
+                <Image source={ data.profile_image ?{ uri: data.profile_image }: User_image} height={160} width={160} style={{ borderRadius: 80, borderWidth: 2}} />
                 </View>
                 <View style={styles.nameContainer}>
                     <Text style={{ fontSize: 25, fontFamily: Font.Bold, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{user.name}</Text>
