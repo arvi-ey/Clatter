@@ -4,7 +4,10 @@ const userSchema = mongoose.Schema({
     name: String,
     email: String,
     number: String,
-    profile_image: String,
+    image:{
+        data:String,
+        contentType:String
+    },
     password: String,
     dark_mode: {
         type: Boolean,

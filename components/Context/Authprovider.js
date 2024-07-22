@@ -13,6 +13,7 @@ export default AuthProvider = ({ children }) => {
     const [user, setuser] = useState({})
     const [loggedIn, setIsloggedIn] = useState(false)
     const [firstLoad, setFirstLoad] = useState(false)
+    const [imageLoading,setImageLoading] = useState(false)
 
     const IP = `http://192.168.29.222:5000`
 
@@ -154,7 +155,41 @@ export default AuthProvider = ({ children }) => {
         else setFirstLoad(false)
     }
 
-    const value = { loading, setuser, SignIn, user, CreateUser, GetUSerOnce, EditUser, loggedIn, firstLoad }
+    const UploadProfileImage = async (image)=>{
+        if(!image){
+            return
+        }
+        setImageLoading(true)
+        const formData = new FormData();
+        formData.append('image', {
+            uri: image,
+            type: 'image/jpeg', 
+            name: 'profile.jpg',
+        });
+            try {
+                const response = await axios.post(`${IP}/image/${user._id}`,formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+                if (response) {
+                    // Alert.alert('Profile updated successfully');
+                    // console.log({data:response.data,contenType:response.contenType})
+                    // setuser({
+                    //     ...user,
+                    //     image:{data:response.data,contenType:response.contenType}});
+                    await GetUSerOnce()
+                }
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                Alert.alert('Error updating profile');
+            }
+            finally{
+                setImageLoading(false)
+            }
+    }
+
+    const value = { loading, setuser, SignIn, user, CreateUser, GetUSerOnce, EditUser, loggedIn, firstLoad,UploadProfileImage,imageLoading }
     return (
         <AuthContext.Provider value={value} >
             {children}

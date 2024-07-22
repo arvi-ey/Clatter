@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { useRef, useState, useMemo, useEffect, useContext } from 'react';
-import { StyleSheet, Text, View, Image, Dimensions, SafeAreaView, Platform, TouchableOpacity, Alert, Linking, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions, SafeAreaView, Platform, TouchableOpacity, Alert, Linking, TextInput, ActivityIndicator } from 'react-native';
 import { colors } from './Theme';
 import { SimpleLineIcons, Feather, AntDesign } from '@expo/vector-icons';
 import Button from '../common/Button';
@@ -17,7 +17,7 @@ import { Font } from '../common/font';
 
 
 const Editprofile = ({ navigation }) => {
-    const { user, EditUser, loading } = useContext(AuthContext)
+    const { user, EditUser, loading, UploadProfileImage,imageLoading } = useContext(AuthContext)
     // const Navigation = useNavigation();
     const snapPoints = useMemo(() => ['25%'], []);
     const sheetRef = useRef(null);
@@ -56,6 +56,9 @@ const Editprofile = ({ navigation }) => {
             closeBottomSheet()
         }
     };
+    useEffect(()=>{
+        if(image) UploadProfileImage(image)
+    },[image])
 
     const openSettings = () => {
         if (Platform.OS === 'ios') {
@@ -117,7 +120,8 @@ const Editprofile = ({ navigation }) => {
             setData({
                 name: user.name,
                 email: user.email,
-                number: user.number
+                number: user.number,
+                profile_image: user.image?.data? `data:${user.image.contentType};base64,${user.image.data}` : null,
             })
         }
     }, [user])
@@ -146,7 +150,14 @@ const Editprofile = ({ navigation }) => {
 
                     <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, }}>
                         <View style={{ position: "relative", }}>
-                            <Image source={{ uri: image }} height={160} width={160} style={{ borderRadius: 80, borderWidth: 2, borderColor: colors.MAIN_COLOR }} />
+                            {
+                                imageLoading ?
+                                <View style={{height:160,width:160, justifyContent:'center',alignItems:'center'}}>
+                                    <ActivityIndicator size="large" color={colors.MAIN_COLOR} /> 
+                                </View>:
+
+                                <Image source={ data.profile_image ?{ uri: data.profile_image }: require('../assets/logo.jpg')} height={160} width={160} style={{ borderRadius: 80, borderWidth: 2, borderColor: colors.MAIN_COLOR }} />
+                            }
                             <TouchableOpacity style={styles.editIcon} onPress={OpenButtomSheet}>
                                 <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />
                             </TouchableOpacity>
