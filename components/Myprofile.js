@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, Dimensions, SafeAreaView, Platform, FlatList, TouchableOpacity, Alert, Linking } from 'react-native';
 import { colors } from './Theme';
 import { MaterialCommunityIcons, MaterialIcons, Feather, AntDesign } from '@expo/vector-icons';
@@ -22,13 +22,14 @@ const Myprofile = () => {
         number: "",
         profile_image: ""
     })
+    const User_image = require("../assets/user1.jpg")
     useEffect(() => {
         if (user) {
             setData({
                 name: user.name,
                 email: user.email,
                 number: user.number,
-                profile_image: user.image?.data? `data:${user.image.contentType};base64,${user.image.data}` : null,
+                profile_image: user.image?.data ? `data:${user.image.contentType};base64,${user.image.data}` : null,
             })
         }
     }, [user])
@@ -100,10 +101,8 @@ const Myprofile = () => {
     return (
 
         <SafeAreaView style={[styles.profileContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>
-            <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8 }}>
-                <View style={{ position: "relative" }}>
-                <Image source={ data.profile_image ?{ uri: data.profile_image }: User_image} height={160} width={160} style={{ borderRadius: 80, borderWidth: 2}} />
-                </View>
+            <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, height: "38%" }}>
+                <Image source={data.profile_image ? { uri: data.profile_image } : User_image} style={{ borderRadius: 80, borderWidth: 2, height: 160, width: 160 }} />
                 <View style={styles.nameContainer}>
                     <Text style={{ fontSize: 25, fontFamily: Font.Bold, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{user.name}</Text>
                     <Text style={{ color: user.dark_mode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: Font.Regular }}>{user.email}</Text>
@@ -116,12 +115,14 @@ const Myprofile = () => {
                     press={() => Navigation.navigate('Editprofile')}
                 />
             </View>
+            {/* <View style={{ height: "80%", }} > */}
             <FlatList
                 data={profileListData}
                 renderItem={Profilelist}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={(item, index) => index}
             />
+            {/* </View> */}
         </SafeAreaView>
 
     );

@@ -6,14 +6,11 @@ import { Alert } from 'react-native';
 export const ContactContext = createContext();
 
 const ContactProvider = ({ children }) => {
-    const { user, GetUSerOnce } = useContext(AuthContext);
+    const { user, GetUSerOnce, setuser } = useContext(AuthContext);
     const [savedContact, setSavedContact] = useState([])
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
     const IP = `http://192.168.29.222:5000`
-    useEffect(() => {
-        GetUSerOnce()
-    }, [])
 
     useEffect(() => {
         if (user) setSavedContact(user.saved_contact)
@@ -23,6 +20,7 @@ const ContactProvider = ({ children }) => {
         fetchContact()
     }, [savedContact])
 
+    // 6598785542
     const fetchContact = async () => {
         let userData = []
         if (savedContact) {

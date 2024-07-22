@@ -17,7 +17,7 @@ import { Font } from '../common/font';
 
 
 const Editprofile = ({ navigation }) => {
-    const { user, EditUser, loading, UploadProfileImage,imageLoading } = useContext(AuthContext)
+    const { user, EditUser, loading, UploadProfileImage, imageLoading } = useContext(AuthContext)
     const snapPoints = useMemo(() => ['25%'], []);
     const sheetRef = useRef(null);
     const [image, setImage] = useState(null);
@@ -30,7 +30,7 @@ const Editprofile = ({ navigation }) => {
         number: "",
         profile_image: ""
     })
-    const User_image = require("../assets/user1.png")
+    const User_image = require("../assets/user1.jpg")
 
     const openCamera = async () => {
         const { status, canAskAgain } = await ImagePicker.requestCameraPermissionsAsync();
@@ -56,9 +56,9 @@ const Editprofile = ({ navigation }) => {
             closeBottomSheet()
         }
     };
-    useEffect(()=>{
-        if(image) UploadProfileImage(image)
-    },[image])
+    useEffect(() => {
+        if (image) UploadProfileImage(image)
+    }, [image])
 
     const openSettings = () => {
         if (Platform.OS === 'ios') {
@@ -121,7 +121,7 @@ const Editprofile = ({ navigation }) => {
                 name: user.name,
                 email: user.email,
                 number: user.number,
-                profile_image: user.image?.data? `data:${user.image.contentType};base64,${user.image.data}` : null,
+                profile_image: user.image?.data ? `data:${user.image.contentType};base64,${user.image.data}` : null,
             })
         }
     }, [user])
@@ -152,11 +152,11 @@ const Editprofile = ({ navigation }) => {
                         <View style={{ position: "relative", }}>
                             {
                                 imageLoading ?
-                                <View style={{height:160,width:160, justifyContent:'center',alignItems:'center'}}>
-                                    <ActivityIndicator size="large" color={colors.MAIN_COLOR} /> 
-                                </View>:
+                                    <View style={{ height: 160, width: 160, justifyContent: 'center', alignItems: 'center' }}>
+                                        <ActivityIndicator size="large" color={colors.MAIN_COLOR} />
+                                    </View> :
 
-                                <Image source={ data.profile_image ?{ uri: data.profile_image }: User_image} height={160} width={160} style={{ borderRadius: 80, borderWidth: 2,}} />
+                                    <Image source={data.profile_image ? { uri: data.profile_image } : User_image} style={{ borderRadius: 90, height: 180, width: 180, borderWidth: 2, }} />
                             }
                             <TouchableOpacity style={styles.editIcon} onPress={OpenButtomSheet}>
                                 <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />
