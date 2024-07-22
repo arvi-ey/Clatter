@@ -86,7 +86,7 @@ const Myprofile = () => {
         <SafeAreaView style={[styles.profileContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>
             <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8 }}>
                 <View style={{ position: "relative" }}>
-                    <Image source={{ uri: image }} height={160} width={160} style={{ borderRadius: 80, borderWidth: 1, borderColor: colors.MAIN_COLOR }} />
+                    <Image source={{ uri: image }} height={160} width={160} style={{ borderRadius: 80, borderWidth: 1 }} />
                 </View>
                 <View style={styles.nameContainer}>
                     <Text style={{ fontSize: 25, fontFamily: Font.Bold, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{user.name}</Text>

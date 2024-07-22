@@ -18,7 +18,6 @@ import { Font } from '../common/font';
 
 const Editprofile = ({ navigation }) => {
     const { user, EditUser, loading, UploadProfileImage,imageLoading } = useContext(AuthContext)
-    // const Navigation = useNavigation();
     const snapPoints = useMemo(() => ['25%'], []);
     const sheetRef = useRef(null);
     const [image, setImage] = useState(null);
@@ -31,6 +30,7 @@ const Editprofile = ({ navigation }) => {
         number: "",
         profile_image: ""
     })
+    const User_image = require("../assets/user1.png")
 
     const openCamera = async () => {
         const { status, canAskAgain } = await ImagePicker.requestCameraPermissionsAsync();
@@ -156,7 +156,7 @@ const Editprofile = ({ navigation }) => {
                                     <ActivityIndicator size="large" color={colors.MAIN_COLOR} /> 
                                 </View>:
 
-                                <Image source={ data.profile_image ?{ uri: data.profile_image }: require('../assets/logo.jpg')} height={160} width={160} style={{ borderRadius: 80, borderWidth: 2, borderColor: colors.MAIN_COLOR }} />
+                                <Image source={ data.profile_image ?{ uri: data.profile_image }: User_image} height={160} width={160} style={{ borderRadius: 80, borderWidth: 2,}} />
                             }
                             <TouchableOpacity style={styles.editIcon} onPress={OpenButtomSheet}>
                                 <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />

@@ -173,12 +173,9 @@ export default AuthProvider = ({ children }) => {
                     },
                 });
                 if (response) {
-                    // Alert.alert('Profile updated successfully');
-                    // console.log({data:response.data,contenType:response.contenType})
-                    // setuser({
-                    //     ...user,
-                    //     image:{data:response.data,contenType:response.contenType}});
-                    await GetUSerOnce()
+                    setuser({
+                        ...user,
+                        image:{data:response.data.data,contenType:response.data.contenType}});
                 }
             } catch (error) {
                 console.error("Error updating profile:", error);
