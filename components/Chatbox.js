@@ -11,10 +11,11 @@ import io from 'socket.io-client';
 import { SocketContext } from './Context/SocketProvider';
 
 const { height, width } = Dimensions.get('window');
-const IP = `http://192.168.29.222:5000`;
+const IP = `http://192.168.1.83:5000`;
 
 const Chatbox = ({ route, navigation }) => {
     const { user, onlineUser } = useContext(AuthContext);
+    const { fetchContact, data } = useContext(ContactContext);
     // const { online } = useContext(SocketContext)
     const ContactDetails = route.params;
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
@@ -25,7 +26,12 @@ const Chatbox = ({ route, navigation }) => {
     const socketRef = useRef(null);
     const typingTimeoutRef = useRef(null)
     const [online, setOnline] = useState(null)
+    const sender_hide_typing = user.hideTyping
+    const sender_hide_active = user.hideActiveStatus
+    const reciver_hide_typing = ContactDetails.hideTyping
+    const reciver_hide_active = ContactDetails.hideActiveStatus
 
+    // console.log(data)
     useEffect(() => {
         getMassage();
 
@@ -41,7 +47,6 @@ const Chatbox = ({ route, navigation }) => {
         });
         socketRef.current.on('typing', (data) => {
             if (data.sender === ContactDetails._id) {
-                // console.log(`${data.sender} is Typing`)
                 setTyping(true)
                 if (typingTimeoutRef.current) {
                     clearTimeout(typingTimeoutRef.current);
@@ -55,7 +60,6 @@ const Chatbox = ({ route, navigation }) => {
         for (let key of Object.keys(onlineUser)) {
             setOnline(null)
             if (key === ContactDetails._id) {
-                console.log(key)
                 setOnline(key)
                 break
             }
@@ -112,7 +116,6 @@ const Chatbox = ({ route, navigation }) => {
                     </TouchableOpacity>
                     <TouchableOpacity style={{ width: "40%" }}>
                         <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{ContactDetails.saved_name}</Text>
-                        {/* <Text style={{ color: colors.MAIN_COLOR }} > {typing ? "typing..." : null}</Text> */}
                         <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(online && !typing) ? "Online" : (online && typing) ? "typing..." : null}</Text>
                     </TouchableOpacity>
                     <View style={{ flexDirection: 'row', width: "30%", gap: 18, justifyContent: "center" }}>
@@ -149,11 +152,13 @@ const Chatbox = ({ route, navigation }) => {
         const sender = user._id;
         const recipient = ContactDetails._id;
         setMassageText(text);
-        socketRef.current.emit('typing', { sender, recipient })
-        if (typingTimeoutRef.current) {
-            clearTimeout(typingTimeoutRef.current);
+        if(sender_hide_typing === false && reciver_hide_typing===false){
+            socketRef.current.emit('typing', { sender, recipient })
+            if (typingTimeoutRef.current) {
+                clearTimeout(typingTimeoutRef.current);
+            }
+            typingTimeoutRef.current = setTimeout(() => setTyping(false), 3000);
         }
-        typingTimeoutRef.current = setTimeout(() => setTyping(false), 3000);
     };
 
     return (

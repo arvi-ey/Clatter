@@ -77,7 +77,11 @@ const ContactList = ({ navigation }) => {
                         </View>
                         <View>
                             <Text style={{ fontFamily: Font.Medium, fontSize: 15, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{value.saved_name}</Text>
-                            <Text style={{ fontFamily: Font.Medium, fontSize: 15, color: colors.MAIN_COLOR }}>{online && online[value._id] ? "Online" : null}</Text>
+                            {
+                                user.hideActiveStatusHome ?
+                                null :
+                                <Text style={{ fontFamily: Font.Medium, fontSize: 15, color: colors.MAIN_COLOR }}>{online && online[value._id] ? "Online" : null}</Text>
+                            }
                         </View>
                     </TouchableOpacity>
                 ))}

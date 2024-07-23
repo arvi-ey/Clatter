@@ -17,6 +17,7 @@ export const colors = {
     MASSAGE_SEND_BG: "#323232",
     MASSAGE_BOX: "#faf0e6",
     MASSAGE_BOX_DARK: "#303134",
-    TIME_TEXT: "#C3C3C3"
-
+    TIME_TEXT: "#C3C3C3",
+    SWITCH_BG:"#D3D3D6",
+    SWITCH_BG_DARK:"#1E1E1E"
 }

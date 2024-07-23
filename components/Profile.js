@@ -14,13 +14,15 @@ import { FontAwesome } from '@expo/vector-icons';
 import { AuthContext } from './Context/Authprovider';
 import { SocketContext } from './Context/SocketProvider'
 import { Font } from '../common/font';
+import Switch from '../common/Switch';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const Profile = () => {
+    const { user, EditUser } = useContext(AuthContext)
     const Tab = createBottomTabNavigator();
     const [darkModeon, setdarkModeon] = useState()
     const [darkMode, setDarkMode] = useState()
     // const {online } = useContext(SocketContext)
-    const { user, EditUser, GetUSerOnce } = useContext(AuthContext)
 
     useEffect(() => {
         if (user) {
@@ -28,11 +30,18 @@ const Profile = () => {
             setdarkModeon(user.dark_mode)
         }
     }, [user])
-    
+
     const SetDarkmode = () => {
         setdarkModeon(!darkModeon)
         EditUser({ dark_mode: !darkMode })
     }
+
+
+const DarkModeIcon = ()=>{
+    return(
+        <Ionicons name={user.dark_mode?"sunny-sharp":"moon"} size={20} color={user.dark_mode?"#facc15":"black"} />
+    )
+}
 
     return (
         <Tab.Navigator screenOptions={{
@@ -69,7 +78,16 @@ const Profile = () => {
                     <View style={{ flexDirection: "row", marginRight: 10, gap: 25 }} >
                         <Feather name="camera" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
                         <Ionicons name="search-outline" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
-                        <FontAwesome name={darkModeon ? "toggle-on" : "toggle-off"} size={30} color={darkMode ? colors.WHITE : colors.BLACK} onPress={SetDarkmode} />
+                        <Switch
+                            onToggle={SetDarkmode}
+                            size={'large'}
+                            isOn={darkModeon}
+                            onColor={colors.MAIN_COLOR}
+                            offColor={colors.SWITCH_BG}
+                            animationSpeed={300}
+                            thumbOnStyle={{backgroundColor:colors.WHITE}}
+                            icon={<DarkModeIcon/>}
+                        />
                     </View>
                 ),
                 headerTitleStyle: {
@@ -101,7 +119,6 @@ const Profile = () => {
                 )
             }} />
             <Tab.Screen name="Myprofile" component={Myprofile} options={{
-                headerShown: false,
                 tabBarIcon: ({ focused }) => (
                     <View style={{ justifyContent: "center", alignItems: "center" }} >
                         <FontAwesome name="user" size={28} color={darkMode ? colors.WHITE : (!darkMode && focused) ? colors.WHITE : colors.BLACK} style={{ backgroundColor: focused ? colors.MAIN_COLOR : null, paddingHorizontal: 18, paddingVertical: 5, borderRadius: 50, }} />

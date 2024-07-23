@@ -17,6 +17,18 @@ const userSchema = mongoose.Schema({
         type:Boolean,
         default:false
     },
+    hideTyping:{
+        type:Boolean,
+        default:false
+    },
+    hideActiveStatus:{
+        type:Boolean,
+        default:false
+    },
+    hideActiveStatusHome:{
+        type:Boolean,
+        default:false
+    },
     saved_contact: [
         {
             id: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },

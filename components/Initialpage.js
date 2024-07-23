@@ -17,6 +17,7 @@ import ContactList from './ContactList';
 import Chatbox from './Chatbox';
 import { colors } from './Theme';
 import io from 'socket.io-client';
+import Settings from './Settings';
 
 export default function Initialpage() {
     const Stack = createNativeStackNavigator();
@@ -79,6 +80,7 @@ export default function Initialpage() {
                     <Stack.Screen name="ContactList" component={ContactList} options={{ title: "Select contact" }} />
                     <Stack.Screen name="AddContact" component={AddContact} options={{ title: "Add contact" }} />
                     <Stack.Screen name="Chatbox" component={Chatbox} />
+                    <Stack.Screen name="Settings" component={Settings} options={{ title: "Account Settings" }} />
 
                 </Stack.Navigator>
             </NavigationContainer>
