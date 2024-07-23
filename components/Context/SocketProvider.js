@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 export const SocketContext = createContext();
 
 const SocketProvider = ({ children }) => {
-    const { user } = useContext(AuthContext);
+    const { user,setuser } = useContext(AuthContext);
     const [online, setOnline] = useState([]);
     const socketRef = useRef(null);
     const IP = `http://192.168.1.83:5000`;

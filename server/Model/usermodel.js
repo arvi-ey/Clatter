@@ -13,6 +13,10 @@ const userSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
+    isOnline:{
+        type:Boolean,
+        default:false
+    },
     saved_contact: [
         {
             id: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },

@@ -1,8 +1,10 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext,useRef } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
+import io from 'socket.io-client';
+
 
 
 
@@ -14,6 +16,7 @@ export default AuthProvider = ({ children }) => {
     const [loggedIn, setIsloggedIn] = useState(false)
     const [firstLoad, setFirstLoad] = useState(false)
     const [imageLoading, setImageLoading] = useState(false)
+    const socketRef = useRef(null);
 
     const IP = `http://192.168.29.222:5000`
 

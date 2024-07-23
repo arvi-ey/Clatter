@@ -28,10 +28,7 @@ const Profile = () => {
             setdarkModeon(user.dark_mode)
         }
     }, [user])
-
-    useEffect(() => {
-        GetUSerOnce()
-    }, [])
+    
     const SetDarkmode = () => {
         setdarkModeon(!darkModeon)
         EditUser({ dark_mode: !darkMode })

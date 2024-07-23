@@ -40,14 +40,11 @@ const userStatus = {}
 
 io.on('connection', (socket) => {
     console.log(`New client connected ${socket.id}`);
-    socket.on('disconnect', () => {
-        console.log('Client disconnected');
-    });
 
     socket.on('register', (userId) => {
         users[userId] = socket.id;
         userStatus[userId] = 'online';
-        io.emit('userStatus', { userId, status: 'online' });
+        io.emit('userStatus',  userStatus);
     });
 
 
@@ -71,9 +68,10 @@ io.on('connection', (socket) => {
         for (let userId in users) {
             if (users[userId] === socket.id) {
                 delete users[userId];
-                userStatus[userId] = 'offline';
+                delete userStatus[userId];
+                // userStatus[userId] = 'offline';
                 console.log(`User ${userId} is now offline`);
-                io.emit('userStatus', { userId, status: 'offline' });
+                io.emit('userStatus', userStatus);
                 break;
             }
         }

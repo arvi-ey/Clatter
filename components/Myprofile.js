@@ -115,14 +115,12 @@ const Myprofile = () => {
                     press={() => Navigation.navigate('Editprofile')}
                 />
             </View>
-            {/* <View style={{ height: "80%", }} > */}
             <FlatList
                 data={profileListData}
                 renderItem={Profilelist}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={(item, index) => index}
             />
-            {/* </View> */}
         </SafeAreaView>
 
     );
