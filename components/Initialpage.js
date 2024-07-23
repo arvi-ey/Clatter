@@ -24,7 +24,6 @@ export default function Initialpage() {
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const IP = `http://192.168.29.222:5000`;
     const socketRef = useRef(null);
-    const [onlineUser, setOnlineUser] = useState()
 
     useEffect(() => {
         GetUSerOnce()
@@ -34,27 +33,6 @@ export default function Initialpage() {
     }, [])
 
 
-
-    useEffect(() => {
-        socketRef.current = io(IP);
-        socketRef.current.on('connect', () => {
-            socketRef.current.emit('register', user._id);
-            socketRef.current.on('userStatus', (data) => {
-                const filteredData = {};
-                for (const key of Object.keys(data)) {
-                    if (key !== 'null' && key !== user._id) {
-                        filteredData[key] = data[key];
-                        setOnlineUser(filteredData)
-                    }
-                }
-            })
-        });
-        socketRef.current.on('disconnect', () => {
-            console.log('Disconnected from server');
-        });
-
-    }, [user])
-    console.log("THIS IS STate", onlineUser)
 
     const loadFonts = async () => {
         await Font.loadAsync({

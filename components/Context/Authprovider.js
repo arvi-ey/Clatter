@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext,useRef } from 'react';
+import React, { createContext, useState, useEffect, useContext, useRef } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -17,6 +17,7 @@ export default AuthProvider = ({ children }) => {
     const [firstLoad, setFirstLoad] = useState(false)
     const [imageLoading, setImageLoading] = useState(false)
     const socketRef = useRef(null);
+    const [onlineUser, setOnlineUser] = useState()
 
     const IP = `http://192.168.29.222:5000`
 
@@ -24,7 +25,25 @@ export default AuthProvider = ({ children }) => {
         AppLoaded()
         GetUSerOnce()
     }, [])
+    useEffect(() => {
+        socketRef.current = io(IP);
+        socketRef.current.on('connect', () => {
+            socketRef.current.emit('register', user._id);
+            socketRef.current.on('userStatus', (data) => {
+                const filteredData = {};
+                for (const key of Object.keys(data)) {
+                    if (key !== 'null' && key !== user._id) {
+                        filteredData[key] = data[key];
+                        setOnlineUser(filteredData)
+                    }
+                }
+            })
+        });
+        socketRef.current.on('disconnect', () => {
+            console.log('Disconnected from server');
+        });
 
+    }, [user])
 
     const EditUser = async (data) => {
         const differences = Object.keys(data).filter(key => data[key] !== user[key]);
@@ -188,7 +207,7 @@ export default AuthProvider = ({ children }) => {
         }
     }
 
-    const value = { loading, setuser, SignIn, user, CreateUser, GetUSerOnce, EditUser, loggedIn, firstLoad, UploadProfileImage, imageLoading }
+    const value = { loading, setuser, SignIn, user, CreateUser, GetUSerOnce, EditUser, loggedIn, firstLoad, UploadProfileImage, onlineUser, imageLoading }
     return (
         <AuthContext.Provider value={value} >
             {children}

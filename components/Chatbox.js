@@ -14,7 +14,7 @@ const { height, width } = Dimensions.get('window');
 const IP = `http://192.168.29.222:5000`;
 
 const Chatbox = ({ route, navigation }) => {
-    const { user } = useContext(AuthContext);
+    const { user, onlineUser } = useContext(AuthContext);
     // const { online } = useContext(SocketContext)
     const ContactDetails = route.params;
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
@@ -24,7 +24,7 @@ const Chatbox = ({ route, navigation }) => {
     const scrollViewRef = useRef();
     const socketRef = useRef(null);
     const typingTimeoutRef = useRef(null)
-    const [userOnline, SetUserOnline] = useState(null)
+    const [online, setOnline] = useState(null)
 
     useEffect(() => {
         getMassage();
@@ -51,10 +51,16 @@ const Chatbox = ({ route, navigation }) => {
         })
     }, [user._id, ContactDetails._id]);
 
-    // useEffect(() => {
-    //     FilteredUserOnline()
-    // }, [online])
-
+    useEffect(() => {
+        for (let key of Object.keys(onlineUser)) {
+            setOnline(null)
+            if (key === ContactDetails._id) {
+                console.log(key)
+                setOnline(key)
+                break
+            }
+        }
+    }, [onlineUser, ContactDetails._id])
     const GetTime = (timestamp) => {
         const date = new Date(timestamp);
         const options = { hour: '2-digit', minute: '2-digit', hour12: true };
@@ -97,8 +103,6 @@ const Chatbox = ({ route, navigation }) => {
         scrollViewRef.current.scrollToEnd({ animated: true });
     }, [messages]);
 
-    console.log("STATE", userOnline)
-
     React.useLayoutEffect(() => {
         navigation.setOptions({
             headerTitle: () => (
@@ -109,8 +113,8 @@ const Chatbox = ({ route, navigation }) => {
                     <TouchableOpacity style={{ width: "40%" }}>
                         <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{ContactDetails.saved_name}</Text>
                         {/* <Text style={{ color: colors.MAIN_COLOR }} > {typing ? "typing..." : null}</Text> */}
-                        <Text style={{ color: colors.MAIN_COLOR }}>{typing ? "typing..." : userOnline?  userOnline : null}</Text>
-                                            </TouchableOpacity>
+                        <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(online && !typing) ? "Online" : (online && typing) ? "typing..." : null}</Text>
+                    </TouchableOpacity>
                     <View style={{ flexDirection: 'row', width: "30%", gap: 18, justifyContent: "center" }}>
                         <TouchableOpacity>
                             <Feather name="video" size={28} color={user.dark_mode ? colors.WHITE : colors.BLACK} />
@@ -139,7 +143,7 @@ const Chatbox = ({ route, navigation }) => {
             },
             headerTintColor: user.dark_mode ? colors.BLACK : colors.WHITE
         });
-    }, [navigation, image, user, ContactDetails, colors, Font, typing]);
+    }, [navigation, image, user, ContactDetails, colors, Font, typing, online]);
 
     const TypeMassage = (text) => {
         const sender = user._id;
