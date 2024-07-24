@@ -11,11 +11,11 @@ import io from 'socket.io-client';
 import { SocketContext } from './Context/SocketProvider';
 
 const { height, width } = Dimensions.get('window');
-const IP = `http://192.168.1.83:5000`;
+const IP = `http://192.168.29.222:5000`;
 
 const Chatbox = ({ route, navigation }) => {
     const { user, onlineUser } = useContext(AuthContext);
-    const { fetchContact, data } = useContext(ContactContext);
+    const { fetchContact, data, setSenderData, senderData, FetchSenderContact } = useContext(ContactContext);
     // const { online } = useContext(SocketContext)
     const ContactDetails = route.params;
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
@@ -26,15 +26,24 @@ const Chatbox = ({ route, navigation }) => {
     const socketRef = useRef(null);
     const typingTimeoutRef = useRef(null)
     const [online, setOnline] = useState(null)
-    const sender_hide_typing = user.hideTyping
-    const sender_hide_active = user.hideActiveStatus
-    const reciver_hide_typing = ContactDetails.hideTyping
-    const reciver_hide_active = ContactDetails.hideActiveStatus
 
     // console.log(data)
-    useEffect(() => {
-        getMassage();
 
+    useEffect(() => {
+        if (ContactDetails._id) {
+            console.log("Running 3")
+            FetchSenderContact(ContactDetails._id)
+            console.log(senderData)
+        }
+    }, [ContactDetails._id, onlineUser])
+
+    const sender_hide_typing = user?.hideTyping
+    const sender_hide_active = user?.hideActiveStatus
+    const reciver_hide_typing = senderData?.hideTyping
+    const reciver_hide_active = senderData?.hideActiveStatus
+    useEffect(() => {
+        console.log("Running 1")
+        getMassage();
         socketRef.current = io(IP);
         socketRef.current.on('connect', () => {
             socketRef.current.emit('register', user._id);
@@ -54,9 +63,11 @@ const Chatbox = ({ route, navigation }) => {
                 typingTimeoutRef.current = setTimeout(() => setTyping(false), 1000);
             }
         })
-    }, [user._id, ContactDetails._id]);
+    }, [user, user._id, ContactDetails._id]);
 
     useEffect(() => {
+        console.log("RUnning 2")
+
         for (let key of Object.keys(onlineUser)) {
             setOnline(null)
             if (key === ContactDetails._id) {
@@ -152,7 +163,7 @@ const Chatbox = ({ route, navigation }) => {
         const sender = user._id;
         const recipient = ContactDetails._id;
         setMassageText(text);
-        if(sender_hide_typing === false && reciver_hide_typing===false){
+        if (sender_hide_typing === false && reciver_hide_typing === false) {
             socketRef.current.emit('typing', { sender, recipient })
             if (typingTimeoutRef.current) {
                 clearTimeout(typingTimeoutRef.current);

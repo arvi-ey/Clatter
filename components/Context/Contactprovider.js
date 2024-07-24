@@ -10,7 +10,8 @@ const ContactProvider = ({ children }) => {
     const [savedContact, setSavedContact] = useState([])
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
-    const IP = `http://192.168.1.83:5000`
+    const [senderData, setSenderData] = useState()
+    const IP = `http://192.168.29.222:5000`
 
     useEffect(() => {
         if (user) setSavedContact(user.saved_contact)
@@ -37,6 +38,23 @@ const ContactProvider = ({ children }) => {
             }
             setData({ ...data, userData })
         }
+    }
+
+    const FetchSenderContact = async (id) => {
+        if (id) {
+
+            try {
+                const result = await axios.get(`${IP}/contact/${id}`)
+                setSenderData(result.data)
+            }
+            catch (err) {
+                console.log(err)
+            }
+        }
+        else {
+            Alert.alert("Please Provide User ID")
+        }
+
     }
 
 
@@ -76,7 +94,7 @@ const ContactProvider = ({ children }) => {
 
 
 
-    value = { fetchContact, data, AddNewContact, loading }
+    value = { fetchContact, data, AddNewContact, loading, FetchSenderContact, senderData, setSenderData }
 
     return (
         <ContactContext.Provider value={value}>

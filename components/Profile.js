@@ -37,11 +37,11 @@ const Profile = () => {
     }
 
 
-const DarkModeIcon = ()=>{
-    return(
-        <Ionicons name={user.dark_mode?"sunny-sharp":"moon"} size={20} color={user.dark_mode?"#facc15":"black"} />
-    )
-}
+    const DarkModeIcon = () => {
+        return (
+            <Ionicons name={user.dark_mode ? "moon" : "sunny-sharp"} size={20} color={user.dark_mode ? "black" : "#facc15"} />
+        )
+    }
 
     return (
         <Tab.Navigator screenOptions={{
@@ -85,8 +85,8 @@ const DarkModeIcon = ()=>{
                             onColor={colors.MAIN_COLOR}
                             offColor={colors.SWITCH_BG}
                             animationSpeed={300}
-                            thumbOnStyle={{backgroundColor:colors.WHITE}}
-                            icon={<DarkModeIcon/>}
+                            thumbOnStyle={{ backgroundColor: colors.WHITE }}
+                            icon={<DarkModeIcon />}
                         />
                     </View>
                 ),

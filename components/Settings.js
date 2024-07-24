@@ -8,46 +8,50 @@ import Switch from '../common/Switch';
 
 const Settings = ({ navigation }) => {
     const { user, EditUser, loading, UploadProfileImage, imageLoading } = useContext(AuthContext)
-    const [hideTyping,setHideTyping]= useState()
-    const [hideActive,setHideActive]= useState()
-    const [hideHomeActive,setHideHomeActive]= useState()
+    const [hideTyping, setHideTyping] = useState()
+    const [hideActive, setHideActive] = useState()
+    const [hideHomeActive, setHideHomeActive] = useState()
 
 
-    useEffect(()=>{
-        if(user){
+    useEffect(() => {
+        if (user) {
             setHideActive(user.hideActiveStatus)
             setHideTyping(user.hideTyping)
             setHideHomeActive(user.hideActiveStatusHome)
         }
-    },[user])
+    }, [user])
 
-    const Info =[
+    const Info = [
         {
-            name:"Hide active status",
-            value:"Active"
+            name: "Hide active status",
+            value: "Active",
+            Desc: "Hiding your active status makes you invisible to others, and you won't see their active status either."
+
         },
         {
-            name:"Hide typing",
-            value:"Typing"
+            name: "Hide typing",
+            value: "Typing",
+            Desc: "Hiding your typing status hides others' typing status too."
         },
         {
-            name:"Hide home scrren active status",
-            value:"HomeActive"
+            name: "Hide home scrren active status",
+            value: "HomeActive",
+            Desc: "Enabling this option hides others' active status from home screen, but they can still see yours."
         },
     ]
 
-    const OnSwitch = (value)=>{
-        if(value === "Active"){
+    const OnSwitch = (value) => {
+        if (value === "Active") {
             setHideActive(!hideActive)
             EditUser({ hideActiveStatus: !hideActive })
         }
-        if(value ==="Typing" ){
+        if (value === "Typing") {
             setHideTyping(!hideTyping)
-            EditUser({hideTyping: !hideTyping })
+            EditUser({ hideTyping: !hideTyping })
         }
-        if(value === "HomeActive"){
+        if (value === "HomeActive") {
             setHideHomeActive(!hideHomeActive)
-            EditUser({hideActiveStatusHome: !hideHomeActive })
+            EditUser({ hideActiveStatusHome: !hideHomeActive })
         }
 
     }
@@ -65,41 +69,52 @@ const Settings = ({ navigation }) => {
             headerTintColor: user.dark_mode ? colors.WHITE : colors.BLACK,
         });
     }, [navigation]);
-  return (
-    <ScrollView style={{flex:1,backgroundColor:user.dark_mode?colors.BLACK:colors.WHITE}} >
-        {
-            Info?.map((item,index)=>{
-                return(
-                    <View style={styles.MainView} key={index} >
-                        <Text style={{fontFamily:Font.Medium,
-                        color:user.dark_mode?colors.WHITE:colors.BLACK,fontSize:15}} >{item.name}</Text>
-                        <Switch
-                            onToggle={()=>OnSwitch(item.value)}
-                            size={'medium'}
-                            isOn={item.value==='Active'?hideActive:item.value==="Typing"?hideTyping:hideHomeActive}
-                            onColor={colors.MAIN_COLOR}
-                            offColor={colors.SWITCH_BG}
-                            animationSpeed={300}
-                            thumbOnStyle={{backgroundColor:colors.WHITE}}
+    return (
+        <ScrollView style={{ flex: 1, backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }} >
+            {
+                Info?.map((item, index) => {
+                    return (
+                        <View style={styles.MainView} key={index} >
+                            <View style={{ width: "80%" }} >
+                                <Text style={{
+                                    fontFamily: Font.Medium,
+                                    color: user.dark_mode ? colors.WHITE : colors.BLACK, fontSize: 15
+                                }} >{item.name}</Text>
+                                <Text style={{
+                                    fontFamily: Font.Light,
+                                    color: user.dark_mode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontSize: 12
+                                }}>
+                                    {item.Desc}
+                                </Text>
+                            </View>
+                            <Switch
+                                onToggle={() => OnSwitch(item.value)}
+                                size={'medium'}
+                                isOn={item.value === 'Active' ? hideActive : item.value === "Typing" ? hideTyping : hideHomeActive}
+                                onColor={colors.MAIN_COLOR}
+                                offColor={colors.SWITCH_BG}
+                                animationSpeed={300}
+                                thumbOnStyle={{ backgroundColor: colors.WHITE }}
                             // icon={<DarkModeIcon/>}
-                        />
-                    </View>
-                )
-            })
-        }
-    </ScrollView>
-  )
+                            />
+                        </View>
+                    )
+                })
+            }
+        </ScrollView>
+    )
 }
 
 export default Settings
 
 const styles = StyleSheet.create({
-    MainView:{width:width-5,
-    paddingLeft:10,
-    height:40,
-    marginVertical:5,
-    alignItems:"center",
-    flexDirection:'row',
-    justifyContent:"space-between"
-}
+    MainView: {
+        width: width - 5,
+        paddingLeft: 10,
+        height: 60,
+        marginVertical: 5,
+        alignItems: "center",
+        flexDirection: 'row',
+        justifyContent: "space-around"
+    }
 })
