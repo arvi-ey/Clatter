@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Dimensions, Platform, TouchableOpacity, Image, KeyboardAvoidingView } from 'react-native'
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import { StyleSheet, Text, View, Dimensions, Platform, TouchableOpacity, Image, KeyboardAvoidingView } from 'react-native';
+import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { AuthContext } from './Context/Authprovider';
 import { ContactContext } from './Context/Contactprovider';
 import { Font } from '../common/font';
@@ -8,7 +8,6 @@ import { Ionicons, MaterialIcons, MaterialCommunityIcons, FontAwesome6, Feather 
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import axios from 'axios';
 import io from 'socket.io-client';
-import { SocketContext } from './Context/SocketProvider';
 
 const { height, width } = Dimensions.get('window');
 const IP = `http://192.168.1.83:5000`;
@@ -16,35 +15,30 @@ const IP = `http://192.168.1.83:5000`;
 const Chatbox = ({ route, navigation }) => {
     const { user, onlineUser } = useContext(AuthContext);
     const { fetchContact, data, setSenderData, senderData, FetchSenderContact } = useContext(ContactContext);
-    // const { online } = useContext(SocketContext)
     const ContactDetails = route.params;
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
     const [messageText, setMassageText] = useState("");
     const [messages, setMessages] = useState([]);
-    const [typing, setTyping] = useState(false)
+    const [typing, setTyping] = useState(false);
     const scrollViewRef = useRef();
     const socketRef = useRef(null);
-    const typingTimeoutRef = useRef(null)
-    const [online, setOnline] = useState(null)
-
-    // console.log(data)
+    const typingTimeoutRef = useRef(null);
+    const [online, setOnline] = useState(null);
 
     useEffect(() => {
+        console.log("1 Running")
         if (ContactDetails._id) {
-            console.log("Running 3")
-            FetchSenderContact(ContactDetails._id)
+            FetchSenderContact(ContactDetails._id);
         }
-    }, [ContactDetails._id, onlineUser])
+    }, [ContactDetails._id]);
 
-    const sender_hide_typing = user?.hideTyping
-    const sender_hide_active = user?.hideActiveStatus
-    const reciver_hide_typing = senderData?.hideTyping
-    const reciver_hide_active = senderData?.hideActiveStatus
+    const sender_hide_typing = user?.hideTyping;
+    const sender_hide_active = user?.hideActiveStatus;
+    const reciver_hide_typing = senderData?.hideTyping;
+    const reciver_hide_active = senderData?.hideActiveStatus;
 
-    // console.log("Sender",sender_hide_active)
-    // console.log("Reciver",reciver_hide_active)
     useEffect(() => {
-        console.log("Running 1")
+        console.log("2 Running")
         getMassage();
         socketRef.current = io(IP);
         socketRef.current.on('connect', () => {
@@ -58,35 +52,31 @@ const Chatbox = ({ route, navigation }) => {
         });
         socketRef.current.on('typing', (data) => {
             if (data.sender === ContactDetails._id) {
-                setTyping(true)
+                setTyping(true);
                 if (typingTimeoutRef.current) {
                     clearTimeout(typingTimeoutRef.current);
                 }
                 typingTimeoutRef.current = setTimeout(() => setTyping(false), 1000);
             }
-        })
-    }, [user, user._id, ContactDetails._id]);
-
+        });
+        
+    }, [user._id, ContactDetails._id]);
+    
     useEffect(() => {
-        console.log("RUnning 2")
-        if(sender_hide_active ===true || reciver_hide_active ===true){
-            setOnline(null)
-            return  
+        console.log("3 Running")
+        if (sender_hide_active === true || reciver_hide_active === true) {
+            setOnline(null);
+            return;
         }
-            for (let key of Object.keys(onlineUser)) {
-                setOnline(null)
-                if (key === senderData?._id) {
-                    setOnline(key)
-                    break
-                }
-            }
-    }, [onlineUser, ContactDetails._id,senderData])
+        const isOnline = Object.keys(onlineUser).some(key => key === senderData?._id);
+        setOnline(isOnline ? senderData._id : null);
+    }, [onlineUser, senderData?._id, sender_hide_active, reciver_hide_active]);
 
-    const GetTime = (timestamp) => {
+    const GetTime = useCallback((timestamp) => {
         const date = new Date(timestamp);
         const options = { hour: '2-digit', minute: '2-digit', hour12: true };
         return date.toLocaleTimeString('en-US', options);
-    };
+    }, []);
 
     const getMassage = async () => {
         const userId1 = user._id;
@@ -98,7 +88,6 @@ const Chatbox = ({ route, navigation }) => {
             setMessages(response.data);
         } catch (error) {
             console.error('Error fetching messages:', error);
-            throw error;
         }
     };
 
@@ -112,14 +101,14 @@ const Chatbox = ({ route, navigation }) => {
 
             try {
                 await axios.post(`${IP}/massage`, { sender, recipient, content });
-                setMessages([...messages, { sender, recipient, content, timestamp: Date.now() }])
+                setMessages([...messages, { sender, recipient, content, timestamp: Date.now() }]);
                 setMassageText("");
             } catch (error) {
                 console.error('Error sending message:', error);
-                throw error;
             }
         }
     };
+
     useEffect(() => {
         scrollViewRef.current.scrollToEnd({ animated: true });
     }, [messages]);
@@ -133,7 +122,9 @@ const Chatbox = ({ route, navigation }) => {
                     </TouchableOpacity>
                     <TouchableOpacity style={{ width: "40%" }}>
                         <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{ContactDetails.saved_name}</Text>
-                        <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(online && !typing) ? "Online" : (online && typing) ? "typing..." : null}</Text>
+                        <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>
+                            {online && !typing ? "Online" : online && typing ? "typing..." : null}
+                        </Text>
                     </TouchableOpacity>
                     <View style={{ flexDirection: 'row', width: "30%", gap: 18, justifyContent: "center" }}>
                         <TouchableOpacity>
@@ -163,14 +154,14 @@ const Chatbox = ({ route, navigation }) => {
             },
             headerTintColor: user.dark_mode ? colors.BLACK : colors.WHITE
         });
-    }, [navigation, image, user, ContactDetails, colors, Font, typing, online]);
+    }, [navigation, image, user.dark_mode, ContactDetails.saved_name, colors, Font, typing, online]);
 
     const TypeMassage = (text) => {
         const sender = user._id;
         const recipient = ContactDetails._id;
         setMassageText(text);
         if (sender_hide_typing === false && reciver_hide_typing === false) {
-            socketRef.current.emit('typing', { sender, recipient })
+            socketRef.current.emit('typing', { sender, recipient });
             if (typingTimeoutRef.current) {
                 clearTimeout(typingTimeoutRef.current);
             }
@@ -184,41 +175,39 @@ const Chatbox = ({ route, navigation }) => {
                 ref={scrollViewRef}
                 onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
                 style={{}}>
-                {messages?.map((data, key) => {
-                    return (
-                        <KeyboardAvoidingView
-                            key={key}
-                            enabled
-                            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-                        >
-                            <View
-                                style={[styles.MessageBox, {
-                                    flexDirection: data.content.length < 32 ? "row" : "column",
-                                    marginBottom: 5,
-                                    alignSelf: data.sender === user._id ? "flex-end" : "flex-start",
-                                    marginHorizontal: 15,
-                                    backgroundColor: (user.dark_mode && data.sender !== user._id) ?
-                                        colors.MASSAGE_BOX_DARK : (!user.dark_mode && data.sender !== user._id) ?
-                                            colors.WHITE : colors.MAIN_COLOR,
-                                    width: data.content.length < 32 ? "auto" : 300, borderTopRightRadius: data.sender !== user._id ? 20 : 0,
-                                    borderTopLeftRadius: data.sender !== user._id ? 20 : 20, borderBottomRightRadius: data.sender !== user._id ? 20 : 20, borderBottomLeftRadius: data.sender !== user._id ? 0 : 20
-                                }]}>
-                                <Text style={[styles.MessageContent, {
-                                    color: (!user.dark_mode && data.sender !== user._id) ? colors.BLACK : colors.WHITE,
-                                }]}>{data.content.trim()}
-                                </Text>
-                                <Text style={[styles.TimeText, {
-                                    color: (!user.dark_mode && data.sender !== user._id) ?
-                                        colors.CHARCOLE_DARK : colors.TIME_TEXT
-                                }]}>{GetTime(data.timestamp)}</Text>
-                            </View>
-                        </KeyboardAvoidingView>
-                    )
-                })}
+                {messages?.map((data, key) => (
+                    <KeyboardAvoidingView
+                        key={key}
+                        enabled
+                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+                    >
+                        <View
+                            style={[styles.MessageBox, {
+                                flexDirection: data.content.length < 32 ? "row" : "column",
+                                marginBottom: 5,
+                                alignSelf: data.sender === user._id ? "flex-end" : "flex-start",
+                                marginHorizontal: 15,
+                                backgroundColor: (user.dark_mode && data.sender !== user._id) ?
+                                    colors.MASSAGE_BOX_DARK : (!user.dark_mode && data.sender !== user._id) ?
+                                        colors.WHITE : colors.MAIN_COLOR,
+                                width: data.content.length < 32 ? "auto" : 300, borderTopRightRadius: data.sender !== user._id ? 20 : 0,
+                                borderTopLeftRadius: data.sender !== user._id ? 20 : 20, borderBottomRightRadius: data.sender !== user._id ? 20 : 20, borderBottomLeftRadius: data.sender !== user._id ? 0 : 20
+                            }]}>
+                            <Text style={[styles.MessageContent, {
+                                color: (!user.dark_mode && data.sender !== user._id) ? colors.BLACK : colors.WHITE,
+                            }]}>{data.content.trim()}
+                            </Text>
+                            <Text style={[styles.TimeText, {
+                                color: (!user.dark_mode && data.sender !== user._id) ?
+                                    colors.CHARCOLE_DARK : colors.TIME_TEXT
+                            }]}>{GetTime(data.timestamp)}</Text>
+                        </View>
+                    </KeyboardAvoidingView>
+                ))}
             </ScrollView>
             <View style={styles.MassageBox}>
-                <View style={[styles.MassageField, { backgroundColor: user.dark_mode ? colors.MASSAGE_BOX_DARK : colors.MASSAGE_BOX, }]}>
+                <View style={[styles.MassageField, { backgroundColor: user.dark_mode ? colors.MASSAGE_BOX_DARK : colors.MASSAGE_BOX }]}>
                     <TouchableOpacity style={styles.emogiIcon}>
                         <FontAwesome6 name="smile-beam" size={24} color={user.dark_mode ? colors.WHITE : colors.CHARCOLE} />
                     </TouchableOpacity>
@@ -242,7 +231,7 @@ const Chatbox = ({ route, navigation }) => {
                 </TouchableOpacity>
             </View>
         </View>
-    )
+    );
 }
 
 export default Chatbox;
@@ -286,14 +275,8 @@ const styles = StyleSheet.create({
         gap: 7,
         flexDirection: "row"
     },
-    emogiIcon: {
-        // position: 'absolute',
-        // left: 15
-    },
-    AttachMentIcon: {
-        // position: "absolute",
-        // right: 80
-    },
+    emogiIcon: {},
+    AttachMentIcon: {},
     SendBox: {
         backgroundColor: colors.MAIN_COLOR,
         padding: 8,
