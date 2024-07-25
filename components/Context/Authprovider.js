@@ -25,7 +25,7 @@ export default AuthProvider = ({ children }) => {
         AppLoaded()
         GetUSerOnce()
     }, [])
-    
+
     useEffect(() => {
         socketRef.current = io(IP);
         socketRef.current.on('connect', () => {

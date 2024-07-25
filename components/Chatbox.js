@@ -69,18 +69,18 @@ const Chatbox = ({ route, navigation }) => {
 
     useEffect(() => {
         console.log("RUnning 2")
-        if(sender_hide_active ===true || reciver_hide_active ===true){
+        if (sender_hide_active === true || reciver_hide_active === true) {
             setOnline(null)
-            return  
+            return
         }
-            for (let key of Object.keys(onlineUser)) {
-                setOnline(null)
-                if (key === senderData?._id) {
-                    setOnline(key)
-                    break
-                }
+        for (let key of Object.keys(onlineUser)) {
+            setOnline(null)
+            if (key === senderData?._id) {
+                setOnline(key)
+                break
             }
-    }, [onlineUser, ContactDetails._id,senderData])
+        }
+    }, [onlineUser, ContactDetails._id, senderData])
 
     const GetTime = (timestamp) => {
         const date = new Date(timestamp);
