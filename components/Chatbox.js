@@ -11,7 +11,7 @@ import io from 'socket.io-client';
 import { SocketContext } from './Context/SocketProvider';
 
 const { height, width } = Dimensions.get('window');
-const IP = `http://192.168.29.222:5000`;
+const IP = `http://192.168.1.83:5000`;
 
 const Chatbox = ({ route, navigation }) => {
     const { user, onlineUser } = useContext(AuthContext);
@@ -33,7 +33,6 @@ const Chatbox = ({ route, navigation }) => {
         if (ContactDetails._id) {
             console.log("Running 3")
             FetchSenderContact(ContactDetails._id)
-            console.log(senderData)
         }
     }, [ContactDetails._id, onlineUser])
 
@@ -41,6 +40,9 @@ const Chatbox = ({ route, navigation }) => {
     const sender_hide_active = user?.hideActiveStatus
     const reciver_hide_typing = senderData?.hideTyping
     const reciver_hide_active = senderData?.hideActiveStatus
+
+    // console.log("Sender",sender_hide_active)
+    // console.log("Reciver",reciver_hide_active)
     useEffect(() => {
         console.log("Running 1")
         getMassage();
@@ -67,15 +69,19 @@ const Chatbox = ({ route, navigation }) => {
 
     useEffect(() => {
         console.log("RUnning 2")
-
-        for (let key of Object.keys(onlineUser)) {
+        if(sender_hide_active ===true || reciver_hide_active ===true){
             setOnline(null)
-            if (key === ContactDetails._id) {
-                setOnline(key)
-                break
-            }
+            return  
         }
-    }, [onlineUser, ContactDetails._id])
+            for (let key of Object.keys(onlineUser)) {
+                setOnline(null)
+                if (key === senderData?._id) {
+                    setOnline(key)
+                    break
+                }
+            }
+    }, [onlineUser, ContactDetails._id,senderData])
+
     const GetTime = (timestamp) => {
         const date = new Date(timestamp);
         const options = { hour: '2-digit', minute: '2-digit', hour12: true };

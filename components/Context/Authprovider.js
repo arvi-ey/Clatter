@@ -19,12 +19,13 @@ export default AuthProvider = ({ children }) => {
     const socketRef = useRef(null);
     const [onlineUser, setOnlineUser] = useState()
 
-    const IP = `http://192.168.29.222:5000`
+    const IP = `http://192.168.1.83:5000`
 
     useEffect(() => {
         AppLoaded()
         GetUSerOnce()
     }, [])
+    
     useEffect(() => {
         socketRef.current = io(IP);
         socketRef.current.on('connect', () => {

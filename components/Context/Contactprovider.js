@@ -11,7 +11,7 @@ const ContactProvider = ({ children }) => {
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
     const [senderData, setSenderData] = useState()
-    const IP = `http://192.168.29.222:5000`
+    const IP = `http://192.168.1.83:5000`
 
     useEffect(() => {
         if (user) setSavedContact(user.saved_contact)

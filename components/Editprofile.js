@@ -115,6 +115,7 @@ const Editprofile = ({ navigation }) => {
             headerTintColor: user.dark_mode ? colors.WHITE : colors.BLACK,
         });
     }, [navigation]);
+    
     useEffect(() => {
         if (user) {
             setData({
