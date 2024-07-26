@@ -7,22 +7,32 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ContactContext } from './Context/Contactprovider';
 import { Font } from '../common/font';
+import axios from 'axios';
+// import io from 'socket.io-client';
+const IP = `http://192.168.1.83:5000`;
+
 const ChatScreen = ({ navigation }) => {
-    const { user, onlineUser, GetUSerOnce } = useContext(AuthContext)
+    const { user, onlineUser, GetUSerOnce,lastMessage } = useContext(AuthContext)
     const { fetchContact, data } = useContext(ContactContext);
     const [online, setOnline] = useState(null);
+    // const socketRef = useRef(null);
     const previousOnlineUser = useRef({});
+    // socketRef.current = io(IP);
     useEffect(() => {
         fetchContact();
         GetUSerOnce()
     }, []);
+    
     useEffect(() => {
         let isOnlineChanged = false;
         const currentOnlineUser = {};
-        for (let key of Object.keys(onlineUser)) {
-            if (key !== user._id) {
-                // console.log(onlineUser[key])
-                currentOnlineUser[key] = onlineUser[key];
+        if(onlineUser){
+
+            for (let key of Object.keys(onlineUser)) {
+                if (key !== user._id) {
+                    // console.log(onlineUser[key])
+                    currentOnlineUser[key] = onlineUser[key];
+                }
             }
         }
 
@@ -36,9 +46,47 @@ const ChatScreen = ({ navigation }) => {
         }
     }, [onlineUser]);
 
-    console.log("For", user._id, online[value._id])
 
     const ChatComponent = ({ data }) => {
+        const [messages, setMessages] = useState([]);
+        const [lastmesssagetime, setlastmessagetime] = useState()
+        const [newMessage,setNewMessage]=useState()
+
+       useEffect(()=>{
+        if(lastMessage)  {
+            setNewMessage( lastMessage)
+            setMessages([...messages,...lastMessage])
+        }
+       },[lastMessage])
+
+
+        useEffect(() => {
+            getMessage();
+        }, []);
+
+        const GetTime = (timestamp) => {
+            const date = new Date(timestamp);
+            const options = { hour: '2-digit', minute: '2-digit', hour12: true };
+            return date.toLocaleTimeString('en-US', options);
+        };
+        const getMessage = async () => {
+            const userId1 = user._id;
+            const userId2 = data._id;
+            try {
+                const response = await axios.get(`${IP}/massage`, {
+                    params: { userId1, userId2 }
+                });
+                    setMessages(response.data);
+                    if (response.data.length > 0) {
+                        setlastmessagetime(response.data[response.data.length - 1].timestamp);
+                    }
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+                throw error;
+            }
+        };
+
+
         return (
             <TouchableOpacity style={{ marginTop: 5, flexDirection: "row", height: 85, padding: 5, gap: 20, alignItems: "center" }}
             >
@@ -55,10 +103,12 @@ const ChatScreen = ({ navigation }) => {
                                 null :
                                 <Text style={{ fontFamily: Font.Medium, fontSize: 15, color: colors.MAIN_COLOR, marginRight: 10 }}>{online && online[data._id] ? "Online" : null}</Text>
                         }
-                        {/* <Text style={{ marginRight: 10, color: user.dark_mode ? colors.WHITE : colors.BLACK, fontFamily: "Ubuntu-Regular" }} >{data.time}</Text> */}
+                        {
+                            <Text style={{ marginRight: 10, color: user.dark_mode ? colors.WHITE : colors.BLACK, fontFamily: "Ubuntu-Regular" }} >{newMessage && newMessage?.timestamp? GetTime(newMessage?.timestamp) : lastmesssagetime && GetTime(lastmesssagetime)}</Text>
+                        }
                     </View>
                     <View>
-                        <Text style={{ fontSize: 15, color: user.dark_mode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: user.dark_mode ? Font.Light : Font.Regular }}>{data.massage}</Text>
+                        <Text style={{ fontSize: 15, color: user.dark_mode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: user.dark_mode ? Font.Light : Font.Regular }}>{newMessage?.content ? newMessage.content : messages[messages.length-1]?.content  }</Text>
                     </View>
                 </View>
 

@@ -18,6 +18,7 @@ export default AuthProvider = ({ children }) => {
     const [imageLoading, setImageLoading] = useState(false)
     const socketRef = useRef(null);
     const [onlineUser, setOnlineUser] = useState()
+    const [lastMessage,setlastMessage]=useState()
 
     const IP = `http://192.168.1.83:5000`
 
@@ -43,7 +44,10 @@ export default AuthProvider = ({ children }) => {
         socketRef.current.on('disconnect', () => {
             console.log('Disconnected from server');
         });
-
+        
+        socketRef.current.on('receiveMessage',(data)=>{
+            setlastMessage(data)
+        })
     }, [user])
 
     const EditUser = async (data) => {
@@ -208,7 +212,7 @@ export default AuthProvider = ({ children }) => {
         }
     }
 
-    const value = { loading, setuser, SignIn, user, CreateUser, GetUSerOnce, EditUser, loggedIn, firstLoad, UploadProfileImage, onlineUser, imageLoading }
+    const value = {lastMessage, loading, setuser, SignIn, user, CreateUser, GetUSerOnce, EditUser, loggedIn, firstLoad, UploadProfileImage, onlineUser, imageLoading }
     return (
         <AuthContext.Provider value={value} >
             {children}

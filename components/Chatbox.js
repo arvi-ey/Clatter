@@ -34,7 +34,7 @@ const Chatbox = ({ route, navigation }) => {
             console.log("Running 3")
             FetchSenderContact(ContactDetails._id)
         }
-    }, [ContactDetails._id, onlineUser])
+    }, [ContactDetails._id,])
 
     const sender_hide_typing = user?.hideTyping
     const sender_hide_active = user?.hideActiveStatus
@@ -80,7 +80,7 @@ const Chatbox = ({ route, navigation }) => {
                 break
             }
         }
-    }, [onlineUser, ContactDetails._id, senderData])
+    }, [ContactDetails._id, senderData])
 
     const GetTime = (timestamp) => {
         const date = new Date(timestamp);
