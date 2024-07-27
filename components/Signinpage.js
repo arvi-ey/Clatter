@@ -37,7 +37,7 @@ const Signinpage = () => {
     }, [country])
 
     const handleMobile = (text) => {
-        if (text.length === 10) setShowButton(!showButton)
+        // if (text.length === 10) setShowButton(!showButton)
         setMobileNumber(text)
     }
 
@@ -156,7 +156,7 @@ const Signinpage = () => {
                     :
                     null
                 }
-                {showButton ?
+                {mobileNumber?.length>=10 ?
 
                     <Button
                         buttonStyle={loading ? styles.loadingButtonStyle : styles.buttonStyle}
