@@ -19,7 +19,7 @@ import { colors } from './Theme';
 import io from 'socket.io-client';
 import LottieView from 'lottie-react-native';
 import Settings from './Settings';
-import { Session } from '@supabase/supabase-js'
+// import { Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase';
 
 export default function Initialpage() {

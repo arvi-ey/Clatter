@@ -1,5 +1,6 @@
 export default country =[
     {country: "Iran", code: "98", label: "ir"},
+    {country: "India", code: "91", label: "in"},
     {country: "Iraq", code: "964", label: "iq"},
     {country: "Ireland", code: "353", label: "ie"},
     {country: "Israel", code: "972", label: "il"},
