@@ -8,7 +8,7 @@ const SocketProvider = ({ children }) => {
     const { user, setuser } = useContext(AuthContext);
     const [online, setOnline] = useState([]);
     const socketRef = useRef(null);
-    const IP = `http://192.168.1.83:5000`;
+    const IP = `http://192.168.29.222:5000`;
 
     useEffect(() => {
         if (user && user._id) {

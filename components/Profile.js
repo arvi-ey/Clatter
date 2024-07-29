@@ -16,6 +16,8 @@ import { SocketContext } from './Context/SocketProvider'
 import { Font } from '../common/font';
 import Switch from '../common/Switch';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { supabase } from '../lib/supabase'
+import { Session } from '@supabase/supabase-js'
 
 const Profile = () => {
     const { user, EditUser } = useContext(AuthContext)

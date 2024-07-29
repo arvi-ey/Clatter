@@ -11,7 +11,7 @@ import io from 'socket.io-client';
 import { SocketContext } from './Context/SocketProvider';
 
 const { height, width } = Dimensions.get('window');
-const IP = `http://192.168.1.83:5000`;
+const IP = `http://192.168.29.222:5000`;
 
 const Chatbox = ({ route, navigation }) => {
     const { user, onlineUser } = useContext(AuthContext);

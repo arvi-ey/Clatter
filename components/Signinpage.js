@@ -16,6 +16,7 @@ const { height, width } = Dimensions.get('window')
 import country from "../common/country"
 import { AntDesign } from '@expo/vector-icons';
 import { FlatList, ScrollView } from 'react-native-gesture-handler'
+import { supabase } from '../lib/supabase'
 
 
 const Signinpage = () => {
@@ -58,8 +59,6 @@ const Signinpage = () => {
             </TouchableOpacity>
         )
     }
-
-
 
     return (
         <View style={styles.container} >
