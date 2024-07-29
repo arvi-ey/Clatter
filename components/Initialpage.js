@@ -17,6 +17,7 @@ import ContactList from './ContactList';
 import Chatbox from './Chatbox';
 import { colors } from './Theme';
 import io from 'socket.io-client';
+import LottieView from 'lottie-react-native';
 import Settings from './Settings';
 import { Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase';
@@ -58,7 +59,15 @@ export default function Initialpage() {
     if (!fontsLoaded) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
-                <Image style={{ height: 300, width: 300, resizeMode: 'contain' }} source={require('../assets/logo.png')} />
+                {/* <Image style={{ height: 300, width: 300, resizeMode: 'contain' }} source={require('../assets/logo.png')} /> */}
+                <LottieView
+                    autoPlay
+                    style={{
+                        width: 500,
+                        height: 500,
+                    }}
+                    source={require('../assets/logo.json')}
+                />
             </View>
         )
     }
