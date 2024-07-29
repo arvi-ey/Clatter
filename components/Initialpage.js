@@ -18,16 +18,25 @@ import Chatbox from './Chatbox';
 import { colors } from './Theme';
 import io from 'socket.io-client';
 import Settings from './Settings';
+import { Session } from '@supabase/supabase-js'
+import { supabase } from '../lib/supabase';
 
 export default function Initialpage() {
     const Stack = createNativeStackNavigator();
-    const { user, GetUSerOnce, loggedIn, firstLoad } = useContext(AuthContext)
+    const { firstLoad } = useContext(AuthContext)
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const IP = `http://192.168.29.222:5000`;
-    const socketRef = useRef(null);
+    const [session, setSession] = useState(null)
 
     useEffect(() => {
-        GetUSerOnce()
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setSession(session)
+            console.log("First Console")
+        })
+        supabase.auth.onAuthStateChange((_event, session) => {
+            setSession(session)
+            console.log("second Console")
+        })
         setTimeout(() => {
             loadFonts()
         }, 1000)
@@ -68,7 +77,7 @@ export default function Initialpage() {
                     }}
                 >
                     {firstLoad === false && <Stack.Screen name="Onboarding" component={Onboardingpage} options={{ headerShown: false }} />}
-                    {loggedIn === false &&
+                    {!session &&
                         <>
                             <Stack.Screen name="Signin" component={Signinpage} options={{ headerShown: false }} />
                             <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />

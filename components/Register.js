@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Alert, Dimensions, TextInput, Image, TouchableOpacity, } from 'react-native'
+import { StyleSheet, Text, View, Alert, Dimensions, TextInput, Image, TouchableOpacity, AppState } from 'react-native'
 import React from 'react'
 import { colors } from './Theme'
 import Button from '../common/Button'
@@ -11,7 +11,15 @@ import { useNavigation } from '@react-navigation/native'
 import { AuthContext } from './Context/Authprovider';
 import { Font } from '../common/font';
 const { height, width } = Dimensions.get('window')
+import { supabase } from '../lib/supabase'
 
+AppState.addEventListener('change', (state) => {
+    if (state === 'active') {
+        supabase.auth.startAutoRefresh()
+    } else {
+        supabase.auth.stopAutoRefresh()
+    }
+})
 const Register = ({ navigation }) => {
     const [hidePassword, setHidepassword] = useState(true)
     const [focusEmail, setFocuEmail] = useState(false)
@@ -71,34 +79,36 @@ const Register = ({ navigation }) => {
 
     const HandleSignUp = () => {
         const { name, email, password, number } = data;
-        const emailRegex = /^([a-z0-9._%+-]+)@([a-z0-9.-]+\.[a-z]{2,})$/;
-        if (!name.trim()) {
-            Alert.alert('Please enter your name');
-        } else if (!email.trim()) {
-            Alert.alert('Please enter your email');
-        } else if (!password.trim()) {
-            Alert.alert('Please enter your password');
-        } else if (!conFirmPass) {
-            Alert.alert('Please confirm your password');
-        } else if (password !== conFirmPass) {
-            Alert.alert('Password and Confirm Password do not match');
-        } else if (!number.trim()) {
-            Alert.alert('Please enter your mobile number');
-        } else if (!emailRegex.test(email)) {
-            Alert.alert('Please enter a valid email address');
-        } else if (number.length < 10) {
-            Alert.alert('Enter a Valid Mobile Number')
-        }
-        else {
+        // const emailRegex = /^([a-z0-9._%+-]+)@([a-z0-9.-]+\.[a-z]{2,})$/;
+        // if (!name.trim()) {
+        //     Alert.alert('Please enter your name');
+        // } else if (!email.trim()) {
+        //     Alert.alert('Please enter your email');
+        // } else if (!password.trim()) {
+        //     Alert.alert('Please enter your password');
+        // } else if (!conFirmPass) {
+        //     Alert.alert('Please confirm your password');
+        // } else if (password !== conFirmPass) {
+        //     Alert.alert('Password and Confirm Password do not match');
+        // } else if (!number.trim()) {
+        //     Alert.alert('Please enter your mobile number');
+        // } else if (!emailRegex.test(email)) {
+        //     Alert.alert('Please enter a valid email address');
+        // } else if (number.length < 10) {
+        //     Alert.alert('Enter a Valid Mobile Number')
+        // }
+        // else {
 
-            const passwordValid = validatePassword(password)
-            if (!passwordValid) {
-                return
-            } else {
-                CreateUser(data, Navigation)
-            }
-        }
+        //     const passwordValid = validatePassword(password)
+        //     if (!passwordValid) {
+        //         return
+        //     } else {
+        CreateUser(data, navigation)
+        // }
+        // }
     }
+
+
 
     return (
         <View style={styles.container} >

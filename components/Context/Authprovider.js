@@ -1,14 +1,20 @@
-import React, { createContext, useState, useEffect, useContext, useRef } from 'react';
+import React, { createContext, useState, useEffect, useContext, useRef, } from 'react';
 import * as SecureStore from 'expo-secure-store';
+import { AppState } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import io from 'socket.io-client';
-
-
-
+import { supabase } from '../../lib/supabase'
 
 export const AuthContext = createContext({});
+AppState.addEventListener('change', (state) => {
+    if (state === 'active') {
+        supabase.auth.startAutoRefresh()
+    } else {
+        supabase.auth.stopAutoRefresh()
+    }
+})
 
 export default AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(false)
@@ -18,13 +24,13 @@ export default AuthProvider = ({ children }) => {
     const [imageLoading, setImageLoading] = useState(false)
     const socketRef = useRef(null);
     const [onlineUser, setOnlineUser] = useState()
-    const [lastMessage,setlastMessage]=useState()
+    const [lastMessage, setlastMessage] = useState()
 
-    const IP = `http://192.168.1.83:5000`
+    const IP = `http://192.168.29.222:5000`
 
     useEffect(() => {
         AppLoaded()
-        GetUSerOnce()
+        // GetUSerOnce()
     }, [])
 
     useEffect(() => {
@@ -44,8 +50,8 @@ export default AuthProvider = ({ children }) => {
         socketRef.current.on('disconnect', () => {
             console.log('Disconnected from server');
         });
-        
-        socketRef.current.on('receiveMessage',(data)=>{
+
+        socketRef.current.on('receiveMessage', (data) => {
             setlastMessage(data)
         })
     }, [user])
@@ -124,56 +130,112 @@ export default AuthProvider = ({ children }) => {
 
 
 
-    const SignIn = async (data, Navigation) => {
+    // const SignIn = async (data, Navigation) => {
+    //     setLoading(true)
+    //     try {
+    //         const response = await axios.post(`${IP}/auth/signin`, data)
+    //         if (response.data === "Email dosen't exist") Alert.alert(response.data)
+    //         else if (response.data === "Password is incorrect") Alert.alert(response.data)
+    //         else {
+    //             await SecureStore.setItemAsync("token", response.data.token)
+    //             const { name, email, _id, number } = response.data.user
+    //             setuser({ _id, name, email, number })
+    //             Navigation.replace("Profile")
+    //         }
+    //     }
+    //     catch (error) {
+    //         console.log(error)
+    //     }
+    //     finally {
+    //         setLoading(false)
+    //     }
+    // }
+
+    async function SignIn(data, Navigation) {
+        const { email, password } = data
         setLoading(true)
         try {
-            const response = await axios.post(`${IP}/auth/signin`, data)
-            if (response.data === "Email dosen't exist") Alert.alert(response.data)
-            else if (response.data === "Password is incorrect") Alert.alert(response.data)
-            else {
-                await SecureStore.setItemAsync("token", response.data.token)
-                const { name, email, _id, number } = response.data.user
-                setuser({ _id, name, email, number })
-                Navigation.replace("Profile")
+
+            const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            })
+            if (error) {
+                console.log(error)
+                Alert.alert("Invalid EMail or password")
             }
+            if (!error) Navigation.replace("Profile")
         }
         catch (error) {
-            console.log(error)
-        }
-        finally {
+            if (error) Alert.alert(error.message)
             setLoading(false)
         }
+        setLoading(false)
+
     }
-    const CreateUser = async (data, Navigation) => {
+
+    // const CreateUser = async (data, Navigation) => {
+    //     try {
+    //         setLoading(true);
+    //         const response = await axios.post(`${IP}/auth/signup`, data, {
+    //             headers: {
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         });
+    //         if (response.data === "Email already exists") {
+    //             Alert.alert("Email already exists")
+    //             setLoading(false)
+    //             return
+    //         }
+    //         else if (response.data === "Mobile number already exists") {
+    //             Alert.alert("Mobile number already exists")
+    //             setLoading(false)
+    //             return
+    //         } else {
+    //             setTimeout(() => {
+    //                 setLoading(false);
+    //                 Navigation.goBack()
+    //             }, 900);
+    //         }
+
+    //     } catch (error) {
+    //         console.error('Error:', error);
+    //         setLoading(false);
+    //         Alert.alert('Error', 'Failed to create user');
+    //     }
+    // };
+
+
+    async function CreateUser(data, navigation) {
+        setLoading(true);
+        const { email, password } = data;
         try {
-            setLoading(true);
-            const response = await axios.post(`${IP}/auth/signup`, data, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+            const { data: signUpData, error } = await supabase.auth.signUp({
+                email,
+                password
             });
-            if (response.data === "Email already exists") {
-                Alert.alert("Email already exists")
-                setLoading(false)
-                return
-            }
-            else if (response.data === "Mobile number already exists") {
-                Alert.alert("Mobile number already exists")
-                setLoading(false)
-                return
-            } else {
-                setTimeout(() => {
-                    setLoading(false);
-                    Navigation.goBack()
-                }, 900);
+
+            if (error) {
+                console.error("Error during sign up:", error.message);
+                Alert.alert("Error", error.message);
+                setLoading(false);
+                return;
             }
 
+            if (signUpData) {
+                console.log("Sign up successful:", signUpData);
+                Alert.alert("Success", "User created successfully");
+                navigation.navigate("Signin");
+            }
         } catch (error) {
-            console.error('Error:', error);
+            console.error("Unexpected error during sign up:", error.message);
+            Alert.alert("Error", error.message);
             setLoading(false);
-            Alert.alert('Error', 'Failed to create user');
+        } finally {
+            setLoading(false);
         }
-    };
+    }
+
     const AppLoaded = async () => {
         const value = await AsyncStorage.getItem("loaded")
         if (value !== null) setFirstLoad(true)
@@ -212,7 +274,7 @@ export default AuthProvider = ({ children }) => {
         }
     }
 
-    const value = {lastMessage, loading, setuser, SignIn, user, CreateUser, GetUSerOnce, EditUser, loggedIn, firstLoad, UploadProfileImage, onlineUser, imageLoading }
+    const value = { lastMessage, loading, setuser, SignIn, user, CreateUser, GetUSerOnce, EditUser, loggedIn, firstLoad, UploadProfileImage, onlineUser, imageLoading }
     return (
         <AuthContext.Provider value={value} >
             {children}

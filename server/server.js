@@ -13,7 +13,7 @@ const UserRouter = require("./Route/userRouter")
 const AuthRouter = require("./Route/authRouter")
 const ContactRouter = require("./Route/contactRouter")
 const MassageRouter = require("./Route/massageRouter")
-const multer  = require('multer')
+const multer = require('multer')
 const UserModel = require('./Model/usermodel')
 
 
@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
     socket.on('register', (userId) => {
         users[userId] = socket.id;
         userStatus[userId] = 'online';
-        io.emit('userStatus',  userStatus);
+        io.emit('userStatus', userStatus);
     });
 
 
@@ -57,7 +57,7 @@ io.on('connection', (socket) => {
     socket.on('sendMessage', ({ sender, recipient, content }) => {
         const recipientSocketId = users[recipient];
         if (recipientSocketId) {
-            io.to(recipientSocketId).emit('receiveMessage', { sender, content, timestamp: Date.now() });
+            io.to(recipientSocketId).emit('receiveMessage', { sender, recipient, content, timestamp: Date.now() });
         }
     });
 
@@ -82,36 +82,36 @@ io.on('connection', (socket) => {
 
 
 const upload = multer({
-    limits:{
-        fileSize:2000000
+    limits: {
+        fileSize: 2000000
     },
-    fileFilter(req,file,cb){
+    fileFilter(req, file, cb) {
         if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
             return cb(new Error('Please upload an image file (jpg, jpeg, png)'));
         }
         cb(null, true);
     }
-    
+
 })
 
 
-app.post('/image/:id', upload.single('image') , async(req,res)=>{
+app.post('/image/:id', upload.single('image'), async (req, res) => {
     const userId = req.params.id
-    try{
+    try {
 
         const user = await UserModel.findById(userId)
-        if(!user){
+        if (!user) {
             return res.send("NO User Found")
         }
-        user.image.data =req.file.buffer.toString('base64');
-        user.image.contentType=req.file.mimetype
+        user.image.data = req.file.buffer.toString('base64');
+        user.image.contentType = req.file.mimetype
         await user.save()
         res.json({
             data: user.image.data,
             contentType: user.image.contentType
         });
     }
-    catch(err){
+    catch (err) {
         res.send(err)
     }
 })

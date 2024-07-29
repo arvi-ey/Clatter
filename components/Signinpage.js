@@ -12,6 +12,8 @@ import { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { AuthContext } from './Context/Authprovider'
 const { height, width } = Dimensions.get('window')
+import { supabase } from '../lib/supabase'
+import { err } from 'react-native-svg'
 
 
 const Signinpage = () => {
@@ -42,6 +44,7 @@ const Signinpage = () => {
             SignIn(data, Navigation)
         }
     }
+
 
     return (
         <View style={styles.container} >
