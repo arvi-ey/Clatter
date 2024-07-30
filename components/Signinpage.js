@@ -155,7 +155,7 @@ const Signinpage = () => {
                     :
                     null
                 }
-                {mobileNumber?.length>=10 ?
+                {mobileNumber?.length >= 10 ?
 
                     <Button
                         buttonStyle={loading ? styles.loadingButtonStyle : styles.buttonStyle}
