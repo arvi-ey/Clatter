@@ -74,11 +74,13 @@ const Register = ({ navigation }) => {
         }
     }
 
-    console.log("Rendered")
     return (
         <View style={styles.container} >
-            <View style={{ marginBottom: 30 }}>
+            <View style={{ marginBottom: 10 }}>
                 <Text style={{ fontSize: 30, fontFamily: Font.Bold }} >Enter OTP</Text>
+            </View>
+            <View>
+                <Text style={{ fontFamily: Font.Regular, color: colors.CHAT_DESC }} >Code has been sent to {phone}</Text>
             </View>
             <View style={styles.otpContainer} >
                 <View style={(code1focus || data.code1?.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
@@ -144,16 +146,26 @@ const Register = ({ navigation }) => {
                 </View>
 
             </View>
-            <Button
-                buttonStyle={loading === true ? styles.loadingButtonStyle : styles.buttonStyle}
-                title="Verify OTP"
-                textStyle={styles.textStyle}
-                activeOpacity={0.8}
-                press={VerifyOTP}
-                loading={loading}
-                loaderColor={colors.MAIN_COLOR}
-                loaderSize="large"
-            />
+            {otp?.length === 4 ?
+                <Button
+                    buttonStyle={loading === true ? styles.loadingButtonStyle : styles.buttonStyle}
+                    title="Verify number"
+                    textStyle={styles.textStyle}
+                    activeOpacity={0.8}
+                    press={VerifyOTP}
+                    loading={loading}
+                    loaderColor={colors.MAIN_COLOR}
+                    loaderSize="large"
+                />
+                : null}
+            <View style={{ flexDirection: 'row', gap: 5 }}>
+                <Text style={{ fontFamily: Font.Regular, color: colors.CHAT_DESC }}>Didn't get OTP?</Text>
+                <TouchableOpacity >
+                    <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Regular }}>
+                        resend code
+                    </Text>
+                </TouchableOpacity>
+            </View>
         </View>
     )
 }

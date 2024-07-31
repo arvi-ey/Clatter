@@ -14,11 +14,11 @@ import { supabase } from '../lib/supabase'
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { err } from 'react-native-svg'
+import LottieView from 'lottie-react-native';
 
 const Signinpage = () => {
 
     const { SignIn } = useContext(AuthContext)
-    const [focusEmail, setFocuEmail] = useState(false)
     const [countryData, setCountryData] = useState(null)
     const Navigation = useNavigation();
     const [mobileNumber, setMobileNumber] = useState()
@@ -67,7 +67,7 @@ const Signinpage = () => {
 
     const RenderCountrylist = ({ item }) => {
         return (
-            <TouchableOpacity style={{ flexDirection: "row", marginBottom: 20, marginLeft: 20 }} onPress={() => {
+            <TouchableOpacity style={{ flexDirection: "row", marginBottom: 20, marginLeft: 20, }} onPress={() => {
                 SelectContryCode(item)
             }}  >
                 <View style={{ width: "15%", }}>
@@ -100,7 +100,7 @@ const Signinpage = () => {
                     <View style={styles.SearchBox}>
                         <AntDesign name="search1" size={18} color={colors.GREY} />
                         <TextInput
-                            style={[{ fontFamily: Font.Medium, width: "80%" }]}
+                            style={[{ fontFamily: Font.Medium, width: "80%",height:50 }]}
                             placeholder="Search country code..."
                             onChangeText={(text) => setSearchCountry(text)}
                             value={searchCountry}
@@ -124,7 +124,7 @@ const Signinpage = () => {
         <GestureHandlerRootView style={{ flex: 1 }}>
             <View style={styles.container} >
                 <View style={{ height: "10%", }} >
-                    <View style={{ paddingLeft: 20, }}>
+                    <View style={{ paddingLeft: 20,flexDirection:'row' }}>
                         <Text style={{ fontFamily: Font.Bold, fontSize: 25 }}>Clatter</Text>
                     </View>
                     <View style={{ paddingLeft: 20, }}>
@@ -132,29 +132,31 @@ const Signinpage = () => {
                     </View>
                 </View>
                 <View style={{ height: "90%", paddingTop: 70, paddingLeft: 16 }}>
-                    <View style={{ flexDirection: 'row', gap: 10 }} >
+                    <Text style={{fontFamily:Font.Regular,color:colors.CHARCOLE}}>Enter mobile number to verify OTP</Text>
+                    <View style={{ flexDirection: 'row', gap: 10,marginTop:10 }} >
                         <TouchableOpacity style={[styles.CountryCode]} onPress={OpenButtomSheet} >
                             <Image source={{ uri: `https://flagpedia.net/data/flags/h80/${selectCountry.label}.png` }} style={{ height: 15, width: 25 }} />
                             <Text style={{ fontFamily: Font.Bold, fontSize: 15 }}>+{selectCountry.code}</Text>
                             <AntDesign name="down" size={18} color="black" />
                         </TouchableOpacity>
-                        <View style={(focusEmail || mobileNumber?.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
+                        <View style={styles.inputContainer} >
                             <TextInput
-                                onFocus={() => setFocuEmail(!focusEmail)}
-                                onBlur={() => setFocuEmail(!focusEmail)}
                                 style={styles.inputBox}
                                 value={mobileNumber}
-                                placeholder='Enter mobile number'
-                                placeholderTextColor="gray"
+                                placeholder='Mobile number'
+                                placeholderTextColor={colors.GREY}
                                 onChangeText={handleMobile}
                                 keyboardType='decimal-pad'
                             />
                         </View>
                     </View>
+                    <View style={{width:width-20,marginTop:5}}>
+                        <Text style={{width:"100%", fontSize:12,fontFamily:Font.Regular,color:colors.CHAT_DESC}} >Securing your personal information is our main priority</Text>
+                    </View>
                     {mobileNumber?.length >= 10 ?
                         <Button
                             buttonStyle={loading ? styles.loadingButtonStyle : styles.buttonStyle}
-                            title="Sign IN"
+                            title="Request OTP"
                             textStyle={styles.textStyle}
                             activeOpacity={0.8}
                             loading={loading}
@@ -178,20 +180,8 @@ const styles = StyleSheet.create({
         gap: 10
     },
     inputContainer: {
-        borderWidth: 2,
-        borderColor: colors.BLACK,
         width: width - 150,
-        borderRadius: 10,
-        paddingHorizontal: 15,
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        position: "relative"
-    },
-    FocusinputContainer: {
-        borderWidth: 2.5,
-        borderColor: colors.MAIN_COLOR,
-        width: width - 150,
+        backgroundColor:"#D2D5F0",
         borderRadius: 10,
         paddingHorizontal: 15,
         flexDirection: "row",
@@ -241,14 +231,13 @@ const styles = StyleSheet.create({
 
     },
     CountryCode: {
-        borderWidth: 2.5,
-        borderColor: colors.MAIN_COLOR,
         width: 100,
         borderRadius: 10,
         flexDirection: "row",
         alignItems: "center",
         position: "relative",
-        justifyContent: "space-around"
+        justifyContent: "space-around",
+        backgroundColor:"#D2D5F0"
     },
     countryList: {
         width: width,
