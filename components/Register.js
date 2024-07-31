@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native'
 import { AuthContext } from './Context/Authprovider';
 import { Font } from '../common/font';
+import { useRoute } from '@react-navigation/native';
 const { height, width } = Dimensions.get('window')
 import { supabase } from '../lib/supabase'
 
@@ -22,7 +23,9 @@ AppState.addEventListener('change', (state) => {
 })
 const Register = ({ navigation }) => {
     const [focusNumber, setFocusNumber] = useState(false)
-    const { CreateUser, loading } = useContext(AuthContext)
+    const { CreateUser } = useContext(AuthContext)
+    const route = useRoute()
+    const { phone } = route.params
     const [data, setData] = useState({
         code1: null,
         code2: null,
@@ -34,17 +37,41 @@ const Register = ({ navigation }) => {
     const [code2focus, setCode2Focus] = useState(false)
     const [code3focus, setCode3Focus] = useState(false)
     const [code4focus, setCode4Focus] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [otp, setOtp] = useState(null)
     const otpRef1 = useRef()
     const otpRef2 = useRef()
     const otpRef3 = useRef()
     const otpRef4 = useRef()
 
-
     const Navigation = useNavigation()
 
-    const VerifyOTP = () => {
-        console.log(otp)
+    useEffect(() => {
+        otpRef1.current.focus()
+    }, [])
+
+    const VerifyOTP = async () => {
+        setLoading(true)
+        try {
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.verifyOtp({
+                phone: phone,
+                token: otp,
+                type: 'sms',
+            })
+            console.log(session)
+            if (!error) navigation.navigate("Profile")
+            setLoading(false)
+        }
+        catch (err) {
+            console.log(err)
+            setLoading(false)
+        }
+        finally {
+            setLoading(false)
+        }
     }
 
     console.log("Rendered")

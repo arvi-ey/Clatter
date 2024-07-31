@@ -59,7 +59,6 @@ export default function Initialpage() {
     if (!fontsLoaded) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
-                {/* <Image style={{ height: 300, width: 300, resizeMode: 'contain' }} source={require('../assets/logo.png')} /> */}
                 <LottieView
                     autoPlay
                     style={{

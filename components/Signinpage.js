@@ -13,10 +13,11 @@ import { FlatList, ScrollView } from 'react-native-gesture-handler'
 import { supabase } from '../lib/supabase'
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { err } from 'react-native-svg'
 
 const Signinpage = () => {
 
-    const { SignIn, loading } = useContext(AuthContext)
+    const { SignIn } = useContext(AuthContext)
     const [focusEmail, setFocuEmail] = useState(false)
     const [countryData, setCountryData] = useState(null)
     const Navigation = useNavigation();
@@ -24,6 +25,7 @@ const Signinpage = () => {
     const [selectCountry, setSelectCountry] = useState({ label: "in", code: "91" })
     const snapPoints = useMemo(() => ['65%'], []);
     const sheetRef = useRef(null);
+    const [loading, setLoading] = useState(false)
     const [searchCountry, setSearchCountry] = useState("")
 
     const OpenButtomSheet = () => sheetRef?.current?.expand()
@@ -38,6 +40,24 @@ const Signinpage = () => {
 
     const handleMobile = (text) => {
         setMobileNumber(text)
+    }
+
+    const HandleSignIn = async () => {
+        setLoading(true)
+        try {
+            const { data, error } = await supabase.auth.signInWithOtp({
+                phone: `+${selectCountry.code}${mobileNumber}`,
+            })
+            if (!error) Navigation.navigate('Register', { phone: `+${selectCountry.code}${mobileNumber}` })
+            setLoading(false)
+        }
+        catch (err) {
+            console.log(err)
+            setLoading(false)
+        }
+        finally {
+            setLoading(false)
+        }
     }
 
     const SelectContryCode = (data) => {
@@ -93,7 +113,7 @@ const Signinpage = () => {
                         keyExtractor={(item, index) => index}
                         getItemLayout={(data, index) => (
                             { length: 50, offset: 50 * index, index }
-                          )}
+                        )}
                     />
                 </View>
             </BottomSheet>
@@ -140,7 +160,7 @@ const Signinpage = () => {
                             loading={loading}
                             loaderColor={colors.MAIN_COLOR}
                             loaderSize="large"
-                        // press={HandleSignIn}
+                            press={HandleSignIn}
                         />
 
                         : null}
@@ -244,8 +264,8 @@ const styles = StyleSheet.create({
         width: width - 20,
         flexDirection: "row",
         alignItems: 'center',
-        gap:5,
-        paddingLeft:10
+        gap: 5,
+        paddingLeft: 10
     },
     dropDown: { width: "100%", height: "100%", borderRadius: 12, overflow: 'hidden', paddingVertical: 10, }
 })
