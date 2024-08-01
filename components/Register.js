@@ -13,6 +13,7 @@ import { Font } from '../common/font';
 import { useRoute } from '@react-navigation/native';
 const { height, width } = Dimensions.get('window')
 import { supabase } from '../lib/supabase'
+import LottieView from 'lottie-react-native';
 
 AppState.addEventListener('change', (state) => {
     if (state === 'active') {
@@ -39,15 +40,14 @@ const Register = ({ navigation }) => {
     const [code4focus, setCode4Focus] = useState(false)
     const [loading, setLoading] = useState(false)
     const [otp, setOtp] = useState(null)
+    const [verified, setVerified] = useState(false)
     const otpRef1 = useRef()
     const otpRef2 = useRef()
     const otpRef3 = useRef()
     const otpRef4 = useRef()
-
-    const Navigation = useNavigation()
-
+    
     useEffect(() => {
-        otpRef1.current.focus()
+        otpRef1?.current?.focus()
     }, [])
 
     const VerifyOTP = async () => {
@@ -62,7 +62,13 @@ const Register = ({ navigation }) => {
                 type: 'sms',
             })
             console.log(session)
-            if (!error) navigation.navigate("Profile")
+            if (!error) {
+                setVerified(true)
+                setTimeout(() => {
+                    navigation.replace("Profile")
+                    setVerified(false)
+                }, 1000)
+            }
             setLoading(false)
         }
         catch (err) {
@@ -74,8 +80,33 @@ const Register = ({ navigation }) => {
         }
     }
 
+
+    if(verified===true){
+        return(
+            <View style={[{flex:1, height,width,justifyContent:'center',alignItems:'center'}]}>
+                <LottieView
+                    autoPlay
+                    style={{
+                        width: 500,
+                        height: 500,
+                    }}
+                    source={require('../assets/otp_verified.json')}
+                />
+            </View>
+        )
+    }
+
     return (
+
         <View style={styles.container} >
+                <LottieView
+                    autoPlay
+                    style={{
+                        width: 250,
+                        height: 250,
+                    }}
+                    source={require('../assets/otp.json')}
+                />
             <View style={{ marginBottom: 10 }}>
                 <Text style={{ fontSize: 30, fontFamily: Font.Bold }} >Enter OTP</Text>
             </View>
@@ -173,7 +204,7 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: colors.BACKGROUND_COLOR,
         flex: 1,
-        justifyContent: "center",
+        paddingTop: 50,
         alignItems: 'center',
         gap: 10
     },

@@ -124,14 +124,14 @@ const Signinpage = () => {
         <GestureHandlerRootView style={{ flex: 1 }}>
             <View style={styles.container} >
                 <View style={{ height: "10%", }} >
-                    <View style={{ paddingLeft: 20,flexDirection:'row' }}>
-                        <Text style={{ fontFamily: Font.Bold, fontSize: 25 }}>Clatter</Text>
-                    </View>
                     <View style={{ paddingLeft: 20, }}>
                         <Text style={{ fontFamily: Font.Bold, fontSize: 25 }}>Hi! Welcome to clatter</Text>
                     </View>
                 </View>
-                <View style={{ height: "90%", paddingTop: 70, paddingLeft: 16 }}>
+                <View style={{width,alignItems:'center'}}>
+                    <Image source={require('../assets/auth.png')} style={{height:250,width:250}} />
+                </View>
+                <View style={{ height: "90%",paddingLeft: 16 }}>
                     <Text style={{fontFamily:Font.Regular,color:colors.CHARCOLE}}>Enter mobile number to verify OTP</Text>
                     <View style={{ flexDirection: 'row', gap: 10,marginTop:10 }} >
                         <TouchableOpacity style={[styles.CountryCode]} onPress={OpenButtomSheet} >
