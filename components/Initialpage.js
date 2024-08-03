@@ -6,7 +6,7 @@ import Onboardingpage from './Onboardingpage';
 import Signinpage from './Signinpage';
 import Register from './Register';
 import Profile from './Profile';
-import { useEffect, useState, useContext, useRef } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import Myprofile from './Myprofile';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Editprofile from './Editprofile';
@@ -15,35 +15,26 @@ import * as Font from 'expo-font';
 import AddContact from './AddContact';
 import ContactList from './ContactList';
 import Chatbox from './Chatbox';
-import { colors } from './Theme';
-import io from 'socket.io-client';
 import LottieView from 'lottie-react-native';
 import Settings from './Settings';
-// import { Session } from '@supabase/supabase-js'
-import { supabase } from '../lib/supabase';
+import EntryPage from './EntryPage';
 
 export default function Initialpage() {
     const Stack = createNativeStackNavigator();
-    const { firstLoad } = useContext(AuthContext)
+    const { firstLoad, session, GetUserOnce, user, uid, AppLoaded } = useContext(AuthContext)
     const [fontsLoaded, setFontsLoaded] = useState(false);
-    const IP = `http://192.168.29.222:5000`;
-    const [session, setSession] = useState(null)
+    const [newUser, setNewUser] = useState(false)
 
     useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session)
-            console.log("First Console")
-        })
-        supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session)
-            console.log("second Console")
-        })
+        GetUserOnce()
         setTimeout(() => {
             loadFonts()
         }, 1000)
     }, [])
 
-
+    useEffect(() => {
+        setNewUser(firstLoad)
+    }, [firstLoad])
 
     const loadFonts = async () => {
         await Font.loadAsync({
@@ -75,22 +66,22 @@ export default function Initialpage() {
         <GestureHandlerRootView style={{ flex: 1 }}>
             <NavigationContainer>
                 <StatusBar
-                    // barStyle="light-content"
                     hidden={false}
                 />
                 <Stack.Navigator
                     screenOptions={{
                         animationTypeForReplace: 'pop',
-                        animationEnabled: Platform.OS == 'android' ? true : true,
+                        animationEnabled: Platform.OS === 'android' ? true : true,
                     }}
                 >
-                    {firstLoad === false && <Stack.Screen name="Onboarding" component={Onboardingpage} options={{ headerShown: false }} />}
-                    {!session &&
+                    {newUser === false && <Stack.Screen name="Onboarding" component={Onboardingpage} options={{ headerShown: false }} />}
+                    {!uid && (
                         <>
                             <Stack.Screen name="Signin" component={Signinpage} options={{ headerShown: false }} />
                             <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
                         </>
-                    }
+                    )}
+                    <Stack.Screen name="Entry" component={EntryPage} options={{ headerShown: false }} />
                     <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
                     <Stack.Screen name="Myprofile" component={Myprofile} options={{ headerShown: false }} />
                     <Stack.Screen name="Editprofile" component={Editprofile} options={{ title: "Edit profile" }} />
@@ -98,10 +89,8 @@ export default function Initialpage() {
                     <Stack.Screen name="AddContact" component={AddContact} options={{ title: "Add contact" }} />
                     <Stack.Screen name="Chatbox" component={Chatbox} />
                     <Stack.Screen name="Settings" component={Settings} options={{ title: "Account Settings" }} />
-
                 </Stack.Navigator>
             </NavigationContainer>
         </GestureHandlerRootView>
     );
 }
-

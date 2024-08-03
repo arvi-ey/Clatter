@@ -100,7 +100,7 @@ const Signinpage = () => {
                     <View style={styles.SearchBox}>
                         <AntDesign name="search1" size={18} color={colors.GREY} />
                         <TextInput
-                            style={[{ fontFamily: Font.Medium, width: "80%",height:50 }]}
+                            style={[{ fontFamily: Font.Medium, width: "80%", height: 50 }]}
                             placeholder="Search country code..."
                             onChangeText={(text) => setSearchCountry(text)}
                             value={searchCountry}
@@ -128,12 +128,12 @@ const Signinpage = () => {
                         <Text style={{ fontFamily: Font.Bold, fontSize: 25 }}>Hi! Welcome to clatter</Text>
                     </View>
                 </View>
-                <View style={{width,alignItems:'center'}}>
-                    <Image source={require('../assets/auth.png')} style={{height:250,width:250}} />
+                <View style={{ width, alignItems: 'center' }}>
+                    <Image source={require('../assets/auth.png')} style={{ height: 250, width: 250 }} />
                 </View>
-                <View style={{ height: "90%",paddingLeft: 16 }}>
-                    <Text style={{fontFamily:Font.Regular,color:colors.CHARCOLE}}>Enter mobile number to verify OTP</Text>
-                    <View style={{ flexDirection: 'row', gap: 10,marginTop:10 }} >
+                <View style={{ height: "90%", paddingLeft: 16 }}>
+                    <Text style={{ fontFamily: Font.Regular, color: colors.CHARCOLE }}>Enter mobile number to verify OTP</Text>
+                    <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }} >
                         <TouchableOpacity style={[styles.CountryCode]} onPress={OpenButtomSheet} >
                             <Image source={{ uri: `https://flagpedia.net/data/flags/h80/${selectCountry.label}.png` }} style={{ height: 15, width: 25 }} />
                             <Text style={{ fontFamily: Font.Bold, fontSize: 15 }}>+{selectCountry.code}</Text>
@@ -150,22 +150,19 @@ const Signinpage = () => {
                             />
                         </View>
                     </View>
-                    <View style={{width:width-20,marginTop:5}}>
-                        <Text style={{width:"100%", fontSize:12,fontFamily:Font.Regular,color:colors.CHAT_DESC}} >Securing your personal information is our main priority</Text>
+                    <View style={{ width: width - 20, marginTop: 5 }}>
+                        <Text style={{ width: "100%", fontSize: 12, fontFamily: Font.Regular, color: colors.CHAT_DESC }} >Securing your personal information is our main priority</Text>
                     </View>
-                    {mobileNumber?.length >= 10 ?
-                        <Button
-                            buttonStyle={loading ? styles.loadingButtonStyle : styles.buttonStyle}
-                            title="Request OTP"
-                            textStyle={styles.textStyle}
-                            activeOpacity={0.8}
-                            loading={loading}
-                            loaderColor={colors.MAIN_COLOR}
-                            loaderSize="large"
-                            press={HandleSignIn}
-                        />
-
-                        : null}
+                    <Button
+                        buttonStyle={loading ? styles.loadingButtonStyle : styles.buttonStyle}
+                        title="Request OTP"
+                        textStyle={styles.textStyle}
+                        activeOpacity={0.8}
+                        loading={loading}
+                        loaderColor={colors.MAIN_COLOR}
+                        loaderSize="large"
+                        press={HandleSignIn}
+                    />
                 </View>
                 {CountryListModal()}
             </View >
@@ -181,7 +178,7 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         width: width - 150,
-        backgroundColor:"#D2D5F0",
+        backgroundColor: "#D2D5F0",
         borderRadius: 10,
         paddingHorizontal: 15,
         flexDirection: "row",
@@ -203,7 +200,9 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 30
+        marginTop: 30,
+        borderWidth: 2,
+        borderColor: colors.MAIN_COLOR,
     },
     textStyle: {
         color: colors.WHITE,
@@ -228,7 +227,6 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: colors.MAIN_COLOR,
         marginTop: 30
-
     },
     CountryCode: {
         width: 100,
@@ -237,7 +235,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         position: "relative",
         justifyContent: "space-around",
-        backgroundColor:"#D2D5F0"
+        backgroundColor: "#D2D5F0"
     },
     countryList: {
         width: width,

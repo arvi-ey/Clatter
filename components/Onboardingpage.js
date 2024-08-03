@@ -90,14 +90,11 @@ const Onboardingpage = ({ navigation }) => {
                     width,
                     alignItems: "center",
                 }}>
-                {/* Indicator container */}
                 <View
                     style={{
                         flexDirection: 'row',
                         justifyContent: 'center',
-                        // marginTop: 30,
                     }}>
-                    {/* Render indicator */}
                     {slides.map((_, index) => (
                         <View
                             key={index}

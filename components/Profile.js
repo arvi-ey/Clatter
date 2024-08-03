@@ -12,36 +12,26 @@ import { Entypo } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { AuthContext } from './Context/Authprovider';
-import { SocketContext } from './Context/SocketProvider'
 import { Font } from '../common/font';
 import Switch from '../common/Switch';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { supabase } from '../lib/supabase'
-import { Session } from '@supabase/supabase-js'
 
 const Profile = () => {
-    const { user, EditUser } = useContext(AuthContext)
+    const { GetUserOnce, user, uid } = useContext(AuthContext)
     const Tab = createBottomTabNavigator();
-    const [darkModeon, setdarkModeon] = useState()
-    const [darkMode, setDarkMode] = useState()
-    // const {online } = useContext(SocketContext)
+    const [darkModeon, setdarkModeon] = useState(false)
+    const [darkMode, setDarkMode] = useState(false)
 
     useEffect(() => {
-        if (user) {
-            setDarkMode(user.dark_mode)
-            setdarkModeon(user.dark_mode)
-        }
+        GetUserOnce()
+    }, [])
+
+    useEffect(() => {
+        if (user) setDarkMode(user?.dark_mode)
     }, [user])
-
-    const SetDarkmode = () => {
-        setdarkModeon(!darkModeon)
-        EditUser({ dark_mode: !darkMode })
-    }
-
 
     const DarkModeIcon = () => {
         return (
-            <Ionicons name={user.dark_mode ? "moon" : "sunny-sharp"} size={20} color={user.dark_mode ? "black" : "#facc15"} />
+            <Ionicons name={user.dark_mode ? "moon" : "sunny-sharp"} size={20} color={darkMode ? colors.BLACK : "#facc15"} />
         )
     }
 
@@ -81,7 +71,7 @@ const Profile = () => {
                         <Feather name="camera" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
                         <Ionicons name="search-outline" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
                         <Switch
-                            onToggle={SetDarkmode}
+                            // onToggle={SetDarkmode}
                             size={'large'}
                             isOn={darkModeon}
                             onColor={colors.MAIN_COLOR}

@@ -7,7 +7,6 @@ import { Feather } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useState, useEffect, useRef, useContext } from 'react'
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native'
 import { AuthContext } from './Context/Authprovider';
 import { Font } from '../common/font';
 import { useRoute } from '@react-navigation/native';
@@ -23,8 +22,7 @@ AppState.addEventListener('change', (state) => {
     }
 })
 const Register = ({ navigation }) => {
-    const [focusNumber, setFocusNumber] = useState(false)
-    const { CreateUser } = useContext(AuthContext)
+    const { VerifyOTP, loading } = useContext(AuthContext)
     const route = useRoute()
     const { phone } = route.params
     const [data, setData] = useState({
@@ -38,75 +36,34 @@ const Register = ({ navigation }) => {
     const [code2focus, setCode2Focus] = useState(false)
     const [code3focus, setCode3Focus] = useState(false)
     const [code4focus, setCode4Focus] = useState(false)
-    const [loading, setLoading] = useState(false)
     const [otp, setOtp] = useState(null)
-    const [verified, setVerified] = useState(false)
     const otpRef1 = useRef()
     const otpRef2 = useRef()
     const otpRef3 = useRef()
     const otpRef4 = useRef()
-    
-    useEffect(() => {
-        otpRef1?.current?.focus()
-    }, [])
 
-    const VerifyOTP = async () => {
-        setLoading(true)
-        try {
-            const {
-                data: { session },
-                error,
-            } = await supabase.auth.verifyOtp({
-                phone: phone,
-                token: otp,
-                type: 'sms',
-            })
-            console.log(session)
-            if (!error) {
-                setVerified(true)
-                setTimeout(() => {
-                    navigation.replace("Profile")
-                    setVerified(false)
-                }, 1000)
-            }
-            setLoading(false)
-        }
-        catch (err) {
-            console.log(err)
-            setLoading(false)
-        }
-        finally {
-            setLoading(false)
-        }
-    }
+    // useEffect(() => {
+    //     otpRef1?.current?.focus()
+    // }, [])
 
-
-    if(verified===true){
-        return(
-            <View style={[{flex:1, height,width,justifyContent:'center',alignItems:'center'}]}>
-                <LottieView
-                    autoPlay
-                    style={{
-                        width: 500,
-                        height: 500,
-                    }}
-                    source={require('../assets/otp_verified.json')}
-                />
-            </View>
-        )
+    const Verify = async () => {
+        const uid = await VerifyOTP(phone, otp)
+        if (uid) {
+            navigation.replace('Entry')
+        }
     }
 
     return (
 
         <View style={styles.container} >
-                <LottieView
-                    autoPlay
-                    style={{
-                        width: 250,
-                        height: 250,
-                    }}
-                    source={require('../assets/otp.json')}
-                />
+            <LottieView
+                autoPlay
+                style={{
+                    width: 250,
+                    height: 250,
+                }}
+                source={require('../assets/otp.json')}
+            />
             <View style={{ marginBottom: 10 }}>
                 <Text style={{ fontSize: 30, fontFamily: Font.Bold }} >Enter OTP</Text>
             </View>
@@ -183,7 +140,7 @@ const Register = ({ navigation }) => {
                     title="Verify number"
                     textStyle={styles.textStyle}
                     activeOpacity={0.8}
-                    press={VerifyOTP}
+                    press={Verify}
                     loading={loading}
                     loaderColor={colors.MAIN_COLOR}
                     loaderSize="large"

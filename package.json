@@ -39,8 +39,7 @@
     "react-native-screens": "3.31.1",
     "react-native-svg": "15.2.0",
     "socket.io-client": "^4.7.5",
-    "toggle-switch-react-native": "^3.3.0",
-    "lottie-react-native": "6.7.0"
+    "toggle-switch-react-native": "^3.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0"
