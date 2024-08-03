@@ -22,14 +22,6 @@ export default AuthProvider = ({ children }) => {
 
     useEffect(() => {
         AppLoaded()
-        // supabase.auth.getSession().then(({ data: { session } }) => {
-        //     setSession(session)
-        //     setuid(session?.user?.id)
-        // })
-        // supabase.auth.onAuthStateChange((_event, session) => {
-        //     setSession(session)
-        //     setuid(session?.user?.id)
-        // })
         GetUserOnce()
     }, [])
 

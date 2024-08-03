@@ -35,13 +35,13 @@ const EntryPage = ({ navigation }) => {
     useEffect(() => {
         GetUserOnce()
     }, [])
-
+    console.log(user)
     useEffect(() => {
-        if (user) {
+        if (user && user.phone) setData({ phone: user?.phone })
+        if (user && (user?.full_name !== null) && (user?.email !== null)) {
             setData({
-                full_name: user.full_name,
-                email: user.email,
-                phone: user.phone
+                full_name: user?.full_name,
+                email: user?.email,
             })
         }
     }, [user])
@@ -113,7 +113,7 @@ const EntryPage = ({ navigation }) => {
     }
 
     const handleNumber = (value) => {
-        setData({ ...data, number: value })
+        setData({ ...data, phone: value })
     }
     const handleNameChange = (value) => {
         setData({ ...data, full_name: value })
@@ -150,8 +150,8 @@ const EntryPage = ({ navigation }) => {
                         </View>
                     </View>
                     <View style={{ gap: 25 }}>
-                        <View style={[(focusName || data?.full_name.length > 0) ? styles.FocusinputContainer : styles.inputContainer, {}]}>
-                            <Ionicons name="person-outline" size={24} color={(focusName || data.full_name.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
+                        <View style={[(focusName || data?.full_name?.length > 0) ? styles.FocusinputContainer : styles.inputContainer, {}]}>
+                            <Ionicons name="person-outline" size={24} color={(focusName || data?.full_name?.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
                             <TextInput
                                 onFocus={() => setFocusName(!focusName)}
                                 onBlur={() => setFocusName(!focusName)}
@@ -162,8 +162,8 @@ const EntryPage = ({ navigation }) => {
                                 onChangeText={handleNameChange}
                             />
                         </View>
-                        <View style={(focusEmail || data?.email.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
-                            <MaterialCommunityIcons name="email-outline" size={24} color={(focusEmail || data.email.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
+                        <View style={(focusEmail || data?.email?.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
+                            <MaterialCommunityIcons name="email-outline" size={24} color={(focusEmail || data?.email?.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
                             <TextInput
                                 onFocus={() => setFocuEmail(!focusEmail)}
                                 onBlur={() => setFocuEmail(!focusEmail)}

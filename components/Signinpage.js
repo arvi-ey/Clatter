@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Platform, Dimensions, TextInput, Image, TouchableOpacity, Alert, Modal } from 'react-native'
+import { StyleSheet, Text, View, Platform, Dimensions, TextInput, Image, TouchableOpacity, Alert, Modal, KeyboardAvoidingView } from 'react-native'
 import React, { useContext, useEffect, useMemo, useRef } from 'react'
 import { colors } from './Theme'
 import Button from '../common/Button'
@@ -46,9 +46,11 @@ const Signinpage = () => {
         setLoading(true)
         try {
             const { data, error } = await supabase.auth.signInWithOtp({
-                phone: `+${selectCountry.code}${mobileNumber}`,
+                // phone: `+${selectCountry.code}${mobileNumber}`,
+                phone: `1234567891`,
             })
-            if (!error) Navigation.navigate('Register', { phone: `+${selectCountry.code}${mobileNumber}` })
+            // if (!error) Navigation.navigate('Register', { phone: `+${selectCountry.code}${mobileNumber}` })
+            if (!error) Navigation.navigate('Register', { phone: `1234567891` })
             setLoading(false)
         }
         catch (err) {
@@ -122,50 +124,55 @@ const Signinpage = () => {
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <View style={styles.container} >
-                <View style={{ height: "10%", }} >
-                    <View style={{ paddingLeft: 20, }}>
-                        <Text style={{ fontFamily: Font.Bold, fontSize: 25 }}>Hi! Welcome to clatter</Text>
-                    </View>
-                </View>
-                <View style={{ width, alignItems: 'center' }}>
-                    <Image source={require('../assets/auth.png')} style={{ height: 250, width: 250 }} />
-                </View>
-                <View style={{ height: "90%", paddingLeft: 16 }}>
-                    <Text style={{ fontFamily: Font.Regular, color: colors.CHARCOLE }}>Enter mobile number to verify OTP</Text>
-                    <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }} >
-                        <TouchableOpacity style={[styles.CountryCode]} onPress={OpenButtomSheet} >
-                            <Image source={{ uri: `https://flagpedia.net/data/flags/h80/${selectCountry.label}.png` }} style={{ height: 15, width: 25 }} />
-                            <Text style={{ fontFamily: Font.Bold, fontSize: 15 }}>+{selectCountry.code}</Text>
-                            <AntDesign name="down" size={18} color="black" />
-                        </TouchableOpacity>
-                        <View style={styles.inputContainer} >
-                            <TextInput
-                                style={styles.inputBox}
-                                value={mobileNumber}
-                                placeholder='Mobile number'
-                                placeholderTextColor={colors.GREY}
-                                onChangeText={handleMobile}
-                                keyboardType='decimal-pad'
-                            />
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{ flex: 1 }}
+            >
+                <View style={styles.container} >
+                    <View style={{ height: "10%", }} >
+                        <View style={{ paddingLeft: 20, }}>
+                            <Text style={{ fontFamily: Font.Bold, fontSize: 25 }}>Hi! Welcome to clatter</Text>
                         </View>
                     </View>
-                    <View style={{ width: width - 20, marginTop: 5 }}>
-                        <Text style={{ width: "100%", fontSize: 12, fontFamily: Font.Regular, color: colors.CHAT_DESC }} >Securing your personal information is our main priority</Text>
+                    <View style={{ width, alignItems: 'center' }}>
+                        <Image source={require('../assets/auth.png')} style={{ height: 250, width: 250 }} />
                     </View>
-                    <Button
-                        buttonStyle={loading ? styles.loadingButtonStyle : styles.buttonStyle}
-                        title="Request OTP"
-                        textStyle={styles.textStyle}
-                        activeOpacity={0.8}
-                        loading={loading}
-                        loaderColor={colors.MAIN_COLOR}
-                        loaderSize="large"
-                        press={HandleSignIn}
-                    />
-                </View>
-                {CountryListModal()}
-            </View >
+                    <View style={{ height: "90%", paddingLeft: 16 }}>
+                        <Text style={{ fontFamily: Font.Regular, color: colors.CHARCOLE }}>Enter mobile number to verify OTP</Text>
+                        <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }} >
+                            <TouchableOpacity style={[styles.CountryCode]} onPress={OpenButtomSheet} >
+                                <Image source={{ uri: `https://flagpedia.net/data/flags/h80/${selectCountry.label}.png` }} style={{ height: 15, width: 25 }} />
+                                <Text style={{ fontFamily: Font.Bold, fontSize: 15 }}>+{selectCountry.code}</Text>
+                                <AntDesign name="down" size={18} color="black" />
+                            </TouchableOpacity>
+                            <View style={styles.inputContainer} >
+                                <TextInput
+                                    style={styles.inputBox}
+                                    value={mobileNumber}
+                                    placeholder='Mobile number'
+                                    placeholderTextColor={colors.GREY}
+                                    onChangeText={handleMobile}
+                                    keyboardType='decimal-pad'
+                                />
+                            </View>
+                        </View>
+                        <View style={{ width: width - 20, marginTop: 5 }}>
+                            <Text style={{ width: "100%", fontSize: 12, fontFamily: Font.Regular, color: colors.CHAT_DESC }} >Securing your personal information is our main priority</Text>
+                        </View>
+                        <Button
+                            buttonStyle={loading ? styles.loadingButtonStyle : styles.buttonStyle}
+                            title="Request OTP"
+                            textStyle={styles.textStyle}
+                            activeOpacity={0.8}
+                            loading={loading}
+                            loaderColor={colors.MAIN_COLOR}
+                            loaderSize="large"
+                            press={HandleSignIn}
+                        />
+                    </View>
+                    {CountryListModal()}
+                </View >
+            </KeyboardAvoidingView>
         </GestureHandlerRootView>
     )
 }

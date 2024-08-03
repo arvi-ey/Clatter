@@ -77,7 +77,7 @@ const Register = ({ navigation }) => {
                         ref={otpRef1}
                         onFocus={() => setCode1Focus(!code1focus)}
                         onBlur={() => setCode1Focus(!code1focus)}
-                        style={[styles.inputBox, { color: Font.Bold }]}
+                        style={[styles.inputBox, { fontFamily: Font.Bold }]}
                         value={data?.code1}
                         placeholderTextColor="gray"
                         onChangeText={(text) => {
@@ -92,7 +92,7 @@ const Register = ({ navigation }) => {
                         ref={otpRef2}
                         onFocus={() => setCode2Focus(!code2focus)}
                         onBlur={() => setCode2Focus(!code2focus)}
-                        style={[styles.inputBox, { color: Font.Bold }]}
+                        style={[styles.inputBox, { fontFamily: Font.Bold }]}
                         value={data?.code2}
                         placeholderTextColor="gray"
                         onChangeText={(text) => {
@@ -107,7 +107,7 @@ const Register = ({ navigation }) => {
                         ref={otpRef3}
                         onFocus={() => setCode3Focus(!code3focus)}
                         onBlur={() => setCode3Focus(!code3focus)}
-                        style={[styles.inputBox, { color: Font.Bold }]}
+                        style={[styles.inputBox, { fontFamily: Font.Bold }]}
                         value={data?.code3}
                         placeholderTextColor="gray"
                         onChangeText={(text) => {
@@ -122,7 +122,7 @@ const Register = ({ navigation }) => {
                         ref={otpRef4}
                         onFocus={() => setCode4Focus(!code4focus)}
                         onBlur={() => setCode4Focus(!code4focus)}
-                        style={[styles.inputBox, { color: Font.Bold }]}
+                        style={[styles.inputBox, { fontFamily: Font.Bold }]}
                         value={data?.code4}
                         placeholderTextColor="gray"
                         onChangeText={(text) => {
