@@ -19,9 +19,11 @@ export default AuthProvider = ({ children }) => {
     const [session, setSession] = useState(null)
     const [uid, setuid] = useState(null)
     const [user, setUser] = useState(null)
+    const [loggedIn, setLoggedIN] = useState(false)
 
     useEffect(() => {
         AppLoaded()
+        LoggedIN()
         GetUserOnce()
     }, [])
 
@@ -30,12 +32,13 @@ export default AuthProvider = ({ children }) => {
         try {
             const { data, error } = await supabase
                 .from('profiles')
-                .upsert({ id: userId, ...profileData }, { onConflict: ['id'] }); // 'id' is the primary key
+                .upsert({ id: userId, ...profileData }, { onConflict: ['id'] });
 
             if (error) {
                 throw error;
             }
             if (!error) navigation.navigate("Profile")
+            await AsyncStorage.setItem("loggedIN", "TRUE")
             setLoading(false)
         } catch (error) {
             console.error('Error adding to profile:', error.message);
@@ -58,6 +61,7 @@ export default AuthProvider = ({ children }) => {
             if (error) {
                 throw error;
             }
+            setUser({ ...user, ...updates })
             return data;
         } catch (error) {
             console.error('Error updating user:', error.message);
@@ -131,9 +135,14 @@ export default AuthProvider = ({ children }) => {
         if (value !== null) setFirstLoad(true)
         else setFirstLoad(false)
     }
+    const LoggedIN = async () => {
+        const value = await AsyncStorage.getItem("loggedIN")
+        if (value !== null) setLoggedIN(true)
+        else setLoggedIN(false)
+    }
 
 
-    const value = { session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded }
+    const value = { loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded }
     return (
         <AuthContext.Provider value={value} >
             {children}

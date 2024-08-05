@@ -16,7 +16,7 @@ import { Font } from '../common/font';
 import Switch from '../common/Switch';
 
 const Profile = () => {
-    const { GetUserOnce, user, uid } = useContext(AuthContext)
+    const { GetUserOnce, user, uid, UpdateUser } = useContext(AuthContext)
     const Tab = createBottomTabNavigator();
     const [darkModeon, setdarkModeon] = useState(false)
     const [darkMode, setDarkMode] = useState(false)
@@ -29,9 +29,13 @@ const Profile = () => {
         if (user) setDarkMode(user?.dark_mode)
     }, [user])
 
+    const SetDarkmode = async () => {
+        setdarkModeon(!darkModeon)
+        await UpdateUser(uid, { dark_mode: !darkMode })
+    }
     const DarkModeIcon = () => {
         return (
-            <Ionicons name={user.dark_mode ? "moon" : "sunny-sharp"} size={20} color={darkMode ? colors.BLACK : "#facc15"} />
+            <Ionicons name={darkMode ? "moon" : "sunny-sharp"} size={20} color={darkMode ? colors.BLACK : "#facc15"} />
         )
     }
 
@@ -71,7 +75,7 @@ const Profile = () => {
                         <Feather name="camera" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
                         <Ionicons name="search-outline" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
                         <Switch
-                            // onToggle={SetDarkmode}
+                            onToggle={SetDarkmode}
                             size={'large'}
                             isOn={darkModeon}
                             onColor={colors.MAIN_COLOR}

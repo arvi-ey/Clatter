@@ -7,39 +7,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from './Context/Authprovider';
 import { Font } from '../common/font';
 import { ScrollView } from 'react-native-gesture-handler';
-import { ContactContext } from './Context/Contactprovider';
 
 const ContactList = ({ navigation }) => {
-    const { user, GetUSerOnce, onlineUser } = useContext(AuthContext);
-    const { fetchContact, data } = useContext(ContactContext);
-    const [online, setOnline] = useState(null);
-    const previousOnlineUser = useRef({});
+    const { user } = useContext(AuthContext)
 
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
 
-    useEffect(() => {
-        GetUSerOnce();
-        fetchContact();
-    }, []);
 
-    useEffect(() => {
-        let isOnlineChanged = false;
-        const currentOnlineUser = {};
-        for (let key of Object.keys(onlineUser)) {
-            if (key !== user._id) {
-                currentOnlineUser[key] = onlineUser[key];
-            }
-        }
-
-        if (JSON.stringify(previousOnlineUser.current) !== JSON.stringify(currentOnlineUser)) {
-            isOnlineChanged = true;
-        }
-
-        if (isOnlineChanged) {
-            previousOnlineUser.current = currentOnlineUser;
-            setOnline(currentOnlineUser);
-        }
-    }, [onlineUser]);
 
     React.useLayoutEffect(() => {
         navigation.setOptions({
@@ -70,7 +44,7 @@ const ContactList = ({ navigation }) => {
                         Add New Contact
                     </Text>
                 </TouchableOpacity>
-                {data?.userData?.map((value, key) => (
+                {/* {data?.userData?.map((value, key) => (
                     <TouchableOpacity key={key} style={styles.Contact_Container} onPress={() => GotoChat(value)}>
                         <View>
                             <Image source={{ uri: image }} style={{ height: 50, width: 50, borderRadius: 30, resizeMode: "cover" }} />
@@ -84,7 +58,7 @@ const ContactList = ({ navigation }) => {
                             }
                         </View>
                     </TouchableOpacity>
-                ))}
+                ))} */}
             </ScrollView>
         </SafeAreaView>
     );

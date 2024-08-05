@@ -9,20 +9,13 @@ import { ContactContext } from './Context/Contactprovider';
 import { Font } from '../common/font';
 
 const ChatScreen = ({ navigation }) => {
-    const { user, GetUserOnce, UpdateUser } = useContext(AuthContext)
+    const { user } = useContext(AuthContext)
     const [darkMode, setDarkMode] = useState()
 
-    // useEffect(() => {
-    //     GetUserOnce()
-    // }, [])
-    console.log(user)
     useEffect(() => {
-        if (user) {
-            UpdateUser(user.id, { loggedIn: true })
-            // setDarkMode(user?.dark_mode)
-        }
-
+        if (user) setDarkMode(user?.dark_mode)
     }, [user])
+
     const data = [
         {
             image: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
@@ -114,7 +107,7 @@ const ChatScreen = ({ navigation }) => {
                         <Text style={{ marginRight: 10, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: "Ubuntu-Regular" }} >{data.time}</Text>
                     </View>
                     <View>
-                        <Text style={{ fontSize: 15, color: darkMode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: user.dark_mode ? "Ubuntu-Light" : "Ubuntu-Regular" }}>{data.massage}</Text>
+                        <Text style={{ fontSize: 15, color: darkMode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: darkMode ? "Ubuntu-Light" : "Ubuntu-Regular" }}>{data.massage}</Text>
                     </View>
                 </View>
 
@@ -135,7 +128,7 @@ const ChatScreen = ({ navigation }) => {
         )
     }
     return (
-        <View style={{ backgroundColor: colors.WHITE, flex: 1, position: "relative" }} >
+        <View style={{ backgroundColor: darkMode ? colors.BLACK : colors.WHITE, flex: 1, position: "relative" }} >
             <FlatList
                 data={data}
                 renderItem={({ item }) => <ChatComponent data={item} />}

@@ -35,17 +35,17 @@ const EntryPage = ({ navigation }) => {
     useEffect(() => {
         GetUserOnce()
     }, [])
-    console.log(user)
-    useEffect(() => {
-        if (user && user.phone) setData({ phone: user?.phone })
-        if (user && (user?.full_name !== null) && (user?.email !== null)) {
-            setData({
-                full_name: user?.full_name,
-                email: user?.email,
-            })
-        }
-    }, [user])
 
+    useEffect(() => {
+        if (user) {
+            setData(prevData => ({
+                ...prevData,
+                phone: user.phone || "",
+                full_name: user.full_name || "",
+                email: user.email || ""
+            }));
+        }
+    }, [user]);
     const User_image = require("../assets/user1.jpg")
 
     const openCamera = async () => {

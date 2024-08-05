@@ -42,10 +42,6 @@ const Register = ({ navigation }) => {
     const otpRef3 = useRef()
     const otpRef4 = useRef()
 
-    // useEffect(() => {
-    //     otpRef1?.current?.focus()
-    // }, [])
-
     const Verify = async () => {
         const uid = await VerifyOTP(phone, otp)
         if (uid) {

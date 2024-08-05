@@ -21,7 +21,7 @@ import EntryPage from './EntryPage';
 
 export default function Initialpage() {
     const Stack = createNativeStackNavigator();
-    const { firstLoad, session, GetUserOnce, user, uid, AppLoaded } = useContext(AuthContext)
+    const { firstLoad, session, GetUserOnce, user, uid, loggedIn } = useContext(AuthContext)
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const [newUser, setNewUser] = useState(false)
 
@@ -81,7 +81,10 @@ export default function Initialpage() {
                             <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
                         </>
                     )}
-                    <Stack.Screen name="Entry" component={EntryPage} options={{ headerShown: false }} />
+                    {
+                        loggedIn === false && <Stack.Screen name="Entry" component={EntryPage} options={{ headerShown: false }} />
+                    }
+
                     <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
                     <Stack.Screen name="Myprofile" component={Myprofile} options={{ headerShown: false }} />
                     <Stack.Screen name="Editprofile" component={Editprofile} options={{ title: "Edit profile" }} />
