@@ -16,18 +16,13 @@ import { Font } from '../common/font';
 import Switch from '../common/Switch';
 
 const Profile = () => {
-    const { GetUserOnce, user, uid, UpdateUser } = useContext(AuthContext)
+    const { GetUserOnce, user, uid, UpdateUser, darkMode } = useContext(AuthContext)
     const Tab = createBottomTabNavigator();
-    const [darkModeon, setdarkModeon] = useState(false)
-    const [darkMode, setDarkMode] = useState(false)
+    const [darkModeon, setdarkModeon] = useState()
 
     useEffect(() => {
         GetUserOnce()
     }, [])
-
-    useEffect(() => {
-        if (user) setDarkMode(user?.dark_mode)
-    }, [user])
 
     const SetDarkmode = async () => {
         setdarkModeon(!darkModeon)

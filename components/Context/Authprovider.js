@@ -20,12 +20,23 @@ export default AuthProvider = ({ children }) => {
     const [uid, setuid] = useState(null)
     const [user, setUser] = useState(null)
     const [loggedIn, setLoggedIN] = useState(false)
+    const [darkMode, setDarkMode] = useState()
 
     useEffect(() => {
         AppLoaded()
         LoggedIN()
         GetUserOnce()
     }, [])
+
+    useEffect(() => {
+        if (uid) {
+            subscribeToUserChanges(uid)
+        }
+    }, [uid])
+
+    useEffect(() => {
+        if (user) setDarkMode(user?.dark_mode)
+    }, [user])
 
     const AddUser = async (userId, profileData, navigation) => {
         setLoading(true)
@@ -49,6 +60,20 @@ export default AuthProvider = ({ children }) => {
             setLoading(false)
 
         }
+    };
+
+
+    const subscribeToUserChanges = (userId) => {
+        const subscription = supabase
+            .channel('public:profiles')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${userId}` }, (payload) => {
+                setUser(payload.new);
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(subscription);
+        };
     };
 
     const UpdateUser = async (userId, updates) => {
@@ -142,7 +167,7 @@ export default AuthProvider = ({ children }) => {
     }
 
 
-    const value = { loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded }
+    const value = { loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
     return (
         <AuthContext.Provider value={value} >
             {children}

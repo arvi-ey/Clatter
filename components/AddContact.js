@@ -11,15 +11,12 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Button from '../common/Button';
 import { ContactContext } from './Context/Contactprovider';
 const AddContact = ({ navigation }) => {
-    const { user, } = useContext(AuthContext)
+    const { user } = useContext(AuthContext)
     const { AddNewContact, loading } = useContext(ContactContext)
-    const [focusEmail, setFocuEmail] = useState(false)
     const [focusNumber, setFocusNumber] = useState(false)
     const [focusName, setFocusName] = useState(false)
-    // const [loading, setLoading] = useState(false)
     const [data, setData] = useState({
-        name: "",
-        email: "",
+        saved_name: "",
         number: "",
     })
 
@@ -36,60 +33,42 @@ const AddContact = ({ navigation }) => {
             headerTintColor: user.dark_mode ? colors.WHITE : colors.BLACK,
         });
     }, [navigation]);
-    const handleEmailChange = (value) => {
-        setData({ ...data, email: value })
-    }
+
     const handleNumber = (value) => {
         setData({ ...data, number: value })
     }
     const handleNameChange = (value) => {
-        setData({ ...data, name: value })
+        setData({ ...data, saved_name: value })
     }
-    // 6598785542
-    // 7896541125
+
     const SaveContact = async () => {
-        const emailRegex = /^([a-z0-9._%78+-]+)@([a-z0-9.-]+\.[a-z]{2,})$/;
-        if (!data.name.trim()) {
+        if (!data.saved_name.trim()) {
             Alert.alert('Enter name');
-        } else if (!data.email.trim()) {
-            Alert.alert('Enter email');
-        } else if (!emailRegex.test(data.email)) {
-            Alert.alert('Enter a valid email address');
         } else if (!data.number.trim()) {
             Alert.alert('Enter mobile number');
         } else if (data.number.length < 10) {
             Alert.alert('Enter a Valid Mobile Number')
         }
         else {
-            AddNewContact(data, navigation)
+            const result = await AddNewContact(data)
+            if (result) console.log(result)
+
         }
     }
 
     return (
         <SafeAreaView style={[styles.AddContactContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>
             <View style={{ gap: 25, alignItems: 'center', }}>
-                <View style={[(focusName || data.name.length > 0) ? styles.FocusinputContainer : user.dark_mode ? styles.darkModeInput : styles.inputContainer, {}]}>
-                    <Ionicons name="person-outline" size={24} color={(focusName || data.name.length > 0) ? colors.MAIN_COLOR : user.dark_mode ? colors.WHITE : colors.CHAT_DESC} />
+                <View style={[(focusName || data.saved_name.length > 0) ? styles.FocusinputContainer : user.dark_mode ? styles.darkModeInput : styles.inputContainer, {}]}>
+                    <Ionicons name="person-outline" size={24} color={(focusName || data.saved_name.length > 0) ? colors.MAIN_COLOR : user.dark_mode ? colors.WHITE : colors.CHAT_DESC} />
                     <TextInput
                         onFocus={() => setFocusName(!focusName)}
                         onBlur={() => setFocusName(!focusName)}
                         style={[styles.inputBox, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}
-                        value={data?.name}
+                        value={data?.saved_name}
                         placeholder='Enter Name'
                         placeholderTextColor="gray"
                         onChangeText={handleNameChange}
-                    />
-                </View>
-                <View style={(focusEmail || data.email.length > 0) ? styles.FocusinputContainer : user.dark_mode ? styles.darkModeInput : styles.inputContainer} >
-                    <MaterialCommunityIcons name="email-outline" size={24} color={(focusEmail || data.email.length > 0) ? colors.MAIN_COLOR : user.dark_mode ? colors.WHITE : colors.CHAT_DESC} />
-                    <TextInput
-                        onFocus={() => setFocuEmail(!focusEmail)}
-                        onBlur={() => setFocuEmail(!focusEmail)}
-                        style={[styles.inputBox, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}
-                        value={data?.email}
-                        placeholder='Enter Email'
-                        placeholderTextColor="gray"
-                        onChangeText={handleEmailChange}
                     />
                 </View>
                 <View style={(focusNumber || data.number.length > 0) ? styles.FocusinputContainer : user.dark_mode ? styles.darkModeInput : styles.inputContainer} >

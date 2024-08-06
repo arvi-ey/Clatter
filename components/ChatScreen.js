@@ -9,12 +9,7 @@ import { ContactContext } from './Context/Contactprovider';
 import { Font } from '../common/font';
 
 const ChatScreen = ({ navigation }) => {
-    const { user } = useContext(AuthContext)
-    const [darkMode, setDarkMode] = useState()
-
-    useEffect(() => {
-        if (user) setDarkMode(user?.dark_mode)
-    }, [user])
+    const { user, darkMode } = useContext(AuthContext)
 
     const data = [
         {
