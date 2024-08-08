@@ -5,15 +5,24 @@ import { useState, useEffect, useContext, useRef } from 'react';
 import { colors } from './Theme';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from './Context/Authprovider';
+import { ContactContext } from './Context/Contactprovider';
 import { Font } from '../common/font';
 import { ScrollView } from 'react-native-gesture-handler';
 
 const ContactList = ({ navigation }) => {
     const { user } = useContext(AuthContext)
+    const { FetchContact, savedContact, FetchByPhone, FetchSaVedContactData } = useContext(ContactContext)
 
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
 
+    // 1234567891
+    useEffect(() => {
+        FetchSaVedContactData()
+    }, [])
 
+    // useEffect(() => {
+    //     FetchByPhone(1234567891)
+    // }, [savedContact])
 
     React.useLayoutEffect(() => {
         navigation.setOptions({

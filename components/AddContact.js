@@ -51,8 +51,7 @@ const AddContact = ({ navigation }) => {
         }
         else {
             const result = await AddNewContact(data)
-            if (result) console.log(result)
-
+            if (result) navigation.goBack()
         }
     }
 

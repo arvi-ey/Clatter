@@ -9,6 +9,7 @@ export const ContactContext = createContext();
 const ContactProvider = ({ children }) => {
     const { user, uid } = useContext(AuthContext);
     const [loading, setLoading] = useState(false)
+    const [savedContact, setSavedContact] = useState()
 
 
 
@@ -17,15 +18,19 @@ const ContactProvider = ({ children }) => {
         setLoading(true)
         const { saved_name, number } = data
         try {
-            const { data, error } = await supabase
-                .from('Savedcontact')
-                .insert([{ saved_name, number, user_id: uid }]);
 
-            if (error) {
-                throw error;
+            const result = await FetchByPhone(number)
+            if (result !== null) {
+                const { data: insertData, error } = await supabase
+                    .from('Savedcontact')
+                    .insert([{ saved_name, number, user_id: uid, saved_id: result.id }]);
+                if (error) {
+                    throw error;
+                }
+                setLoading(false)
+                return data;
             }
-            setLoading(false)
-            return data;
+            else Alert.alert("This phone number Does not Use Clatter")
         } catch (error) {
             console.error('Error adding contact:', error.message);
             setLoading(false)
@@ -36,7 +41,62 @@ const ContactProvider = ({ children }) => {
         }
     };
 
-    value = { loading, AddNewContact }
+
+    const FetchContact = async () => {
+        setLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from('Savedcontact')
+                .select('*')
+                .eq('user_id', uid)
+            if (error) {
+                throw error;
+            }
+            setSavedContact(data)
+        } catch (error) {
+            console.error('Error fetching saved contacts count:', error.message);
+            setLoading(false);
+            return null;
+        }
+    };
+
+
+    const FetchByPhone = async (phoneNumber) => {
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('phone', phoneNumber)
+                .single(); // Use single() if expecting one result
+
+            if (error) {
+                throw error;
+            }
+            return data
+        } catch (error) {
+            console.error('Error fetching user by phone number:', error.message);
+            return null;
+        }
+    };
+
+
+    const FetchSaVedContactData = async () => {
+
+        try {
+            let { data: Savedcontact, error } = await supabase
+                .from('Savedcontact')
+                .select(`user_id,profiles(*)`)
+                .eq('user_id', uid);
+
+            console.log(Savedcontact)
+        }
+        catch (error) {
+            console.log(error)
+        }
+    };
+
+
+    value = { loading, AddNewContact, FetchContact, savedContact, FetchByPhone, FetchSaVedContactData }
 
     return (
         <ContactContext.Provider value={value}>
