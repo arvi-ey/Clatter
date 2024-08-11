@@ -17,7 +17,7 @@ import { Font } from '../common/font';
 
 
 const Editprofile = ({ navigation }) => {
-    const { user, EditUser, loading, UploadProfileImage, imageLoading } = useContext(AuthContext)
+    const { user, UpdateUser, loading } = useContext(AuthContext)
     const snapPoints = useMemo(() => ['25%'], []);
     const sheetRef = useRef(null);
     const [image, setImage] = useState(null);
@@ -25,9 +25,9 @@ const Editprofile = ({ navigation }) => {
     const [focusNumber, setFocusNumber] = useState(false)
     const [focusName, setFocusName] = useState(false)
     const [data, setData] = useState({
-        name: "",
+        full_name: "",
         email: "",
-        number: "",
+        phone: "",
         profile_image: ""
     })
     const User_image = require("../assets/user1.jpg")
@@ -56,9 +56,6 @@ const Editprofile = ({ navigation }) => {
             closeBottomSheet()
         }
     };
-    useEffect(() => {
-        if (image) UploadProfileImage(image)
-    }, [image])
 
     const openSettings = () => {
         if (Platform.OS === 'ios') {
@@ -97,10 +94,10 @@ const Editprofile = ({ navigation }) => {
     }
 
     const handleNumber = (value) => {
-        setData({ ...data, number: value })
+        setData({ ...data, phone: value })
     }
     const handleNameChange = (value) => {
-        setData({ ...data, name: value })
+        setData({ ...data, full_name: value })
     }
     React.useLayoutEffect(() => {
         navigation.setOptions({
@@ -115,32 +112,31 @@ const Editprofile = ({ navigation }) => {
             headerTintColor: user.dark_mode ? colors.WHITE : colors.BLACK,
         });
     }, [navigation]);
-    
+
     useEffect(() => {
         if (user) {
             setData({
-                name: user.name,
+                full_name: user.full_name,
                 email: user.email,
-                number: user.number,
-                profile_image: user.image?.data ? `data:${user.image.contentType};base64,${user.image.data}` : null,
+                phone: user.phone,
             })
         }
     }, [user])
 
     const HandleUpdate = () => {
-        const { name, email, number } = data;
+        const { full_name, email, phone } = data;
         const emailRegex = /^([a-z0-9._%+-]+)@([a-z0-9.-]+\.[a-z]{2,})$/;
-        if (!name.trim()) {
-            Alert.alert('Please enter your name');
+        if (!full_name.trim()) {
+            Alert.alert('Please enter your full_name');
         } else if (!email.trim()) {
             Alert.alert('Please enter your email');
         } else if (!emailRegex.test(email)) {
             Alert.alert('Please enter a valid email address');
-        } else if (!number.trim()) {
-            Alert.alert('Please enter your mobile number');
+        } else if (!phone.trim()) {
+            Alert.alert('Please enter your mobile phone');
         }
         else {
-            EditUser(data)
+            UpdateUser(data)
         }
     }
 
@@ -148,37 +144,29 @@ const Editprofile = ({ navigation }) => {
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView style={[styles.profileContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>
                 <View style={{ alignItems: 'center', gap: 25, backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }}>
-
                     <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, }}>
                         <View style={{ position: "relative", }}>
-                            {
-                                imageLoading ?
-                                    <View style={{ height: 160, width: 160, justifyContent: 'center', alignItems: 'center' }}>
-                                        <ActivityIndicator size="large" color={colors.MAIN_COLOR} />
-                                    </View> :
-
-                                    <Image source={data.profile_image ? { uri: data.profile_image } : User_image} style={{ borderRadius: 90, height: 180, width: 180, borderWidth: 2, }} />
-                            }
+                            <Image source={User_image} style={{ borderRadius: 90, height: 180, width: 180, borderWidth: 2, }} />
                             <TouchableOpacity style={styles.editIcon} onPress={OpenButtomSheet}>
-                                <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />
+                                <SimpleLineIcons full_name="camera" size={20} color={colors.WHITE} />
                             </TouchableOpacity>
                         </View>
                     </View>
                     <View style={{ gap: 25 }}>
-                        <View style={[(focusName || data?.name.length > 0) ? styles.FocusinputContainer : styles.inputContainer, {}]}>
-                            <Ionicons name="person-outline" size={24} color={(focusName || data.name.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
+                        <View style={[(focusName || data?.full_name.length > 0) ? styles.FocusinputContainer : styles.inputContainer, {}]}>
+                            <Ionicons full_name="person-outline" size={24} color={(focusName || data.full_name.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
                             <TextInput
                                 onFocus={() => setFocusName(!focusName)}
                                 onBlur={() => setFocusName(!focusName)}
                                 style={[styles.inputBox, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}
-                                value={data?.name}
+                                value={data?.full_name}
                                 placeholder='Enter Name'
                                 placeholderTextColor="gray"
                                 onChangeText={handleNameChange}
                             />
                         </View>
                         <View style={(focusEmail || data?.email.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
-                            <MaterialCommunityIcons name="email-outline" size={24} color={(focusEmail || data.email.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
+                            <MaterialCommunityIcons full_name="email-outline" size={24} color={(focusEmail || data.email.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
                             <TextInput
                                 onFocus={() => setFocuEmail(!focusEmail)}
                                 onBlur={() => setFocuEmail(!focusEmail)}
@@ -189,17 +177,18 @@ const Editprofile = ({ navigation }) => {
                                 onChangeText={handleEmailChange}
                             />
                         </View>
-                        <View style={(focusNumber || data?.number.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
-                            <Ionicons name="phone-portrait-outline" size={24} color={(focusNumber || data.number.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
+                        <View style={(focusNumber || data?.phone.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
+                            <Ionicons full_name="phone-portrait-outline" size={24} color={(focusNumber || data.phone.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
                             <TextInput
+                                editable={false}
                                 onFocus={() => setFocusNumber(!focusNumber)}
                                 onBlur={() => setFocusNumber(!focusNumber)}
                                 style={[styles.inputBox, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}
-                                value={data?.number}
+                                value={data?.phone}
                                 placeholder='Enter Mobile Number'
                                 placeholderTextColor="gray"
                                 onChangeText={handleNumber}
-                                keyboardType='number-pad'
+                                keyboardType='phone-pad'
                             />
                         </View>
                         <Button
@@ -229,15 +218,15 @@ const Editprofile = ({ navigation }) => {
                         </View>
                         <View style={styles.contentContainer}>
                             <TouchableOpacity activeOpacity={0.8} style={{ justifyContent: 'center', alignItems: 'center' }} onPress={openCamera} >
-                                <Feather name="camera" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
+                                <Feather full_name="camera" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
                                 <Text style={{ fontFamily: Font.Medium, color: colors.CHAT_DESC }}>Camera</Text>
                             </TouchableOpacity>
                             <TouchableOpacity activeOpacity={0.8} style={{ justifyContent: 'center', alignItems: 'center' }} onPress={pickImage}  >
-                                <Octicons name="image" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
+                                <Octicons full_name="image" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
                                 <Text style={{ fontFamily: Font.Medium, color: colors.CHAT_DESC }}>Galary</Text>
                             </TouchableOpacity>
                             <TouchableOpacity activeOpacity={0.8} style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                <AntDesign name="delete" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
+                                <AntDesign full_name="delete" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
                                 <Text style={{ fontFamily: Font.Medium, color: colors.CHAT_DESC }}>Remove</Text>
                             </TouchableOpacity>
                         </View>
@@ -258,7 +247,7 @@ const styles = StyleSheet.create({
         position: "relative",
         gap: 20,
     },
-    nameContainer: {
+    full_nameContainer: {
         width: width - 20,
         alignItems: "center"
     },

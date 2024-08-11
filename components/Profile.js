@@ -73,8 +73,8 @@ const Profile = () => {
                             onToggle={SetDarkmode}
                             size={'large'}
                             isOn={darkModeon}
-                            onColor={colors.MAIN_COLOR}
-                            offColor={colors.SWITCH_BG}
+                            onColor={colors.SWITCH_BG}
+                            offColor={colors.MAIN_COLOR}
                             animationSpeed={300}
                             thumbOnStyle={{ backgroundColor: colors.WHITE }}
                             icon={<DarkModeIcon />}

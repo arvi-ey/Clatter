@@ -2,8 +2,8 @@ import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Authprovider from './components/Context/Authprovider';
 import ContactProvider from './components/Context/Contactprovider';
+import Messageprovider from './components/Context/Messageprovider';
 import Initialpage from './components/Initialpage';
-import SocketProvider from './components/Context/SocketProvider';
 
 export default function App() {
 
@@ -11,9 +11,9 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Authprovider>
         <ContactProvider>
-          {/* <SocketProvider> */}
-          <Initialpage />
-          {/* </SocketProvider> */}
+          <Messageprovider>
+            <Initialpage />
+          </Messageprovider>
         </ContactProvider>
       </Authprovider>
     </GestureHandlerRootView>

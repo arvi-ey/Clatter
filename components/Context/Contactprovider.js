@@ -7,30 +7,38 @@ import { supabase } from '../../lib/supabase'
 export const ContactContext = createContext();
 
 const ContactProvider = ({ children }) => {
-    const { user, uid } = useContext(AuthContext);
+    const { uid } = useContext(AuthContext);
     const [loading, setLoading] = useState(false)
+    const [contact, setContact] = useState()
     const [savedContact, setSavedContact] = useState()
 
 
-
+    useEffect(() => {
+        SubscribeToContactChange()
+    }, [contact])
 
     const AddNewContact = async (data) => {
         setLoading(true)
         const { saved_name, number } = data
         try {
-
-            const result = await FetchByPhone(number)
-            if (result !== null) {
-                const { data: insertData, error } = await supabase
-                    .from('Savedcontact')
-                    .insert([{ saved_name, number, user_id: uid, saved_id: result.id }]);
-                if (error) {
-                    throw error;
+            try {
+                const result = await FetchByPhone(number)
+                if (result && result !== null) {
+                    const { data: insertData, error } = await supabase
+                        .from('Savedcontact')
+                        .insert([{ saved_name, number, user_id: uid, saved_id: result.id }]);
+                    if (error) {
+                        console.log(error)
+                    }
+                    setLoading(false)
+                    setContact(data)
+                    return data;
                 }
-                setLoading(false)
-                return data;
+                else Alert.alert("This phone number Does not Use Clatter")
             }
-            else Alert.alert("This phone number Does not Use Clatter")
+            catch (error) {
+                console.log(error)
+            }
         } catch (error) {
             console.error('Error adding contact:', error.message);
             setLoading(false)
@@ -40,26 +48,6 @@ const ContactProvider = ({ children }) => {
             setLoading(false)
         }
     };
-
-
-    const FetchContact = async () => {
-        setLoading(true);
-        try {
-            const { data, error } = await supabase
-                .from('Savedcontact')
-                .select('*')
-                .eq('user_id', uid)
-            if (error) {
-                throw error;
-            }
-            setSavedContact(data)
-        } catch (error) {
-            console.error('Error fetching saved contacts count:', error.message);
-            setLoading(false);
-            return null;
-        }
-    };
-
 
     const FetchByPhone = async (phoneNumber) => {
         try {
@@ -79,16 +67,26 @@ const ContactProvider = ({ children }) => {
         }
     };
 
+    const SubscribeToContactChange = (userId) => {
+        const subscription = supabase
+            .channel('public:Savedcontact')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'Savedcontact' }, (payload) => {
+                FetchSaVedContactData()
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(subscription);
+        };
+    };
 
     const FetchSaVedContactData = async () => {
-
         try {
             let { data: Savedcontact, error } = await supabase
                 .from('Savedcontact')
-                .select(`user_id,profiles(*)`)
+                .select(`user_id,saved_name,profiles(*)`)
                 .eq('user_id', uid);
-
-            console.log(Savedcontact)
+            setSavedContact(Savedcontact)
         }
         catch (error) {
             console.log(error)
@@ -96,7 +94,7 @@ const ContactProvider = ({ children }) => {
     };
 
 
-    value = { loading, AddNewContact, FetchContact, savedContact, FetchByPhone, FetchSaVedContactData }
+    value = { loading, AddNewContact, savedContact, FetchByPhone, FetchSaVedContactData }
 
     return (
         <ContactContext.Provider value={value}>

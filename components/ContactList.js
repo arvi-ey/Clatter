@@ -12,6 +12,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 const ContactList = ({ navigation }) => {
     const { user } = useContext(AuthContext)
     const { FetchContact, savedContact, FetchByPhone, FetchSaVedContactData } = useContext(ContactContext)
+    const [data, setData] = useState()
 
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
 
@@ -20,9 +21,9 @@ const ContactList = ({ navigation }) => {
         FetchSaVedContactData()
     }, [])
 
-    // useEffect(() => {
-    //     FetchByPhone(1234567891)
-    // }, [savedContact])
+    useEffect(() => {
+        setData(savedContact)
+    }, [savedContact])
 
     React.useLayoutEffect(() => {
         navigation.setOptions({
@@ -53,21 +54,21 @@ const ContactList = ({ navigation }) => {
                         Add New Contact
                     </Text>
                 </TouchableOpacity>
-                {/* {data?.userData?.map((value, key) => (
+                {data?.map((value, key) => (
                     <TouchableOpacity key={key} style={styles.Contact_Container} onPress={() => GotoChat(value)}>
                         <View>
                             <Image source={{ uri: image }} style={{ height: 50, width: 50, borderRadius: 30, resizeMode: "cover" }} />
                         </View>
                         <View>
                             <Text style={{ fontFamily: Font.Medium, fontSize: 15, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{value.saved_name}</Text>
-                            {
+                            {/* {
                                 user.hideActiveStatusHome ?
                                     null :
                                     <Text style={{ fontFamily: Font.Medium, fontSize: 15, color: colors.MAIN_COLOR }}>{online && online[value._id] ? "Online" : null}</Text>
-                            }
+                            } */}
                         </View>
                     </TouchableOpacity>
-                ))} */}
+                ))}
             </ScrollView>
         </SafeAreaView>
     );

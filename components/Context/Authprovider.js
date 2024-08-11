@@ -1,5 +1,4 @@
 import React, { createContext, useState, useEffect, useContext, useRef, } from 'react';
-import * as SecureStore from 'expo-secure-store';
 import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase'
@@ -70,7 +69,6 @@ export default AuthProvider = ({ children }) => {
                 setUser(payload.new);
             })
             .subscribe();
-
         return () => {
             supabase.removeChannel(subscription);
         };
