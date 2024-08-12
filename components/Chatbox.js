@@ -13,9 +13,10 @@ const { height, width } = Dimensions.get('window');
 const Chatbox = ({ navigation }) => {
     const route = useRoute()
     const data = route.params
+    const reciverId = data?.profiles.id
     const { uid, user } = useContext(AuthContext);
     const { } = useContext(ContactContext);
-    const { message, SendMessage } = useContext(MessageContext);
+    const { message, SendMessage, GetMessage, setMessage, SubscribeToMessages } = useContext(MessageContext);
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
     const [messageText, setMassageText] = useState("");
     const [typing, setTyping] = useState(false)
@@ -28,10 +29,15 @@ const Chatbox = ({ navigation }) => {
     };
 
     useEffect(() => {
+        GetMessage(uid, reciverId)
     }, [])
 
+    useEffect(() => {
+        SubscribeToMessages(uid, reciverId)
+    }, [message])
 
-    const Send = () => {
+
+    const Send = async () => {
         if (messageText.length > 0) {
             const messageObj = {}
             messageObj.time = Date.now()
@@ -40,7 +46,10 @@ const Chatbox = ({ navigation }) => {
             messageObj.content = messageText
             messageObj.status = "SENT"
             messageObj.react = false
-            SendMessage(messageObj)
+            await SendMessage(messageObj)
+            setMessage([...message, messageObj])
+            setMassageText("")
+
         }
     }
 
