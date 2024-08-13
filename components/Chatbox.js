@@ -23,7 +23,8 @@ const Chatbox = ({ navigation }) => {
     const scrollViewRef = useRef();
 
     const GetTime = (timestamp) => {
-        const date = new Date(timestamp);
+        const timeStampData = Number(timestamp)
+        const date = new Date(timeStampData);
         const options = { hour: '2-digit', minute: '2-digit', hour12: true };
         return date.toLocaleTimeString('en-US', options);
     };
@@ -34,7 +35,7 @@ const Chatbox = ({ navigation }) => {
 
     useEffect(() => {
         SubscribeToMessages(uid, reciverId)
-    }, [message])
+    }, [uid, reciverId])
 
 
     const Send = async () => {
@@ -131,7 +132,7 @@ const Chatbox = ({ navigation }) => {
                                 <Text style={[styles.TimeText, {
                                     color: (!user.dark_mode && data.sender !== uid) ?
                                         colors.CHARCOLE_DARK : colors.TIME_TEXT
-                                }]}>{GetTime(data.timestamp)}</Text>
+                                }]}>{GetTime(data.time)}</Text>
                             </View>
                         </KeyboardAvoidingView>
                     )

@@ -22,30 +22,26 @@ export default Messageprovider = ({ children }) => {
         }
     };
 
+
     const SubscribeToMessages = (senderId, receiverId) => {
-        const subscription = supabase
-            .channel('custom-all-channel')
-            .on(
-                'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'message',
-                    filter: `or(and(sender.eq.${senderId},reciver.eq.${receiverId}),and(sender.eq.${receiverId},reciver.eq.${senderId}))`
-                },
+        const channel = supabase
+            .channel('messages-channel')
+            .on('postgres_changes',
+                { event: '*', schema: 'public', table: 'message' },
                 (payload) => {
-                    // console.log('New message received:', payload.new);
-                    // Fetch the latest messages whenever a new one is inserted
-                    GetMessage(senderId, receiverId);
+                    const newMessage = payload.new;
+                    if (
+                        (newMessage.sender === senderId && newMessage.reciver === receiverId) ||
+                        (newMessage.sender === receiverId && newMessage.reciver === senderId)
+                    ) {
+                        GetMessage(senderId, receiverId);
+                    }
                 }
             )
             .subscribe();
-
-        return () => {
-            // Unsubscribe when the component unmounts or whenever needed
-            supabase.removeChannel(subscription);
-        };
+        return channel;
     };
+
 
 
 
@@ -58,7 +54,6 @@ export default Messageprovider = ({ children }) => {
             if (error) {
                 throw error;
             }
-            console.log(obj)
         } catch (error) {
             console.error('Error inserting data:', error.message);
         }

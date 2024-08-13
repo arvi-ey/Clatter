@@ -18,14 +18,12 @@ import Switch from '../common/Switch';
 const Profile = () => {
     const { GetUserOnce, user, uid, UpdateUser, darkMode } = useContext(AuthContext)
     const Tab = createBottomTabNavigator();
-    const [darkModeon, setdarkModeon] = useState()
-
     useEffect(() => {
         GetUserOnce()
     }, [])
 
+
     const SetDarkmode = async () => {
-        setdarkModeon(!darkModeon)
         await UpdateUser(uid, { dark_mode: !darkMode })
     }
     const DarkModeIcon = () => {
@@ -72,10 +70,10 @@ const Profile = () => {
                         <Switch
                             onToggle={SetDarkmode}
                             size={'large'}
-                            isOn={darkModeon}
-                            onColor={colors.SWITCH_BG}
-                            offColor={colors.MAIN_COLOR}
-                            animationSpeed={300}
+                            isOn={darkMode}
+                            onColor={colors.MAIN_COLOR}
+                            offColor={colors.SWITCH_BG}
+                            animationSpeed={250}
                             thumbOnStyle={{ backgroundColor: colors.WHITE }}
                             icon={<DarkModeIcon />}
                         />

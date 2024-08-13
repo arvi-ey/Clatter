@@ -24,7 +24,6 @@ export default AuthProvider = ({ children }) => {
     useEffect(() => {
         AppLoaded()
         LoggedIN()
-        GetUserOnce()
     }, [])
 
     useEffect(() => {
@@ -32,6 +31,10 @@ export default AuthProvider = ({ children }) => {
             subscribeToUserChanges(uid)
         }
     }, [uid])
+
+    useEffect(() => {
+        GetUserOnce()
+    }, [loggedIn])
 
     useEffect(() => {
         if (user) setDarkMode(user?.dark_mode)
