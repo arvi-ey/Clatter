@@ -55,8 +55,7 @@ const ContactProvider = ({ children }) => {
                 .from('profiles')
                 .select('*')
                 .eq('phone', phoneNumber)
-                .single(); // Use single() if expecting one result
-
+                .single();
             if (error) {
                 throw error;
             }

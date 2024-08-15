@@ -14,6 +14,7 @@ const { height, width } = Dimensions.get('window');
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AuthContext } from './Context/Authprovider';
 import { Font } from '../common/font';
+import { supabase } from '../lib/supabase'
 
 
 const Editprofile = ({ navigation }) => {
@@ -79,11 +80,23 @@ const Editprofile = ({ navigation }) => {
         });
 
         if (!result.canceled) {
+            console.log("REsult", result.assets[0].uri)
+            const uri = result.assets[0].uri;
+            const fileName = uri.split('/').pop();
+            const file = {
+                uri,
+                name: fileName,
+                type: 'image/jpeg',
+            };
+            console.log("Final", file)
             setImage(result.assets[0].uri);
             setData({ ...data, profile_image: result.assets[0].uri })
             closeBottomSheet()
         }
     };
+
+
+
     const OpenButtomSheet = () => sheetRef?.current?.expand()
     const closeBottomSheet = () => sheetRef.current?.close();
     const renderBackdrop = (props) => (
@@ -148,7 +161,7 @@ const Editprofile = ({ navigation }) => {
                         <View style={{ position: "relative", }}>
                             <Image source={User_image} style={{ borderRadius: 90, height: 180, width: 180, borderWidth: 2, }} />
                             <TouchableOpacity style={styles.editIcon} onPress={OpenButtomSheet}>
-                                <SimpleLineIcons full_name="camera" size={20} color={colors.WHITE} />
+                                <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -218,15 +231,15 @@ const Editprofile = ({ navigation }) => {
                         </View>
                         <View style={styles.contentContainer}>
                             <TouchableOpacity activeOpacity={0.8} style={{ justifyContent: 'center', alignItems: 'center' }} onPress={openCamera} >
-                                <Feather full_name="camera" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
+                                <Feather name="camera" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
                                 <Text style={{ fontFamily: Font.Medium, color: colors.CHAT_DESC }}>Camera</Text>
                             </TouchableOpacity>
                             <TouchableOpacity activeOpacity={0.8} style={{ justifyContent: 'center', alignItems: 'center' }} onPress={pickImage}  >
-                                <Octicons full_name="image" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
+                                <Octicons name="image" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
                                 <Text style={{ fontFamily: Font.Medium, color: colors.CHAT_DESC }}>Galary</Text>
                             </TouchableOpacity>
                             <TouchableOpacity activeOpacity={0.8} style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                <AntDesign full_name="delete" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
+                                <AntDesign name="delete" size={35} color={colors.MAIN_COLOR} style={styles.mediaContainer} />
                                 <Text style={{ fontFamily: Font.Medium, color: colors.CHAT_DESC }}>Remove</Text>
                             </TouchableOpacity>
                         </View>

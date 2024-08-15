@@ -9,18 +9,20 @@ import { Ionicons, MaterialIcons, MaterialCommunityIcons, FontAwesome6, Feather 
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import { useRoute } from '@react-navigation/native';
 const { height, width } = Dimensions.get('window');
+import { supabase } from '../lib/supabase'
 
 const Chatbox = ({ navigation }) => {
     const route = useRoute()
     const data = route.params
     const reciverId = data?.profiles.id
-    const { uid, user } = useContext(AuthContext);
-    const { } = useContext(ContactContext);
+    const { uid, user, } = useContext(AuthContext);
+    const { FetchByPhone } = useContext(ContactContext);
     const { message, SendMessage, GetMessage, setMessage, SubscribeToMessages } = useContext(MessageContext);
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
     const [messageText, setMassageText] = useState("");
     const [typing, setTyping] = useState(false)
     const scrollViewRef = useRef();
+    const [userActive, setUserActive] = useState(false)
 
     const GetTime = (timestamp) => {
         const timeStampData = Number(timestamp)
@@ -31,7 +33,38 @@ const Chatbox = ({ navigation }) => {
 
     useEffect(() => {
         GetMessage(uid, reciverId)
+        FetchReciverInfo(reciverId)
+        UserStatusChanges(reciverId)
     }, [])
+
+    const FetchReciverInfo = async (reciverId) => {
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('active')
+                .eq('id', reciverId)
+                .single();
+            if (error) {
+                throw error;
+            }
+            setUserActive(data?.active)
+        } catch (error) {
+            console.error('Error fetching user by phone number:', error.message);
+        }
+    }
+
+
+    const UserStatusChanges = (userId) => {
+        const subscription = supabase
+            .channel('public:profiles')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${userId}` }, (payload) => {
+                setUserActive(payload?.new?.active)
+            })
+            .subscribe();
+        return () => {
+            supabase.removeChannel(subscription);
+        };
+    };
 
     useEffect(() => {
         SubscribeToMessages(uid, reciverId)
@@ -64,6 +97,7 @@ const Chatbox = ({ navigation }) => {
                     <TouchableOpacity style={{ width: "40%" }}>
                         <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{data.saved_name}</Text>
                         {/* <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(online && !typing) ? "Online" : (online && typing) ? "typing..." : null}</Text> */}
+                        <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{userActive ? "Online" : "Offline"}</Text>
                     </TouchableOpacity>
                     <View style={{ flexDirection: 'row', width: "30%", gap: 18, justifyContent: "center" }}>
                         <TouchableOpacity>
@@ -93,7 +127,7 @@ const Chatbox = ({ navigation }) => {
             },
             headerTintColor: user.dark_mode ? colors.BLACK : colors.WHITE
         });
-    }, [navigation, image, user, colors, Font, typing]);
+    }, [navigation, image, user, colors, Font, typing, userActive]);
 
     const TypeMassage = (text) => {
         setMassageText(text);
