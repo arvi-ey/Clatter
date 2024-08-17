@@ -21,7 +21,7 @@ import EntryPage from './EntryPage';
 
 export default function Initialpage() {
     const Stack = createNativeStackNavigator();
-    const { firstLoad, session, GetUserOnce, user, uid, loggedIn } = useContext(AuthContext)
+    const { firstLoad, session, GetUserOnce, user, uid, loggedIn, } = useContext(AuthContext)
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const [newUser, setNewUser] = useState(false)
 

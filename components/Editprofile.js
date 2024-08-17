@@ -18,13 +18,13 @@ import { supabase } from '../lib/supabase'
 
 
 const Editprofile = ({ navigation }) => {
-    const { user, UpdateUser, loading } = useContext(AuthContext)
+    const { user, UpdateUser, loading, uid, downloadImage, image, setImage, uploadImage, imageLoading } = useContext(AuthContext)
     const snapPoints = useMemo(() => ['25%'], []);
     const sheetRef = useRef(null);
-    const [image, setImage] = useState(null);
     const [focusEmail, setFocuEmail] = useState(false)
     const [focusNumber, setFocusNumber] = useState(false)
     const [focusName, setFocusName] = useState(false)
+    const [localImage, setLocalImage] = useState()
     const [data, setData] = useState({
         full_name: "",
         email: "",
@@ -32,6 +32,17 @@ const Editprofile = ({ navigation }) => {
         profile_image: ""
     })
     const User_image = require("../assets/user1.jpg")
+
+    useEffect(() => {
+        if (user) {
+            setData({
+                full_name: user.full_name,
+                email: user.email,
+                phone: user.phone,
+            })
+        }
+    }, [user])
+
 
     const openCamera = async () => {
         const { status, canAskAgain } = await ImagePicker.requestCameraPermissionsAsync();
@@ -53,7 +64,7 @@ const Editprofile = ({ navigation }) => {
         });
 
         if (!pickerResult.canceled) {
-            setImage(pickerResult.assets[0].uri);
+            setLocalImage(pickerResult.assets[0].uri);
             closeBottomSheet()
         }
     };
@@ -80,17 +91,9 @@ const Editprofile = ({ navigation }) => {
         });
 
         if (!result.canceled) {
-            console.log("REsult", result.assets[0].uri)
             const uri = result.assets[0].uri;
-            const fileName = uri.split('/').pop();
-            const file = {
-                uri,
-                name: fileName,
-                type: 'image/jpeg',
-            };
-            console.log("Final", file)
-            setImage(result.assets[0].uri);
-            setData({ ...data, profile_image: result.assets[0].uri })
+            setLocalImage(uri)
+            uploadImage(uri)
             closeBottomSheet()
         }
     };
@@ -126,15 +129,6 @@ const Editprofile = ({ navigation }) => {
         });
     }, [navigation]);
 
-    useEffect(() => {
-        if (user) {
-            setData({
-                full_name: user.full_name,
-                email: user.email,
-                phone: user.phone,
-            })
-        }
-    }, [user])
 
     const HandleUpdate = () => {
         const { full_name, email, phone } = data;
@@ -158,8 +152,13 @@ const Editprofile = ({ navigation }) => {
             <SafeAreaView style={[styles.profileContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>
                 <View style={{ alignItems: 'center', gap: 25, backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }}>
                     <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, }}>
-                        <View style={{ position: "relative", }}>
-                            <Image source={User_image} style={{ borderRadius: 90, height: 180, width: 180, borderWidth: 2, }} />
+                        <View style={{ position: "relative", justifyContent: 'center', alignItems: "center" }}>
+
+                            {imageLoading ?
+                                <ActivityIndicator size="large" style={{ position: 'absolute', zIndex: 10 }} color={colors.WHITE} />
+                                : null
+                            }
+                            <Image source={image ? { uri: image } : User_image} style={{ borderRadius: 90, height: 180, width: 180, borderWidth: 2, }} />
                             <TouchableOpacity style={styles.editIcon} onPress={OpenButtomSheet}>
                                 <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />
                             </TouchableOpacity>
@@ -167,7 +166,7 @@ const Editprofile = ({ navigation }) => {
                     </View>
                     <View style={{ gap: 25 }}>
                         <View style={[(focusName || data?.full_name.length > 0) ? styles.FocusinputContainer : styles.inputContainer, {}]}>
-                            <Ionicons full_name="person-outline" size={24} color={(focusName || data.full_name.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
+                            <Ionicons name="person-outline" size={24} color={(focusName || data.full_name.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
                             <TextInput
                                 onFocus={() => setFocusName(!focusName)}
                                 onBlur={() => setFocusName(!focusName)}
@@ -179,7 +178,7 @@ const Editprofile = ({ navigation }) => {
                             />
                         </View>
                         <View style={(focusEmail || data?.email.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
-                            <MaterialCommunityIcons full_name="email-outline" size={24} color={(focusEmail || data.email.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
+                            <MaterialCommunityIcons name="email-outline" size={24} color={(focusEmail || data.email.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
                             <TextInput
                                 onFocus={() => setFocuEmail(!focusEmail)}
                                 onBlur={() => setFocuEmail(!focusEmail)}
@@ -191,7 +190,7 @@ const Editprofile = ({ navigation }) => {
                             />
                         </View>
                         <View style={(focusNumber || data?.phone.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
-                            <Ionicons full_name="phone-portrait-outline" size={24} color={(focusNumber || data.phone.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
+                            <Ionicons name="phone-portrait-outline" size={24} color={(focusNumber || data.phone.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
                             <TextInput
                                 editable={false}
                                 onFocus={() => setFocusNumber(!focusNumber)}

@@ -12,6 +12,7 @@ AppState.addEventListener('change', (state) => {
     }
 })
 
+
 export default AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(false)
     const [firstLoad, setFirstLoad] = useState(false)
@@ -20,6 +21,8 @@ export default AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null)
     const [loggedIn, setLoggedIN] = useState(false)
     const [darkMode, setDarkMode] = useState()
+    const [image, setImage] = useState(null);
+    const [imageLoading, setImageLoading] = useState(false)
 
     useEffect(() => {
         AppLoaded()
@@ -37,7 +40,11 @@ export default AuthProvider = ({ children }) => {
     }, [loggedIn])
 
     useEffect(() => {
-        if (user) setDarkMode(user?.dark_mode)
+        if (user) {
+            setDarkMode(user?.dark_mode)
+            downloadImage(user.profile_pic)
+        }
+
     }, [user])
 
     const AddUser = async (userId, profileData, navigation) => {
@@ -92,6 +99,61 @@ export default AuthProvider = ({ children }) => {
         } catch (error) {
             console.error('Error updating user:', error.message);
             return null;
+        }
+    };
+
+    const uploadImage = async (imageUri) => {
+        setImageLoading(true)
+        try {
+            const arraybuffer = await fetch(imageUri).then((res) => res.arrayBuffer())
+            const filename = `${uid}.jpg`;
+            await supabase
+                .storage
+                .from('avatars')
+                .remove([filename]);
+
+            const { data, error } = await supabase
+                .storage
+                .from('avatars')
+                .upload(filename, arraybuffer, {
+                    contentType: 'image/jpeg',
+                    upsert: true
+                });
+            if (error) {
+                console.log(error);
+                return
+            }
+            UpdateUser(uid, { profile_pic: filename })
+            downloadImage(filename)
+        } catch (error) {
+            console.log('Error uploading image:', error.message);
+        }
+    };
+
+    const downloadImage = async (filename) => {
+        setImageLoading(true)
+        try {
+            const { data, error } = await supabase.storage
+                .from('avatars')
+                .download(filename);
+
+            if (error) {
+                console.error('Error downloading image:', error.message);
+                return;
+            }
+            const fr = new FileReader();
+            fr.readAsDataURL(data);
+            fr.onload = () => {
+                setImage(fr.result)
+                setImageLoading(false)
+            };
+        } catch (error) {
+            console.error('Error:', error.message);
+            setImageLoading(false)
+        }
+        finally {
+            setImageLoading(false)
+
         }
     };
 
@@ -168,7 +230,7 @@ export default AuthProvider = ({ children }) => {
     }
 
 
-    const value = { loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
+    const value = { image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
     return (
         <AuthContext.Provider value={value} >
             {children}

@@ -18,10 +18,10 @@ import { useRoute } from '@react-navigation/native';
 
 
 const EntryPage = ({ navigation }) => {
-    const { loading, AddUser, user, GetUserOnce } = useContext(AuthContext)
+    const { loading, AddUser, user, GetUserOnce, uploadImage, imageLoading, image } = useContext(AuthContext)
     const snapPoints = useMemo(() => ['25%'], []);
     const sheetRef = useRef(null);
-    const [image, setImage] = useState(null);
+    // const [image, setImage] = useState(null);
     const [focusEmail, setFocuEmail] = useState(false)
     const [focusNumber, setFocusNumber] = useState(false)
     const [focusName, setFocusName] = useState(false)
@@ -68,13 +68,11 @@ const EntryPage = ({ navigation }) => {
         });
 
         if (!pickerResult.canceled) {
-            setImage(pickerResult.assets[0].uri);
+            // setImage(pickerResult.assets[0].uri);
             closeBottomSheet()
         }
     };
-    useEffect(() => {
-        if (image) UploadProfileImage(image)
-    }, [image])
+
 
     const openSettings = () => {
         if (Platform.OS === 'ios') {
@@ -98,8 +96,10 @@ const EntryPage = ({ navigation }) => {
         });
 
         if (!result.canceled) {
-            setImage(result.assets[0].uri);
-            setData({ ...data, profile_image: result.assets[0].uri })
+            const uri = result.assets[0].uri
+            // setImage(result.assets[0].uri);
+            // setData({ ...data, profile_image: result.assets[0].uri })
+            uploadImage(uri)
             closeBottomSheet()
         }
     };
@@ -142,8 +142,12 @@ const EntryPage = ({ navigation }) => {
                 <View style={{ alignItems: 'center', gap: 25, backgroundColor: colors.WHITE }}>
 
                     <View style={{ backgroundColor: colors.WHITE, alignItems: "center", gap: 8, }}>
-                        <View style={{ position: "relative", }}>
-                            <Image source={data.profile_image ? { uri: data.profile_image } : User_image} style={{ borderRadius: 90, height: 180, width: 180, borderWidth: 2, }} />
+                        <View style={{ position: "relative", justifyContent: 'center', alignItems: "center" }}>
+                            {imageLoading ?
+                                <ActivityIndicator size="large" style={{ position: 'absolute', zIndex: 10 }} color={colors.WHITE} />
+                                : null
+                            }
+                            <Image source={image ? { uri: image } : User_image} style={{ borderRadius: 90, height: 180, width: 180, borderWidth: 2, }} />
                             <TouchableOpacity style={styles.editIcon} onPress={OpenButtomSheet}>
                                 <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />
                             </TouchableOpacity>
