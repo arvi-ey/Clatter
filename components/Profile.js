@@ -16,7 +16,7 @@ import { Font } from '../common/font';
 import Switch from '../common/Switch';
 
 const Profile = () => {
-    const { GetUserOnce, user, uid, UpdateUser, darkMode } = useContext(AuthContext)
+    const { GetUserOnce, user, uid, UpdateUser, darkMode, image } = useContext(AuthContext)
     const Tab = createBottomTabNavigator();
     useEffect(() => {
         GetUserOnce()

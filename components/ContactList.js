@@ -10,16 +10,11 @@ import { Font } from '../common/font';
 import { ScrollView } from 'react-native-gesture-handler';
 
 const ContactList = ({ navigation }) => {
-    const { user } = useContext(AuthContext)
-    const { FetchContact, savedContact, FetchByPhone, FetchSaVedContactData } = useContext(ContactContext)
+    const { user, savedContact } = useContext(AuthContext)
+    const { FetchContact, FetchSaVedContactData } = useContext(ContactContext)
     const [data, setData] = useState()
 
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
-
-    // 1234567891
-    useEffect(() => {
-        FetchSaVedContactData()
-    }, [])
 
     useEffect(() => {
         setData(savedContact)

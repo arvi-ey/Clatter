@@ -142,12 +142,12 @@ const EntryPage = ({ navigation }) => {
                 <View style={{ alignItems: 'center', gap: 25, backgroundColor: colors.WHITE }}>
 
                     <View style={{ backgroundColor: colors.WHITE, alignItems: "center", gap: 8, }}>
-                        <View style={{ position: "relative", justifyContent: 'center', alignItems: "center" }}>
+                        <View style={{ position: "relative", justifyContent: 'center', alignItems: "center", }}>
                             {imageLoading ?
                                 <ActivityIndicator size="large" style={{ position: 'absolute', zIndex: 10 }} color={colors.WHITE} />
                                 : null
                             }
-                            <Image source={image ? { uri: image } : User_image} style={{ borderRadius: 90, height: 180, width: 180, borderWidth: 2, }} />
+                            <Image source={image ? { uri: image } : User_image} style={{ borderRadius: 90, height: 180, width: 180, borderWidth: 2, borderColor: colors.MAIN_COLOR }} />
                             <TouchableOpacity style={styles.editIcon} onPress={OpenButtomSheet}>
                                 <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />
                             </TouchableOpacity>

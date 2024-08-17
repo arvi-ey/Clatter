@@ -7,10 +7,9 @@ import { supabase } from '../../lib/supabase'
 export const ContactContext = createContext();
 
 const ContactProvider = ({ children }) => {
-    const { uid } = useContext(AuthContext);
+    const { uid, FetchSaVedContactData } = useContext(AuthContext);
     const [loading, setLoading] = useState(false)
     const [contact, setContact] = useState()
-    const [savedContact, setSavedContact] = useState()
 
 
     useEffect(() => {
@@ -79,21 +78,8 @@ const ContactProvider = ({ children }) => {
         };
     };
 
-    const FetchSaVedContactData = async () => {
-        try {
-            let { data: Savedcontact, error } = await supabase
-                .from('Savedcontact')
-                .select(`user_id,saved_name,profiles(*)`)
-                .eq('user_id', uid);
-            setSavedContact(Savedcontact)
-        }
-        catch (error) {
-            console.log(error)
-        }
-    };
 
-
-    value = { loading, AddNewContact, savedContact, FetchByPhone, FetchSaVedContactData }
+    value = { loading, AddNewContact, FetchByPhone }
 
     return (
         <ContactContext.Provider value={value}>

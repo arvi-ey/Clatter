@@ -23,6 +23,7 @@ export default AuthProvider = ({ children }) => {
     const [darkMode, setDarkMode] = useState()
     const [image, setImage] = useState(null);
     const [imageLoading, setImageLoading] = useState(false)
+    const [savedContact, setSavedContact] = useState()
 
     useEffect(() => {
         AppLoaded()
@@ -42,9 +43,9 @@ export default AuthProvider = ({ children }) => {
     useEffect(() => {
         if (user) {
             setDarkMode(user?.dark_mode)
-            downloadImage(user.profile_pic)
+            if (user.profile_pic) downloadImage(user.profile_pic)
+            FetchSaVedContactData()
         }
-
     }, [user])
 
     const AddUser = async (userId, profileData, navigation) => {
@@ -68,6 +69,19 @@ export default AuthProvider = ({ children }) => {
         finally {
             setLoading(false)
 
+        }
+    };
+
+    const FetchSaVedContactData = async () => {
+        try {
+            let { data: Savedcontact, error } = await supabase
+                .from('Savedcontact')
+                .select(`user_id,saved_name,profiles(*)`)
+                .eq('user_id', uid);
+            setSavedContact(Savedcontact)
+        }
+        catch (error) {
+            console.log(error)
         }
     };
 
@@ -230,7 +244,7 @@ export default AuthProvider = ({ children }) => {
     }
 
 
-    const value = { image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
+    const value = { savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
     return (
         <AuthContext.Provider value={value} >
             {children}

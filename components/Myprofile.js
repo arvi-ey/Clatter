@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import React, { useState, useContext, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, Dimensions, SafeAreaView, Platform, FlatList, TouchableOpacity, Alert, Linking, ScrollView } from 'react-native';
 import { colors } from './Theme';
-import { MaterialCommunityIcons, MaterialIcons, Feather, AntDesign,Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, MaterialIcons, Feather, AntDesign, Ionicons } from '@expo/vector-icons';
 import Button from '../common/Button';
 import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
@@ -11,11 +11,11 @@ import { Font } from '../common/font';
 const { height, width } = Dimensions.get('window');
 
 const Myprofile = ({ navigation }) => {
-    const { user } = useContext(AuthContext)
+    const { user, image } = useContext(AuthContext)
     const Navigation = useNavigation();
     const size = 24;
     const color = user.dark_mode ? colors.CHAT_DESC_DARK : colors.CHAT_DESC;
-    const [image, setImage] = useState(null);
+    // const [image, setImage] = useState(null);
     const [data, setData] = useState({
         name: "",
         email: "",
@@ -36,7 +36,7 @@ const Myprofile = ({ navigation }) => {
     const profileListData = [
 
         {
-            icon: <Ionicons name="settings-outline" size={size} color={color}/>,
+            icon: <Ionicons name="settings-outline" size={size} color={color} />,
             name: "Settings",
             info: "Profile Settings"
         },
@@ -87,7 +87,7 @@ const Myprofile = ({ navigation }) => {
     };
     const ListClick = (value) => {
         if (value === "Log out") LogOut();
-        if(value === "Settings") Navigation.navigate("Settings");
+        if (value === "Settings") Navigation.navigate("Settings");
     };
     React.useLayoutEffect(() => {
         Navigation.setOptions({
@@ -101,12 +101,12 @@ const Myprofile = ({ navigation }) => {
             },
             headerTintColor: user.dark_mode ? colors.WHITE : colors.BLACK,
         });
-    }, [Navigation,user]);
+    }, [Navigation, user]);
     return (
 
         <ScrollView style={[styles.profileContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>
             <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, }}>
-                <Image source={data.profile_image ? { uri: data.profile_image } : User_image} style={{ borderRadius: 80, borderWidth: 2, height: 160, width: 160 }} />
+                <Image source={image ? { uri: image } : User_image} style={{ borderRadius: 80, borderWidth: 2, borderWidth: 2, borderColor: colors.MAIN_COLOR, height: 160, width: 160 }} />
                 <View style={styles.nameContainer}>
                     <Text style={{ fontSize: 25, fontFamily: Font.Bold, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{user.name}</Text>
                     <Text style={{ color: user.dark_mode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: Font.Regular }}>{user.email}</Text>
@@ -119,9 +119,9 @@ const Myprofile = ({ navigation }) => {
                     press={() => Navigation.navigate('Editprofile')}
                 />
             </View>
-            {profileListData?.map((item,index) => {
+            {profileListData?.map((item, index) => {
                 return (
-                    <TouchableOpacity activeOpacity={0.5} style={[styles.menuContainer,{marginBottom:index===(profileListData.length-1)?100:0}  ]} onPress={() => ListClick(item.name)} key={index}>
+                    <TouchableOpacity activeOpacity={0.5} style={[styles.menuContainer, { marginBottom: index === (profileListData.length - 1) ? 100 : 0 }]} onPress={() => ListClick(item.name)} key={index}>
                         <View style={{ marginLeft: 15 }}>
                             {item?.icon}
                         </View>
