@@ -23,6 +23,7 @@ const Chatbox = ({ navigation }) => {
     const [typing, setTyping] = useState(false)
     const scrollViewRef = useRef();
     const [userActive, setUserActive] = useState(false)
+    const [lastSeen, setlastSeen] = useState()
 
     const GetTime = (timestamp) => {
         const timeStampData = Number(timestamp)
@@ -41,13 +42,14 @@ const Chatbox = ({ navigation }) => {
         try {
             const { data, error } = await supabase
                 .from('profiles')
-                .select('active')
+                .select('active,last_seen')
                 .eq('id', reciverId)
                 .single();
             if (error) {
                 throw error;
             }
             setUserActive(data?.active)
+            setlastSeen(data?.last_seen)
         } catch (error) {
             console.error('Error fetching user by phone number:', error.message);
         }
@@ -59,6 +61,7 @@ const Chatbox = ({ navigation }) => {
             .channel('public:profiles')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${userId}` }, (payload) => {
                 setUserActive(payload?.new?.active)
+                setlastSeen(payload?.new?.last_seen)
             })
             .subscribe();
         return () => {
@@ -81,7 +84,7 @@ const Chatbox = ({ navigation }) => {
             messageObj.status = "SENT"
             messageObj.react = false
             await SendMessage(messageObj)
-            setMessage([...message, messageObj])
+            // setMessage([...message, messageObj])
             setMassageText("")
 
         }
@@ -96,8 +99,10 @@ const Chatbox = ({ navigation }) => {
                     </TouchableOpacity>
                     <TouchableOpacity style={{ width: "40%" }}>
                         <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{data.saved_name}</Text>
-                        {/* <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(online && !typing) ? "Online" : (online && typing) ? "typing..." : null}</Text> */}
-                        <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{userActive ? "Online" : "Offline"}</Text>
+                        {userActive || lastSeen ?
+                            <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{userActive ? "Online" : `last seen ${GetTime(lastSeen)}`}</Text>
+                            : null
+                        }
                     </TouchableOpacity>
                     <View style={{ flexDirection: 'row', width: "30%", gap: 18, justifyContent: "center" }}>
                         <TouchableOpacity>
@@ -127,7 +132,7 @@ const Chatbox = ({ navigation }) => {
             },
             headerTintColor: user.dark_mode ? colors.BLACK : colors.WHITE
         });
-    }, [navigation, image, user, colors, Font, typing, userActive]);
+    }, [navigation, image, user, colors, Font, typing, userActive, lastSeen]);
 
     const TypeMassage = (text) => {
         setMassageText(text);

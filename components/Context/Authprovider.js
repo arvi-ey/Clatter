@@ -181,7 +181,7 @@ export default AuthProvider = ({ children }) => {
             setuid(session?.user?.id)
         })
         if (!session?.user?.id) {
-            console.log('User ID is null, cannot fetch user');
+            // console.log('User ID is null, cannot fetch user');
             return;
         }
         try {

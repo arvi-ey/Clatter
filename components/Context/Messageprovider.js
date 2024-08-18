@@ -10,6 +10,7 @@ export default Messageprovider = ({ children }) => {
 
     const GetMessage = async (senderId, receiverId) => {
         try {
+            setMessage([])
             let { data: messages, error } = await supabase
                 .from('message')
                 .select(`*`)
@@ -34,7 +35,7 @@ export default Messageprovider = ({ children }) => {
                         (newMessage.sender === senderId && newMessage.reciver === receiverId) ||
                         (newMessage.sender === receiverId && newMessage.reciver === senderId)
                     ) {
-                        GetMessage(senderId, receiverId);
+                        setMessage((prevMessages) => [...prevMessages, newMessage]);
                     }
                 }
             )

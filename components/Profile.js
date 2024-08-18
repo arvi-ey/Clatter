@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, AppState } from 'react-native'
 import React, { useState, useEffect, useContext } from 'react';
 import ChatScreen from './ChatScreen';
 import CallScreen from './CallScreen';
@@ -15,12 +15,37 @@ import { AuthContext } from './Context/Authprovider';
 import { Font } from '../common/font';
 import Switch from '../common/Switch';
 
+
+
 const Profile = () => {
     const { GetUserOnce, user, uid, UpdateUser, darkMode, image } = useContext(AuthContext)
     const Tab = createBottomTabNavigator();
+
+
     useEffect(() => {
         GetUserOnce()
     }, [])
+
+    useEffect(() => {
+        if (uid && user.active === false) {
+            UpdateUser(uid, { active: true });
+        }
+        const handleAppStateChange = (nextAppState) => {
+
+            if (nextAppState === 'background') {
+                UpdateUser(uid, { active: false, last_seen: Date.now() });
+            }
+            if (nextAppState === 'active') {
+                UpdateUser(uid, { active: true });
+            }
+        };
+        const subscription = AppState.addEventListener('change', handleAppStateChange);
+        return () => {
+            subscription.remove();
+        };
+    }, [uid])
+
+
 
 
     const SetDarkmode = async () => {
