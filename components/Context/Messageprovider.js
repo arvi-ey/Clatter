@@ -43,6 +43,33 @@ export default Messageprovider = ({ children }) => {
         return channel;
     };
 
+    const UpdateTyping = async (updatedData) => {
+        try {
+            const { data, error } = await supabase
+                .from('Typing')
+                .update(updatedData)
+                .eq('sender', uid);
+
+            if (error) {
+                throw error;
+            }
+        } catch (error) {
+            console.error('Error updating user:', error.message);
+            return null;
+        }
+    };
+
+
+    const TrackTyping = (senderId) => {
+        const typingChannel = supabase
+            .channel('typing-channel')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'Typing', filter: `sender=eq.${senderId}` }, (payload) => {
+                console.log('Typing event:', payload);
+            })
+            .subscribe();
+        return typingChannel;
+    }
+
 
 
 
@@ -60,7 +87,7 @@ export default Messageprovider = ({ children }) => {
         }
     };
 
-    const value = { message, SendMessage, GetMessage, setMessage, SubscribeToMessages }
+    const value = { message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping }
     return (
         <MessageContext.Provider value={value} >
             {children}

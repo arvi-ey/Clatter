@@ -17,7 +17,7 @@ const Chatbox = ({ navigation }) => {
     const reciverId = data?.profiles.id
     const { uid, user, } = useContext(AuthContext);
     const { FetchByPhone } = useContext(ContactContext);
-    const { message, SendMessage, GetMessage, setMessage, SubscribeToMessages } = useContext(MessageContext);
+    const { message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping } = useContext(MessageContext);
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
     const [messageText, setMassageText] = useState("");
     const [typing, setTyping] = useState(false)
@@ -71,6 +71,8 @@ const Chatbox = ({ navigation }) => {
 
     useEffect(() => {
         SubscribeToMessages(uid, reciverId)
+        TrackTyping(uid)
+
     }, [uid, reciverId])
 
 
@@ -86,6 +88,7 @@ const Chatbox = ({ navigation }) => {
             await SendMessage(messageObj)
             // setMessage([...message, messageObj])
             setMassageText("")
+            UpdateTyping({ reciver: reciverId, typing: false })
 
         }
     }
@@ -136,6 +139,9 @@ const Chatbox = ({ navigation }) => {
 
     const TypeMassage = (text) => {
         setMassageText(text);
+        // if (text && text.length > 0) UpdateTyping({ reciver: reciverId, typing: true })
+        UpdateTyping({ reciver: reciverId, typing: text.length > 0 });
+        // else UpdateTyping({ reciver: reciverId, typing: false })
     };
 
     return (
