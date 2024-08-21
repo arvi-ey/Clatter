@@ -17,13 +17,14 @@ const Chatbox = ({ navigation }) => {
     const reciverId = data?.profiles.id
     const { uid, user, } = useContext(AuthContext);
     const { FetchByPhone } = useContext(ContactContext);
-    const { message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping } = useContext(MessageContext);
+    const { message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping, typing } = useContext(MessageContext);
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
     const [messageText, setMassageText] = useState("");
-    const [typing, setTyping] = useState(false)
     const scrollViewRef = useRef();
     const [userActive, setUserActive] = useState(false)
     const [lastSeen, setlastSeen] = useState()
+    const [isTyping, setIsTyping] = useState(false);
+    const typingTimeoutRef = useRef(null);
 
     const GetTime = (timestamp) => {
         const timeStampData = Number(timestamp)
@@ -71,7 +72,7 @@ const Chatbox = ({ navigation }) => {
 
     useEffect(() => {
         SubscribeToMessages(uid, reciverId)
-        TrackTyping(uid)
+        TrackTyping(reciverId)
 
     }, [uid, reciverId])
 
@@ -88,7 +89,6 @@ const Chatbox = ({ navigation }) => {
             await SendMessage(messageObj)
             // setMessage([...message, messageObj])
             setMassageText("")
-            UpdateTyping({ reciver: reciverId, typing: false })
 
         }
     }
@@ -103,7 +103,7 @@ const Chatbox = ({ navigation }) => {
                     <TouchableOpacity style={{ width: "40%" }}>
                         <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{data.saved_name}</Text>
                         {userActive || lastSeen ?
-                            <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{userActive ? "Online" : `last seen ${GetTime(lastSeen)}`}</Text>
+                            <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing) ? "Online" : (userActive && typing) ? "Typing..." : `last seen ${GetTime(lastSeen)}`}</Text>
                             : null
                         }
                     </TouchableOpacity>
@@ -139,10 +139,21 @@ const Chatbox = ({ navigation }) => {
 
     const TypeMassage = (text) => {
         setMassageText(text);
-        // if (text && text.length > 0) UpdateTyping({ reciver: reciverId, typing: true })
-        UpdateTyping({ reciver: reciverId, typing: text.length > 0 });
-        // else UpdateTyping({ reciver: reciverId, typing: false })
+        setIsTyping(true);
+
+        if (typingTimeoutRef) {
+            clearTimeout(typingTimeoutRef.current);
+        }
+        typingTimeoutRef.current = setTimeout(() => {
+            setIsTyping(false);
+        }, 1000);
     };
+
+    useEffect(() => {
+        if (isTyping) UpdateTyping({ reciver: reciverId, typing: true })
+        if (!isTyping) UpdateTyping({ reciver: reciverId, typing: false })
+    }, [isTyping])
+
 
     return (
         <View style={[styles.ChatBackGround, { backgroundColor: user.dark_mode ? colors.CHAT_BG_DARK : colors.CHAT_BG }]}>

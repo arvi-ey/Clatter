@@ -27,7 +27,7 @@ const Profile = () => {
     }, [])
 
     useEffect(() => {
-        if (uid && user.active === false) {
+        if (uid) {
             UpdateUser(uid, { active: true });
         }
         const handleAppStateChange = (nextAppState) => {

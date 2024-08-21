@@ -39,6 +39,7 @@ const Editprofile = ({ navigation }) => {
                 full_name: user.full_name,
                 email: user.email,
                 phone: user.phone,
+                profile_image: user.profile_pic
             })
         }
     }, [user])
@@ -158,7 +159,7 @@ const Editprofile = ({ navigation }) => {
                                 <ActivityIndicator size="large" style={{ position: 'absolute', zIndex: 10 }} color={colors.WHITE} />
                                 : null
                             }
-                            <Image source={image ? { uri: image } : User_image} style={{ borderRadius: 90, height: 180, width: 180, borderWidth: 2, borderColor: colors.MAIN_COLOR }} />
+                            <Image source={data.profile_image ? { uri: data.profile_image } : User_image} style={{ borderRadius: 90, height: 180, width: 180, borderWidth: 2, borderColor: colors.MAIN_COLOR }} />
                             <TouchableOpacity style={styles.editIcon} onPress={OpenButtomSheet}>
                                 <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />
                             </TouchableOpacity>

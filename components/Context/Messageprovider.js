@@ -7,6 +7,8 @@ export const MessageContext = createContext({});
 export default Messageprovider = ({ children }) => {
     const { user, uid } = useContext(AuthContext);
     const [message, setMessage] = useState()
+    const [typing, setTyping] = useState(false)
+
 
     const GetMessage = async (senderId, receiverId) => {
         try {
@@ -60,15 +62,23 @@ export default Messageprovider = ({ children }) => {
     };
 
 
-    const TrackTyping = (senderId) => {
-        const typingChannel = supabase
-            .channel('typing-channel')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'Typing', filter: `sender=eq.${senderId}` }, (payload) => {
-                console.log('Typing event:', payload);
-            })
-            .subscribe();
-        return typingChannel;
-    }
+    const TrackTyping = (userId) => {
+
+        const channels = supabase.channel('custom-all-channel')
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'Typing', filter: `sender=eq.${userId}` },
+                (payload) => {
+                    setTyping(payload.new.typing)
+                }
+            )
+            .subscribe()
+    };
+
+
+
+
+
 
 
 
@@ -87,7 +97,7 @@ export default Messageprovider = ({ children }) => {
         }
     };
 
-    const value = { message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping }
+    const value = { message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping, typing }
     return (
         <MessageContext.Provider value={value} >
             {children}
