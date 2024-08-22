@@ -69,19 +69,13 @@ export default Messageprovider = ({ children }) => {
                 'postgres_changes',
                 { event: '*', schema: 'public', table: 'Typing', filter: `sender=eq.${userId}` },
                 (payload) => {
-                    setTyping(payload.new.typing)
+                    if (payload.new.reciver === uid)
+                        setTyping(payload.new.typing)
                 }
             )
             .subscribe()
+        return channels
     };
-
-
-
-
-
-
-
-
 
     const SendMessage = async (mesageTeext) => {
         try {

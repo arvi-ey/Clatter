@@ -24,6 +24,10 @@ const Chatbox = ({ navigation }) => {
     const [userActive, setUserActive] = useState(false)
     const [lastSeen, setlastSeen] = useState()
     const [isTyping, setIsTyping] = useState(false);
+    // const [hide, setHide] = useState({ hideActive: false, hideTyping: false, hideLastseen: false })
+    const [hideActive, setHideActive] = useState()
+    const [hideTyping, setHideTyping] = useState()
+    const [hideLastseen, setHideLastseen] = useState()
     const typingTimeoutRef = useRef(null);
 
     const GetTime = (timestamp) => {
@@ -43,7 +47,7 @@ const Chatbox = ({ navigation }) => {
         try {
             const { data, error } = await supabase
                 .from('profiles')
-                .select('active,last_seen')
+                .select('active,last_seen,hideActive,hideTyping,hideLastseen')
                 .eq('id', reciverId)
                 .single();
             if (error) {
@@ -51,11 +55,14 @@ const Chatbox = ({ navigation }) => {
             }
             setUserActive(data?.active)
             setlastSeen(data?.last_seen)
+            setHideActive(data?.hideActive)
+            setHideLastseen(data?.hideLastseen)
+            setHideTyping(data?.hideTyping)
+            // setHide({ hideActive: data.hideActive, hideLastseen: data.hideLastseen, hideTyping: data.hideTyping })
         } catch (error) {
             console.error('Error fetching user by phone number:', error.message);
         }
     }
-
 
     const UserStatusChanges = (userId) => {
         const subscription = supabase
@@ -63,6 +70,11 @@ const Chatbox = ({ navigation }) => {
             .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${userId}` }, (payload) => {
                 setUserActive(payload?.new?.active)
                 setlastSeen(payload?.new?.last_seen)
+                // setHide({ hideActive: payload?.new?.hideActive, hideLastseen: payload?.new?.hideLastseen, hideTyping: payload?.new?.hideTyping })
+                setHideActive(payload?.new?.hideActive)
+                setHideLastseen(payload?.new?.hideLastseen)
+                setHideTyping(payload?.new?.hideTyping)
+
             })
             .subscribe();
         return () => {
@@ -103,7 +115,7 @@ const Chatbox = ({ navigation }) => {
                     <TouchableOpacity style={{ width: "40%" }}>
                         <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{data.saved_name}</Text>
                         {userActive || lastSeen ?
-                            <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing) ? "Online" : (userActive && typing) ? "Typing..." : `last seen ${GetTime(lastSeen)}`}</Text>
+                            <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && !typing && hideActive) ? null : (userActive && typing) ? "Typing..." : !hideLastseen ? `last seen ${GetTime(lastSeen)}` : null}</Text>
                             : null
                         }
                     </TouchableOpacity>
@@ -135,7 +147,7 @@ const Chatbox = ({ navigation }) => {
             },
             headerTintColor: user.dark_mode ? colors.BLACK : colors.WHITE
         });
-    }, [navigation, image, user, colors, Font, typing, userActive, lastSeen]);
+    }, [navigation, image, user, colors, Font, typing, userActive, lastSeen, hideActive, hideLastseen, hideTyping]);
 
     const TypeMassage = (text) => {
         setMassageText(text);
@@ -146,7 +158,7 @@ const Chatbox = ({ navigation }) => {
         }
         typingTimeoutRef.current = setTimeout(() => {
             setIsTyping(false);
-        }, 1000);
+        }, 800);
     };
 
     useEffect(() => {

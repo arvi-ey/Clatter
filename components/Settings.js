@@ -7,17 +7,17 @@ const { height, width } = Dimensions.get('window');
 import Switch from '../common/Switch';
 
 const Settings = ({ navigation }) => {
-    const { user, EditUser, loading, UploadProfileImage, imageLoading } = useContext(AuthContext)
-    const [hideTyping, setHideTyping] = useState()
-    const [hideActive, setHideActive] = useState()
-    const [hideHomeActive, setHideHomeActive] = useState()
+    const { user, UpdateUser, uid } = useContext(AuthContext)
+    const [hideTyping, setHideTyping] = useState(false)
+    const [hideActive, setHideActive] = useState(false)
+    const [hideLastseen, setHideLastseen] = useState(false)
 
 
     useEffect(() => {
         if (user) {
-            setHideActive(user.hideActiveStatus)
+            setHideActive(user.hideActive)
             setHideTyping(user.hideTyping)
-            setHideHomeActive(user.hideActiveStatusHome)
+            setHideLastseen(user.hideLastseen)
         }
     }, [user])
 
@@ -34,24 +34,24 @@ const Settings = ({ navigation }) => {
             Desc: "Hiding your typing status hides others' typing status too."
         },
         {
-            name: "Hide home scrren active status",
-            value: "HomeActive",
-            Desc: "Enabling this option hides others' active status from home screen, but they can still see yours."
+            name: "Hide last seen",
+            value: "Lastseen",
+            Desc: "Enabling this option hides your last seen and others too."
         },
     ]
 
     const OnSwitch = (value) => {
         if (value === "Active") {
             setHideActive(!hideActive)
-            EditUser({ hideActiveStatus: !hideActive })
+            UpdateUser(uid, { hideActive: !hideActive })
         }
         if (value === "Typing") {
             setHideTyping(!hideTyping)
-            EditUser({ hideTyping: !hideTyping })
+            UpdateUser(uid, { hideTyping: !hideTyping })
         }
-        if (value === "HomeActive") {
-            setHideHomeActive(!hideHomeActive)
-            EditUser({ hideActiveStatusHome: !hideHomeActive })
+        if (value === "Lastseen") {
+            setHideLastseen(!hideLastseen)
+            UpdateUser(uid, { hideLastseen: !hideLastseen })
         }
 
     }
@@ -69,6 +69,7 @@ const Settings = ({ navigation }) => {
             headerTintColor: user.dark_mode ? colors.WHITE : colors.BLACK,
         });
     }, [navigation]);
+
     return (
         <ScrollView style={{ flex: 1, backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }} >
             {
@@ -90,12 +91,11 @@ const Settings = ({ navigation }) => {
                             <Switch
                                 onToggle={() => OnSwitch(item.value)}
                                 size={'medium'}
-                                isOn={item.value === 'Active' ? hideActive : item.value === "Typing" ? hideTyping : hideHomeActive}
+                                isOn={item.value === 'Active' ? hideActive : item.value === "Typing" ? hideTyping : item.value === "Lastseen" ? hideLastseen : null}
                                 onColor={colors.MAIN_COLOR}
                                 offColor={colors.SWITCH_BG}
                                 animationSpeed={300}
                                 thumbOnStyle={{ backgroundColor: colors.WHITE }}
-                            // icon={<DarkModeIcon/>}
                             />
                         </View>
                     )
