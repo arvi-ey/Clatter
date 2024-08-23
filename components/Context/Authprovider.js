@@ -2,6 +2,8 @@ import React, { createContext, useState, useEffect, useContext, useRef, } from '
 import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase'
+import country from '../../common/country';
+import { err } from 'react-native-svg';
 
 export const AuthContext = createContext({});
 AppState.addEventListener('change', (state) => {
@@ -24,10 +26,12 @@ export default AuthProvider = ({ children }) => {
     const [image, setImage] = useState(null);
     const [imageLoading, setImageLoading] = useState(false)
     const [savedContact, setSavedContact] = useState()
+    const [country, setCountry] = useState()
 
     useEffect(() => {
         AppLoaded()
         LoggedIN()
+        // FetchCountry(country)
     }, [])
 
     useEffect(() => {
@@ -47,6 +51,20 @@ export default AuthProvider = ({ children }) => {
             FetchSaVedContactData()
         }
     }, [user])
+
+    const FetchCountry = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('country')
+                .select('*')
+            if (!error) setCountry(data)
+        }
+        catch (error) {
+            console.log(error)
+
+        }
+    }
+
 
     const AddUser = async (userId, profileData, navigation) => {
         setLoading(true)
@@ -264,7 +282,7 @@ export default AuthProvider = ({ children }) => {
     }
 
 
-    const value = { savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
+    const value = { country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
     return (
         <AuthContext.Provider value={value} >
             {children}

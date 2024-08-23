@@ -18,7 +18,7 @@ import LottieView from 'lottie-react-native';
 
 const Signinpage = () => {
 
-    const { SignIn } = useContext(AuthContext)
+    const { FetchCountry, country } = useContext(AuthContext)
     const [countryData, setCountryData] = useState(null)
     const Navigation = useNavigation();
     const [mobileNumber, setMobileNumber] = useState()
@@ -35,8 +35,8 @@ const Signinpage = () => {
     );
 
     useEffect(() => {
-        if (country) setCountryData(country)
-    }, [country])
+        FetchCountry()
+    }, [])
 
     const handleMobile = (text) => {
         setMobileNumber(text)
@@ -84,7 +84,7 @@ const Signinpage = () => {
             </TouchableOpacity>
         )
     }
-    const FilteredCountry = countryData?.filter(value =>
+    const FilteredCountry = country?.filter(value =>
         value?.country?.toLowerCase().includes(searchCountry?.toLowerCase()) || value?.label.toLowerCase().includes(searchCountry?.toLowerCase())
     )
 
