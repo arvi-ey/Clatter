@@ -104,6 +104,54 @@ const Chatbox = ({ navigation }) => {
 
         }
     }
+    function formatTimestamp(data) {
+        const timestamp = Number(data);
+
+        const months = [
+            "January", "February", "March", "April", "May", "June", "July",
+            "August", "September", "October", "November", "December"
+        ];
+
+        const date = new Date(timestamp);
+        const now = new Date();
+
+        // Calculate the difference in days between the given date and now
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const startOfYesterday = new Date(startOfToday);
+        startOfYesterday.setDate(startOfToday.getDate() - 1);
+
+        const dayDifference = Math.floor((startOfToday - date) / (1000 * 60 * 60 * 24));
+        const isYesterday = timestamp >= startOfYesterday.getTime() && timestamp < startOfToday.getTime();
+
+        const hours = date.getHours();
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+
+        const period = hours >= 12 ? 'PM' : 'AM';
+        const formattedHours = hours % 12 || 12;
+
+        const timeString = `${formattedHours}:${minutes} ${period}`;
+
+        if (dayDifference === 0) {
+            // console.log(timeString)
+            return `today at ${timeString}`;
+        } else if (isYesterday) {
+            // console.log(timeString)
+            return `yesterday at ${timeString}`;
+        } else {
+            const day = date.getDate();
+            const suffix = day % 10 === 1 && day !== 11 ? "st" : day % 10 === 2 && day !== 12 ? "nd" : day % 10 === 3 && day !== 13 ? "rd" : "th";
+            if (formatDateFromTimestamp(Date.now()) == formatDateFromTimestamp(timestamp)) return `today at ${timeString}`
+            else return `${day}${suffix} ${months[date.getMonth()]} at ${timeString}`;
+        }
+    }
+
+    function formatDateFromTimestamp(timestamp) {
+        const date = new Date(timestamp);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    }
 
     React.useLayoutEffect(() => {
         navigation.setOptions({
@@ -115,7 +163,8 @@ const Chatbox = ({ navigation }) => {
                     <TouchableOpacity style={{ width: "40%" }}>
                         <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{data.saved_name}</Text>
                         {userActive || lastSeen ?
-                            <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && !typing && hideActive) ? null : (userActive && typing) ? "Typing..." : !hideLastseen ? `last seen ${GetTime(lastSeen)}` : null}</Text>
+                            // <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && !typing && hideActive) ? null : (userActive && typing) ? "Typing..." : !hideLastseen ? `last seen ${GetTime(lastSeen)}` : null}</Text>
+                            <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && !typing && hideActive) ? null : (userActive && typing) ? "Typing..." : !hideLastseen ? formatTimestamp(lastSeen) : null}</Text>
                             : null
                         }
                     </TouchableOpacity>

@@ -31,7 +31,6 @@ export default AuthProvider = ({ children }) => {
     useEffect(() => {
         AppLoaded()
         LoggedIN()
-        // FetchCountry(country)
     }, [])
 
     useEffect(() => {
@@ -51,6 +50,17 @@ export default AuthProvider = ({ children }) => {
             FetchSaVedContactData()
         }
     }, [user])
+
+    const AddCountry = async (country) => {
+        try {
+            const { data, error } = await supabase
+                .from('country')
+                .upsert(country)
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
 
     const FetchCountry = async () => {
         try {

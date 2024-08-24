@@ -8,9 +8,9 @@ import Switch from '../common/Switch';
 
 const Settings = ({ navigation }) => {
     const { user, UpdateUser, uid } = useContext(AuthContext)
-    const [hideTyping, setHideTyping] = useState(false)
-    const [hideActive, setHideActive] = useState(false)
-    const [hideLastseen, setHideLastseen] = useState(false)
+    const [hideTyping, setHideTyping] = useState()
+    const [hideActive, setHideActive] = useState()
+    const [hideLastseen, setHideLastseen] = useState()
 
 
     useEffect(() => {

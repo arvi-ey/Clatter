@@ -69,11 +69,11 @@ const Signinpage = () => {
 
     const RenderCountrylist = ({ item }) => {
         return (
-            <TouchableOpacity style={{ flexDirection: "row", marginBottom: 20, marginLeft: 20, }} onPress={() => {
+            <TouchableOpacity style={{ flexDirection: "row", marginBottom: 10, marginLeft: 20, paddingVertical: 10, }} onPress={() => {
                 SelectContryCode(item)
             }}  >
                 <View style={{ width: "15%", }}>
-                    <Image source={{ uri: `https://flagpedia.net/data/flags/h80/${item.label}.png` }} style={{ height: 20, width: 30 }} />
+                    <Image source={{ uri: item.flag }} style={{ height: 20, width: 30 }} />
                 </View>
                 <View style={{ width: "20%", }}>
                     <Text style={{ fontFamily: Font.Medium, fontSize: 15 }}>(+{item.code})</Text>
