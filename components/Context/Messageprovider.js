@@ -26,6 +26,25 @@ export default Messageprovider = ({ children }) => {
     };
 
 
+    const GetLatestMessage = async (receiverId) => {
+        try {
+            let { data: messages, error } = await supabase
+                .from('message')
+                .select('*')
+                .or(`and(sender.eq.${uid},reciver.eq.${receiverId}),and(sender.eq.${receiverId},reciver.eq.${uid})`)
+                .order('time', { ascending: false })
+                .limit(1);
+
+            if (error) throw error;
+            // console.log(messages[0].content)
+            return messages[0];
+        } catch (error) {
+            console.log('Error fetching the latest message:', error);
+            return null;
+        }
+    };
+
+
     const SubscribeToMessages = (senderId, receiverId) => {
         const channel = supabase
             .channel('messages-channel')
@@ -39,6 +58,7 @@ export default Messageprovider = ({ children }) => {
                     ) {
                         setMessage((prevMessages) => [...prevMessages, newMessage]);
                     }
+                    // if (newMessage.sender === uid || newMessage.reciver === uid) console.log(newMessage)
                 }
             )
             .subscribe();
@@ -91,7 +111,7 @@ export default Messageprovider = ({ children }) => {
         }
     };
 
-    const value = { message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping, typing }
+    const value = { GetLatestMessage, message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping, typing }
     return (
         <MessageContext.Provider value={value} >
             {children}

@@ -14,7 +14,6 @@ import { supabase } from '../lib/supabase'
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { err } from 'react-native-svg'
-import LottieView from 'lottie-react-native';
 
 const Signinpage = () => {
 
@@ -66,6 +65,9 @@ const Signinpage = () => {
         setSelectCountry(data)
         closeBottomSheet()
     }
+
+
+
 
     const RenderCountrylist = ({ item }) => {
         return (

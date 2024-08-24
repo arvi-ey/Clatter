@@ -15,6 +15,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AuthContext } from './Context/Authprovider';
 import { Font } from '../common/font';
 import { useRoute } from '@react-navigation/native';
+import LottieView from 'lottie-react-native';
+
 
 
 const EntryPage = ({ navigation }) => {
@@ -25,7 +27,7 @@ const EntryPage = ({ navigation }) => {
     const [focusEmail, setFocuEmail] = useState(false)
     const [focusNumber, setFocusNumber] = useState(false)
     const [focusName, setFocusName] = useState(false)
-
+    const [dataLoading, setDataLoading] = useState(true)
     const [data, setData] = useState({
         full_name: "",
         email: "",
@@ -34,7 +36,12 @@ const EntryPage = ({ navigation }) => {
 
     useEffect(() => {
         GetUserOnce()
+        setDataLoading(true)
     }, [])
+
+    setTimeout(() => {
+        setDataLoading(false)
+    }, 2000)
 
     useEffect(() => {
         if (user) {
@@ -134,6 +141,22 @@ const EntryPage = ({ navigation }) => {
         else {
             AddUser(user.id, data, navigation)
         }
+    }
+
+
+    if (dataLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
+                <LottieView
+                    autoPlay
+                    style={{
+                        width: 400,
+                        height: 400,
+                    }}
+                    source={require('../assets/otp_verified.json')}
+                />
+            </View>
+        )
     }
 
     return (
