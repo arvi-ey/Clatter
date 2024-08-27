@@ -7,9 +7,10 @@ import { supabase } from '../../lib/supabase'
 export const ContactContext = createContext();
 
 const ContactProvider = ({ children }) => {
-    const { uid, FetchSaVedContactData } = useContext(AuthContext);
+    const { uid, FetchSaVedContactData, savedContact, setSavedContact } = useContext(AuthContext);
     const [loading, setLoading] = useState(false)
     const [contact, setContact] = useState()
+    const [messagedContact, SetmessagedContact] = useState()
 
 
     useEffect(() => {
@@ -69,7 +70,10 @@ const ContactProvider = ({ children }) => {
         const subscription = supabase
             .channel('public:Savedcontact')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'Savedcontact' }, (payload) => {
-                FetchSaVedContactData()
+
+                if (payload.new && payload.new.user_id === uid) {
+                    FetchSaVedContactData()
+                }
             })
             .subscribe();
 
@@ -78,8 +82,29 @@ const ContactProvider = ({ children }) => {
         };
     };
 
+    const GetuserMessaged = async () => {
+        try {
+            let { data: messages, error } = await supabase
+                .from('message')
+                .select('profiles(*)')
+                .or(`reciver.eq.${uid}`);
 
-    value = { loading, AddNewContact, FetchByPhone }
+            if (error) throw error;
+            const uniqueProfiles = messages.reduce((acc, message) => {
+                if (!acc.some(profile => profile.id === message.profiles.id)) {
+                    acc.push(message.profiles);
+                }
+                return acc;
+            }, []);
+            SetmessagedContact(uniqueProfiles)
+
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+        }
+    };
+
+
+    value = { SubscribeToContactChange, loading, messagedContact, AddNewContact, FetchByPhone, GetuserMessaged }
 
     return (
         <ContactContext.Provider value={value}>

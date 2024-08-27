@@ -11,14 +11,21 @@ import { MessageContext } from './Context/Messageprovider'
 
 const ChatScreen = ({ navigation }) => {
     const { user, darkMode, savedContact, uid } = useContext(AuthContext)
+    const { GetuserMessaged, messagedContact, SubscribeToContactChange } = useContext(ContactContext)
     const [data, setData] = useState()
     const { GetLatestMessage } = useContext(MessageContext);
 
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
 
     useEffect(() => {
+        GetuserMessaged()
+        SubscribeToContactChange()
+    }, [])
+    useEffect(() => {
         setData(savedContact)
     }, [savedContact])
+
+    // console.log(GetuserMessaged)
 
     const GotoChat = (data) => {
         navigation.navigate('Chatbox', data);
@@ -28,13 +35,18 @@ const ChatScreen = ({ navigation }) => {
     const ChatComponent = ({ data }) => {
         const [latestMessage, setLatestMessage] = useState(null);
         const [time, settime] = useState()
+        const [emptyMessage, setEmptyMessage] = useState(false)
 
         useEffect(() => {
             const fetchLatestMessage = async () => {
                 if (data && data.profiles && data.profiles.id) {
                     const message = await GetLatestMessage(data.profiles.id);
-                    setLatestMessage(message.content);
-                    settime(message.time)
+                    // console.log(message, `For ${uid}`)
+                    if (!message) setEmptyMessage(true)
+                    if (message?.content) {
+                        setLatestMessage(message?.content);
+                        settime(message.time)
+                    }
                 }
             };
             fetchLatestMessage();
@@ -48,32 +60,33 @@ const ChatScreen = ({ navigation }) => {
         };
 
         return (
-            <TouchableOpacity style={{ marginTop: 8, flexDirection: "row", height: 70, padding: 5, gap: 20, alignItems: "center" }}
-                onPress={() => GotoChat(data)}
-            >
-                <View style={{ padding: 5, }} >
-                    <Image source={{ uri: image }}
-                        style={{ height: 55, width: 55, borderRadius: 30, resizeMode: "cover" }}
-                    />
-                </View>
-                <View style={{ flex: 1 }} >
-                    <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
-                        <Text style={{ fontSize: 19, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: Font.Regular }}  >{data.saved_name}</Text>
-                        <Text style={{ marginRight: 10, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: Font.Regular, fontSize: 12 }} >{time && GetTime(time)}</Text>
+            !emptyMessage ?
+                <TouchableOpacity style={{ marginTop: 8, flexDirection: "row", height: 70, padding: 5, gap: 20, alignItems: "center" }}
+                    onPress={() => GotoChat(data)}
+                >
+                    <View style={{ padding: 5, }} >
+                        <Image source={{ uri: image }}
+                            style={{ height: 55, width: 55, borderRadius: 30, resizeMode: "cover" }}
+                        />
                     </View>
-                    <View>
-                        <Text style={{ fontSize: 15, color: darkMode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: darkMode ? "Ubuntu-Light" : Font.Regular }}>{latestMessage && latestMessage}</Text>
+                    <View style={{ flex: 1 }} >
+                        <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
+                            <Text style={{ fontSize: 19, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: Font.Regular }}  >{data?.saved_name ? data.saved_name : data?.profiles?.phone ? data.profiles.phone : "No one"}</Text>
+                            <Text style={{ marginRight: 10, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: Font.Regular, fontSize: 12 }} >{time && GetTime(time)}</Text>
+                        </View>
+                        <View>
+                            <Text style={{ fontSize: 15, color: darkMode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: darkMode ? "Ubuntu-Light" : Font.Regular }}>{latestMessage && latestMessage}</Text>
+                        </View>
                     </View>
-                </View>
 
-            </TouchableOpacity>
+                </TouchableOpacity>
+                : null
         )
     }
 
     const AddChat = () => {
         navigation.navigate("ContactList")
     }
-
 
     const AddContact = () => {
         return (

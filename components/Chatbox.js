@@ -98,12 +98,40 @@ const Chatbox = ({ navigation }) => {
             messageObj.content = messageText
             messageObj.status = "SENT"
             messageObj.react = false
+            if (message.length < 1) AddToContactList(uid, data?.profiles.id, user?.phone)
             await SendMessage(messageObj)
             // setMessage([...message, messageObj])
             setMassageText("")
+            // checkSavedContact(uid, data?.profiles.id)
 
         }
     }
+
+    const AddToContactList = async (saved_id, user_id, number) => {
+        // console.log(saved_id, user_id, number)
+        try {
+            try {
+                const { data: insertData, error } = await supabase
+                    .from('Savedcontact')
+                    .insert([{ number, user_id, saved_id }]);
+                if (error) {
+                    console.log(error)
+                }
+                setLoading(false)
+                setContact(data)
+                return data;
+            }
+            catch (error) {
+                console.log(error)
+            }
+        } catch (error) {
+            console.error('Error adding contact:', error.message);
+            setLoading(false)
+            return null;
+        }
+    };
+
+
     function formatTimestamp(data) {
         const timestamp = Number(data);
 
@@ -161,7 +189,7 @@ const Chatbox = ({ navigation }) => {
                         <Image source={{ uri: image }} style={{ height: 45, width: 45, borderRadius: 30, resizeMode: "cover" }} />
                     </TouchableOpacity>
                     <TouchableOpacity style={{ width: "40%" }}>
-                        <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{data.saved_name}</Text>
+                        <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{data?.saved_name ? data.saved_name : data?.profiles?.phone ? data.profiles.phone : null}</Text>
                         {userActive || lastSeen ?
                             // <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && !typing && hideActive) ? null : (userActive && typing) ? "Typing..." : !hideLastseen ? `last seen ${GetTime(lastSeen)}` : null}</Text>
                             <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && !typing && hideActive) ? null : (userActive && typing) ? "Typing..." : !hideLastseen ? formatTimestamp(lastSeen) : null}</Text>
