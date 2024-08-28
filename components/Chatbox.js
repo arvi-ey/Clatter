@@ -6,10 +6,12 @@ import { MessageContext } from './Context/Messageprovider'
 import { Font } from '../common/font';
 import { colors } from './Theme';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons, FontAwesome6, Feather } from '@expo/vector-icons';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import { useRoute } from '@react-navigation/native';
 const { height, width } = Dimensions.get('window');
 import { supabase } from '../lib/supabase'
+
 
 const Chatbox = ({ navigation }) => {
     const route = useRoute()
@@ -246,6 +248,14 @@ const Chatbox = ({ navigation }) => {
 
     return (
         <View style={[styles.ChatBackGround, { backgroundColor: user.dark_mode ? colors.CHAT_BG_DARK : colors.CHAT_BG }]}>
+            {!data.saved_name &&
+                <View style={{ width: width, justifyContent: 'center', alignItems: 'center', marginVertical: 20 }} >
+                    <TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }}>
+                        <AntDesign name="adduser" size={30} color={colors.MAIN_COLOR} />
+                        <Text style={{ fontFamily: Font.Bold, fontSize: 15, color: colors.MAIN_COLOR }}>Add to contact</Text>
+                    </TouchableOpacity>
+                </View>
+            }
             <ScrollView
                 ref={scrollViewRef}
                 onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}

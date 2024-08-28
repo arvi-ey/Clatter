@@ -7,13 +7,11 @@ import { useNavigation } from '@react-navigation/native'
 import { AuthContext } from './Context/Authprovider'
 import { Font } from '../common/font'
 const { height, width } = Dimensions.get('window')
-import country from "../common/country"
 import { AntDesign } from '@expo/vector-icons';
 import { FlatList, ScrollView } from 'react-native-gesture-handler'
 import { supabase } from '../lib/supabase'
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { err } from 'react-native-svg'
 
 const Signinpage = () => {
 
