@@ -249,11 +249,20 @@ const Chatbox = ({ navigation }) => {
     return (
         <View style={[styles.ChatBackGround, { backgroundColor: user.dark_mode ? colors.CHAT_BG_DARK : colors.CHAT_BG }]}>
             {!data.saved_name &&
-                <View style={{ width: width, justifyContent: 'center', alignItems: 'center', marginVertical: 20 }} >
-                    <TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 8 }}>
-                        <AntDesign name="adduser" size={30} color={colors.MAIN_COLOR} />
-                        <Text style={{ fontFamily: Font.Bold, fontSize: 15, color: colors.MAIN_COLOR }}>Add to contact</Text>
-                    </TouchableOpacity>
+                <View style={{ width: width, justifyContent: 'center', alignItems: 'center', marginVertical: 20, gap: 10 }} >
+                    <Image source={{ uri: image }} style={{ height: 60, width: 60, borderRadius: 30, resizeMode: "cover" }} />
+                    <Text style={{ fontFamily: Font.Bold, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.profiles.full_name}</Text>
+                    <Text style={{ fontFamily: Font.Light, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.profiles.email}</Text>
+                    <View style={{ flexDirection: 'row', gap: 20 }}>
+                        <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 3, }} onPress={() => navigation.navigate('AddContact', { number: data.profiles.phone })}>
+                            <AntDesign name="adduser" size={22} color={colors.MAIN_COLOR} />
+                            <Text style={{ fontFamily: Font.Medium, fontSize: 12, color: colors.MAIN_COLOR }}>Add to contact</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 3, }}>
+                            <MaterialIcons name="block" size={22} color="red" />
+                            <Text style={{ fontFamily: Font.Medium, fontSize: 12, color: "red" }}>Block</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             }
             <ScrollView
