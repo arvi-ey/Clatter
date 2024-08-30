@@ -7,10 +7,12 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { ContactContext } from './Context/Contactprovider';
 import { Font } from '../common/font';
 import { MessageContext } from './Context/Messageprovider'
+import { supabase } from '../lib/supabase'
+
 
 
 const ChatScreen = ({ navigation }) => {
-    const { user, darkMode, savedContact, uid } = useContext(AuthContext)
+    const { user, darkMode, savedContact, uid, downloadImage, } = useContext(AuthContext)
     const { GetuserMessaged, messagedContact, SubscribeToContactChange } = useContext(ContactContext)
     const [data, setData] = useState()
     const { GetLatestMessage } = useContext(MessageContext);
@@ -36,10 +38,34 @@ const ChatScreen = ({ navigation }) => {
         const [latestMessage, setLatestMessage] = useState(null);
         const [time, settime] = useState()
         const [emptyMessage, setEmptyMessage] = useState(false)
+        const [userImage, setuserImage] = useState()
+
+
+        const downloadImage = async (filename) => {
+            if (!filename) return
+            try {
+                const { data, error } = await supabase.storage
+                    .from('avatars')
+                    .download(filename);
+
+                if (error) {
+                    console.error('Error downloading image:', error.message);
+                    return;
+                }
+                const fr = new FileReader();
+                fr.readAsDataURL(data);
+                fr.onload = () => {
+                    setuserImage(fr.result)
+                };
+            } catch (error) {
+                console.error('Error:', error.message);
+            }
+        };
 
         useEffect(() => {
             const fetchLatestMessage = async () => {
                 if (data && data.profiles && data.profiles.id) {
+                    downloadImage(data.profiles.profile_pic)
                     const message = await GetLatestMessage(data.profiles.id);
                     // console.log(message, `For ${uid}`)
                     if (!message) setEmptyMessage(true)
@@ -65,7 +91,7 @@ const ChatScreen = ({ navigation }) => {
                     onPress={() => GotoChat(data)}
                 >
                     <View style={{ padding: 5, }} >
-                        <Image source={{ uri: image }}
+                        <Image source={userImage ? { uri: userImage } : image}
                             style={{ height: 55, width: 55, borderRadius: 30, resizeMode: "cover" }}
                         />
                     </View>

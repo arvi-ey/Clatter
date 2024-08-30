@@ -46,7 +46,7 @@ export default AuthProvider = ({ children }) => {
     useEffect(() => {
         if (user) {
             setDarkMode(user?.dark_mode)
-            // if (user.profile_pic) downloadImage(user.profile_pic)
+            if (user.profile_pic) downloadImage(user.profile_pic)
             FetchSaVedContactData()
         }
     }, [user])
@@ -166,34 +166,16 @@ export default AuthProvider = ({ children }) => {
                 setImageLoading(false)
                 return
             }
-            const { data: publicUrlData } = supabase
-                .storage
-                .from('avatars')
-                .getPublicUrl(filename);
-
-            const publicURL = publicUrlData.publicUrl;
-
-            if (!publicURL) {
-                setImageLoading(false)
-                throw new Error('Failed to retrieve public URL.');
-            }
-
-            console.log('Public URL:', publicURL);
-            UpdateUser(uid, { profile_pic: publicURL })
-            setImageLoading(false)
-            // downloadImage(filename)
+            UpdateUser(uid, { profile_pic: filename })
+            downloadImage(filename)
         } catch (error) {
             setImageLoading(false)
             console.log('Error uploading image:', error.message);
         }
-        finally {
-            setImageLoading(false)
-
-        }
     };
 
     const downloadImage = async (filename) => {
-        setImageLoading(true)
+        // setImageLoading(true)
         try {
             const { data, error } = await supabase.storage
                 .from('avatars')
@@ -300,3 +282,17 @@ export default AuthProvider = ({ children }) => {
     )
 
 }
+
+// console.log(data)
+// const { data: publicUrlData } = supabase
+//     .storage
+//     .from('avatars')
+//     .getPublicUrl(filename);
+
+// const publicURL = publicUrlData.publicUrl;
+// if (!publicURL) {
+//     setImageLoading(false)
+//     throw new Error('Failed to retrieve public URL.');
+// }
+// UpdateUser(uid, { profile_pic: publicURL })
+// setImageLoading(false)
