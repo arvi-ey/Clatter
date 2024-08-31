@@ -12,6 +12,8 @@ import { FlatList, ScrollView } from 'react-native-gesture-handler'
 import { supabase } from '../lib/supabase'
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import LottieView from 'lottie-react-native';
+
 
 const Signinpage = () => {
 
@@ -43,11 +45,11 @@ const Signinpage = () => {
         setLoading(true)
         try {
             const { data, error } = await supabase.auth.signInWithOtp({
-                // phone: `+${selectCountry.code}${mobileNumber}`,
-                phone: `1234567891`,
+                phone: `+${selectCountry.code}${mobileNumber}`,
+                // phone: `1234567891`,
             })
-            // if (!error) Navigation.navigate('Register', { phone: `+${selectCountry.code}${mobileNumber}` })
-            if (!error) Navigation.navigate('Register', { phone: `1234567891` })
+            if (!error) Navigation.navigate('Register', { phone: `+${selectCountry.code}${mobileNumber}` })
+            // if (!error) Navigation.navigate('Register', { phone: `1234567891` })
             setLoading(false)
         }
         catch (err) {
@@ -129,15 +131,15 @@ const Signinpage = () => {
                 style={{ flex: 1 }}
             >
                 <View style={styles.container} >
-                    <View style={{ height: "10%", }} >
+                    <View style={{ height: "9%", }} >
                         <View style={{ paddingLeft: 20, }}>
                             <Text style={{ fontFamily: Font.Bold, fontSize: 25 }}>Hi! Welcome to clatter</Text>
                         </View>
                     </View>
-                    <View style={{ width, alignItems: 'center' }}>
-                        <Image source={require('../assets/auth.png')} style={{ height: 250, width: 250 }} />
+                    <View style={{ width, alignItems: 'center', }}>
+                        <Image source={require('../assets/use5.png')} style={{ height: 250, width: 250 }} />
                     </View>
-                    <View style={{ height: "90%", paddingLeft: 16 }}>
+                    <View style={{ height: "90%", marginTop: 5, paddingLeft: 16 }}>
                         <Text style={{ fontFamily: Font.Regular, color: colors.CHARCOLE }}>Enter mobile number to verify OTP</Text>
                         <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }} >
                             <TouchableOpacity style={[styles.CountryCode]} onPress={OpenButtomSheet} >

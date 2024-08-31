@@ -5,9 +5,7 @@ import { useState, useEffect, useContext, useRef } from 'react';
 import { colors } from './Theme';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from './Context/Authprovider';
-import { ContactContext } from './Context/Contactprovider';
 import { Font } from '../common/font';
-import { ScrollView } from 'react-native-gesture-handler';
 import { supabase } from '../lib/supabase'
 
 

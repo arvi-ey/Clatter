@@ -19,21 +19,27 @@ const { width, height } = Dimensions.get('window');
 const slides = [
     {
         id: '1',
-        image: require('../assets/on2.png'),
-        title: 'Best Digital Solution',
-        subtitle: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        image: require('../assets/st1.png'),
+        title: 'Connect Instantly',
+        subtitle: 'Real-time messaging with your contacts, anywhere.',
     },
     {
         id: '2',
-        image: require('../assets/on3.png'),
-        title: 'Achieve Your Goals',
-        subtitle: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        image: require('../assets/st2.png'),
+        title: 'Stay Secure',
+        subtitle: 'Your chats are encrypted and always private.',
     },
     {
         id: '3',
-        image: require('../assets/on4.png'),
-        title: 'Increase Your Value',
-        subtitle: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        image: require('../assets/st3.png'),
+        title: 'Share Moments',
+        subtitle: 'Easily send photos, videos, and files to friends.',
+    },
+    {
+        id: '4',
+        image: require('../assets/st4.png'),
+        title: 'Seamless Experience',
+        subtitle: 'Smooth, fast, and user-friendly interface.',
     },
 ];
 
