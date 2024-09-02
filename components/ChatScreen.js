@@ -8,6 +8,8 @@ import { ContactContext } from './Context/Contactprovider';
 import { Font } from '../common/font';
 import { MessageContext } from './Context/Messageprovider'
 import { supabase } from '../lib/supabase'
+import { MotiView } from 'moti';
+import { Skeleton } from 'moti/skeleton';
 
 const ChatScreen = ({ navigation }) => {
     const { user, darkMode, savedContact, uid, downloadImage, } = useContext(AuthContext)
@@ -84,18 +86,24 @@ const ChatScreen = ({ navigation }) => {
         };
 
         if (!latestMessage || !time) {
+            const ColorMOde = darkMode ? 'dark' : 'light'
             return (
-                <TouchableOpacity style={{ marginTop: 8, flexDirection: "row", height: 70, padding: 5, gap: 20, alignItems: "center", marginLeft: 10 }}
+                <MotiView
+                    transition={{
+                        type: 'timing',
+                    }}
+                    style={{ marginTop: 8, flexDirection: "row", height: 70, padding: 5, gap: 20, alignItems: "center", marginLeft: 10 }}
                 >
-                    <View style={{ padding: 5, backgroundColor: darkMode ? colors.SKELETON_BG_DARK : colors.SKELETON_BG, height: 60, width: 60, borderRadius: 30 }} >
-                    </View>
-                    <View style={{ flex: 1, gap: 5 }} >
-                        <View style={{ width: "90%", height: 20, flexDirection: "row", justifyContent: "space-between", backgroundColor: darkMode ? colors.SKELETON_BG_DARK : colors.SKELETON_BG, borderRadius: 8 }}>
-                        </View>
-                        <View style={{ width: "30%", height: 20, flexDirection: "row", justifyContent: "space-between", backgroundColor: darkMode ? colors.SKELETON_BG_DARK : colors.SKELETON_BG, borderRadius: 8 }}>
-                        </View>
-                    </View>
-                </TouchableOpacity>
+                    <Skeleton colorMode={ColorMOde} height={60} width={60} radius={'round'} style={{ padding: 5, }} >
+                    </Skeleton>
+                    <Skeleton colorMode={ColorMOde} style={{ flex: 1, gap: 5 }} >
+                        <Skeleton colorMode={ColorMOde} height={30} width={"85%"} style={{ flexDirection: "row", justifyContent: "space-between", borderRadius: 8 }}>
+                        </Skeleton>
+                        <View style={{ height: 10 }} />
+                        <Skeleton colorMode={ColorMOde} height={20} width={"30%"} style={{ flexDirection: "row", justifyContent: "space-between", borderRadius: 8 }}>
+                        </Skeleton>
+                    </Skeleton>
+                </MotiView>
             )
         }
 
