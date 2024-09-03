@@ -13,8 +13,6 @@ import { Feather } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { AuthContext } from './Context/Authprovider';
 import { Font } from '../common/font';
-import Switch from '../common/Switch';
-
 
 
 const Profile = () => {
@@ -44,18 +42,6 @@ const Profile = () => {
             subscription.remove();
         };
     }, [uid])
-
-
-
-
-    const SetDarkmode = async () => {
-        await UpdateUser(uid, { dark_mode: !darkMode })
-    }
-    const DarkModeIcon = () => {
-        return (
-            <Ionicons name={darkMode ? "moon" : "sunny-sharp"} size={20} color={darkMode ? colors.BLACK : "#facc15"} />
-        )
-    }
 
     return (
         <Tab.Navigator screenOptions={{
@@ -89,19 +75,10 @@ const Profile = () => {
                 title: 'Clatter',
                 headerTintColor: darkMode ? colors.WHITE : colors.BLACK,
                 headerRight: () => (
-                    <View style={{ flexDirection: "row", marginRight: 10, gap: 25 }} >
+                    <View style={{ flexDirection: "row", marginRight: 30, gap: 25}} >
                         <Feather name="camera" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
-                        <Ionicons name="search-outline" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
-                        <Switch
-                            onToggle={SetDarkmode}
-                            size={'large'}
-                            isOn={darkMode}
-                            onColor={colors.MAIN_COLOR}
-                            offColor={colors.SWITCH_BG}
-                            animationSpeed={250}
-                            thumbOnStyle={{ backgroundColor: colors.WHITE }}
-                            icon={<DarkModeIcon />}
-                        />
+                        <MaterialIcons name="qr-code-scanner" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
+                        {/* <Ionicons name="search-outline" size={28} color={darkMode ? colors.WHITE : colors.BLACK} /> */}
                     </View>
                 ),
                 headerTitleStyle: {
