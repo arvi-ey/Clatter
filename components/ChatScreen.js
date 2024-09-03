@@ -18,7 +18,7 @@ const ChatScreen = ({ navigation }) => {
     const { GetuserMessaged, messagedContact, SubscribeToContactChange } = useContext(ContactContext)
     const [data, setData] = useState()
     const { GetLatestMessage } = useContext(MessageContext);
-    const [searchContact,setSearchContact]= useState()
+    const [searchContact,setSearchContact]= useState("")
 
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
 
@@ -32,8 +32,8 @@ const ChatScreen = ({ navigation }) => {
 
     
 
-    const GotoChat = (data) => {
-        navigation.navigate('Chatbox', data);
+    const GotoChat = (data,userImage) => {
+        navigation.navigate('Chatbox', { data, userImage });
     };
 
 
@@ -107,7 +107,7 @@ const ChatScreen = ({ navigation }) => {
         return (
             !emptyMessage ?
                 <TouchableOpacity style={{ marginTop: 8, flexDirection: "row", height: 70, padding: 5, gap: 20, alignItems: "center" }}
-                    onPress={() => GotoChat(data)}
+                    onPress={() => GotoChat(data,userImage)}
                 >
                     <View style={{ padding: 5, }} >
                         <Image source={userImage ? { uri: userImage } : image}

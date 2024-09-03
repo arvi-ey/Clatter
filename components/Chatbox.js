@@ -15,7 +15,7 @@ import { supabase } from '../lib/supabase'
 
 const Chatbox = ({ navigation }) => {
     const route = useRoute()
-    const data = route.params
+    const { data, userImage } = route.params;
     const reciverId = data?.profiles.id
     const { uid, user, } = useContext(AuthContext);
     const { FetchByPhone } = useContext(ContactContext);
@@ -188,7 +188,7 @@ const Chatbox = ({ navigation }) => {
             headerTitle: () => (
                 <View style={styles.HeaderStyle}>
                     <TouchableOpacity>
-                        <Image source={{ uri: image }} style={{ height: 45, width: 45, borderRadius: 30, resizeMode: "cover" }} />
+                        <Image source={userImage?{uri:userImage}:image} style={{ height: 45, width: 45, borderRadius: 30, resizeMode: "cover" }} />
                     </TouchableOpacity>
                     <TouchableOpacity style={{ width: "40%" }}>
                         <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{data?.saved_name ? data.saved_name : data?.profiles?.phone ? data.profiles.phone : null}</Text>
@@ -250,7 +250,7 @@ const Chatbox = ({ navigation }) => {
         <View style={[styles.ChatBackGround, { backgroundColor: user.dark_mode ? colors.CHAT_BG_DARK : colors.CHAT_BG }]}>
             {!data.saved_name &&
                 <View style={{ width: width, justifyContent: 'center', alignItems: 'center', marginVertical: 20, gap: 10 }} >
-                    <Image source={{ uri: image }} style={{ height: 60, width: 60, borderRadius: 30, resizeMode: "cover" }} />
+                    <Image source={userImage?{uri:userImage}:image} style={{ height: 60, width: 60, borderRadius: 30, resizeMode: "cover" }} />
                     <Text style={{ fontFamily: Font.Bold, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.profiles.full_name}</Text>
                     <Text style={{ fontFamily: Font.Light, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.profiles.email}</Text>
                     <View style={{ flexDirection: 'row', gap: 20 }}>
