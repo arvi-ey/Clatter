@@ -65,21 +65,54 @@ const ChatScreen = ({ navigation }) => {
             }
         };
 
+        const fetchUserData = async () => {
+            if (data && data.profiles && data.profiles.id) {
+                downloadImage(data.profiles.profile_pic)
+        }
+    }
+
         useEffect(() => {
-            const fetchLatestMessage = async () => {
-                if (data && data.profiles && data.profiles.id) {
-                    downloadImage(data.profiles.profile_pic)
-                    const message = await GetLatestMessage(data.profiles.id);
-                    // console.log(message, `For ${uid}`)
-                    if (!message) setEmptyMessage(true)
-                    if (message?.content) {
-                        setLatestMessage(message?.content);
-                        settime(message.time)
-                    }
-                }
-            };
-            fetchLatestMessage();
+            fetchUserData()
+            GetLatestMessage()
         }, [data]);
+
+        useEffect(() => {
+            if (!data || !data.profiles || !data.profiles.id) return;
+            const subscription= supabase
+                .channel('custom-message-channel')
+                .on('postgres_changes',{event: '*', schema: 'public',table: 'message',},(payload) => {
+                    const newData = payload.new
+                    if(newData.reciver=== uid && newData.sender===data.profiles.id) GetLatestMessage()
+                    }
+                )
+                .subscribe();
+        }, [data, uid]);
+        
+
+        const GetLatestMessage = async () => {
+            if(data && data.profiles && data.profiles.id){
+                try {
+                    let { data: messages, error } = await supabase
+                    .from('message')
+                    .select('*')
+                    .or(`and(sender.eq.${uid},reciver.eq.${data.profiles.id}),and(sender.eq.${data.profiles.id},reciver.eq.${uid})`)
+                    .order('time', { ascending: false })
+                    .limit(1);
+                    
+                    if (error) throw error;
+                    if (!messages) setEmptyMessage(true)
+                    if(messages[0]){
+                        setLatestMessage(messages[0]?.content);
+                    settime(messages[0].time)
+                }
+            } catch (error) {
+                console.log('Error fetching the latest message:', error);
+                return null;
+            }
+        }
+        return null
+        };
+    
 
         const GetTime = (timestamp) => {
             const timeStampData = Number(timestamp)
