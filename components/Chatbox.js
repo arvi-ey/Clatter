@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, Platform, TouchableOpacity, Image, KeyboardAvoidingView } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, Platform, TouchableOpacity, Image, KeyboardAvoidingView,ImageBackground  } from 'react-native'
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { AuthContext } from './Context/Authprovider';
 import { ContactContext } from './Context/Contactprovider';
@@ -245,9 +245,15 @@ const Chatbox = ({ navigation }) => {
         if (!isTyping) UpdateTyping({ reciver: reciverId, typing: false })
     }, [isTyping])
 
+    const BG_dark = require(".././assets/Chat_bg_dark.jpg")
+    const BG = require(".././assets/chat_bg.png")
 
     return (
-        <View style={[styles.ChatBackGround, { backgroundColor: user.dark_mode ? colors.CHAT_BG_DARK : colors.CHAT_BG }]}>
+    <ImageBackground
+        source={user.dark_mode? BG_dark:BG} 
+        style={{ flex: 1 }} 
+    >
+        <View style={[styles.ChatBackGround,]}>
             {!data.saved_name &&
                 <View style={{ width: width, justifyContent: 'center', alignItems: 'center', marginVertical: 20, gap: 10 }} >
                     <Image source={userImage?{uri:userImage}:image} style={{ height: 60, width: 60, borderRadius: 30, resizeMode: "cover" }} />
@@ -272,7 +278,7 @@ const Chatbox = ({ navigation }) => {
                 {message?.map((data, key) => {
                     return (
                         <KeyboardAvoidingView
-                            key={key}
+                        key={key}
                             enabled
                             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                             keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
@@ -285,17 +291,17 @@ const Chatbox = ({ navigation }) => {
                                     marginHorizontal: 15,
                                     backgroundColor: (user.dark_mode && data.sender !== uid) ?
                                         colors.MASSAGE_BOX_DARK : (!user.dark_mode && data.sender !== uid) ?
-                                            colors.WHITE : colors.MAIN_COLOR,
-                                    width: data.content.length < 32 ? "auto" : 300, borderTopRightRadius: data.sender !== uid ? 20 : 0,
-                                    borderTopLeftRadius: data.sender !== uid ? 20 : 20, borderBottomRightRadius: data.sender !== uid ? 20 : 20, borderBottomLeftRadius: data.sender !== uid ? 0 : 20
-                                }]}>
+                                        colors.WHITE : colors.MAIN_COLOR,
+                                        width: data.content.length < 32 ? "auto" : 300, borderTopRightRadius: data.sender !== uid ? 20 : 0,
+                                        borderTopLeftRadius: data.sender !== uid ? 20 : 20, borderBottomRightRadius: data.sender !== uid ? 20 : 20, borderBottomLeftRadius: data.sender !== uid ? 0 : 20
+                                    }]}>
                                 <Text style={[styles.MessageContent, {
                                     color: (!user.dark_mode && data.sender !== uid) ? colors.BLACK : colors.WHITE,
                                 }]}>{data.content.trim()}
                                 </Text>
                                 <Text style={[styles.TimeText, {
                                     color: (!user.dark_mode && data.sender !== uid) ?
-                                        colors.CHARCOLE_DARK : colors.TIME_TEXT
+                                    colors.CHARCOLE_DARK : colors.TIME_TEXT
                                 }]}>{GetTime(data.time)}</Text>
                             </View>
                         </KeyboardAvoidingView>
@@ -317,7 +323,7 @@ const Chatbox = ({ navigation }) => {
                         style={{ width: "75%", fontFamily: Font.Medium, color: user?.dark_mode ? colors.WHITE : colors.BLACK }}
                         onChangeText={TypeMassage}
                         placeholderTextColor={user.dark_mode ? colors.WHITE : colors.CHARCOLE}
-                    />
+                        />
                     <TouchableOpacity style={styles.AttachMentIcon}>
                         <MaterialIcons name="attach-file" size={24} color={user.dark_mode ? colors.WHITE : colors.CHARCOLE} />
                     </TouchableOpacity>
@@ -327,6 +333,7 @@ const Chatbox = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
         </View>
+    </ImageBackground>
     )
 }
 
