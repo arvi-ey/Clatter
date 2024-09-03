@@ -255,7 +255,8 @@ const Chatbox = ({ navigation }) => {
     >
         <View style={[styles.ChatBackGround,]}>
             {!data.saved_name &&
-                <View style={{ width: width, justifyContent: 'center', alignItems: 'center', marginVertical: 20, gap: 10 }} >
+                <View style={{ width: width,justifyContent: 'center', alignItems: 'center' }} >
+                    <View style={{justifyContent: 'center', alignItems: 'center', marginVertical: 20, gap: 10, backgroundColor: user.dark_mode? colors.ADD_CONTACT_BG_DARK : colors.ADD_CONTACT_BG, width:"70%", paddingVertical:20, borderRadius:12 }}>
                     <Image source={userImage?{uri:userImage}:image} style={{ height: 60, width: 60, borderRadius: 30, resizeMode: "cover" }} />
                     <Text style={{ fontFamily: Font.Bold, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.profiles.full_name}</Text>
                     <Text style={{ fontFamily: Font.Light, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.profiles.email}</Text>
@@ -268,6 +269,7 @@ const Chatbox = ({ navigation }) => {
                             <MaterialIcons name="block" size={22} color="red" />
                             <Text style={{ fontFamily: Font.Medium, fontSize: 12, color: "red" }}>Block</Text>
                         </TouchableOpacity>
+                    </View>
                     </View>
                 </View>
             }
