@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, Alert, ScrollView, ActivityIndicator, } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, Alert, ScrollView, ActivityIndicator, TextInput, Dimensions, } from 'react-native'
 import React from 'react'
-import { useContext, useEffect, useState, useRef } from 'react';
+import { useContext, useEffect, useState, useRef,useMemo } from 'react';
 import { AuthContext } from "./Context/Authprovider"
 import { colors } from './Theme'
 import { MaterialIcons } from '@expo/vector-icons';
@@ -10,12 +10,15 @@ import { MessageContext } from './Context/Messageprovider'
 import { supabase } from '../lib/supabase'
 import { MotiView } from 'moti';
 import { Skeleton } from 'moti/skeleton';
+const { height, width } = Dimensions.get("window");
+import { Ionicons } from '@expo/vector-icons';
 
 const ChatScreen = ({ navigation }) => {
     const { user, darkMode, savedContact, uid, downloadImage, } = useContext(AuthContext)
     const { GetuserMessaged, messagedContact, SubscribeToContactChange } = useContext(ContactContext)
     const [data, setData] = useState()
     const { GetLatestMessage } = useContext(MessageContext);
+    const [searchContact,setSearchContact]= useState()
 
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
 
@@ -27,7 +30,7 @@ const ChatScreen = ({ navigation }) => {
         setData(savedContact)
     }, [savedContact])
 
-    // console.log(GetuserMessaged)
+    
 
     const GotoChat = (data) => {
         navigation.navigate('Chatbox', data);
@@ -86,24 +89,18 @@ const ChatScreen = ({ navigation }) => {
         };
 
         if (!latestMessage || !time) {
-            const ColorMOde = darkMode ? 'dark' : 'light'
             return (
-                <MotiView
-                    transition={{
-                        type: 'timing',
-                    }}
-                    style={{ marginTop: 8, flexDirection: "row", height: 70, padding: 5, gap: 20, alignItems: "center", marginLeft: 10 }}
+                <TouchableOpacity style={{ marginTop: 8, flexDirection: "row", height: 70, padding: 5, gap: 20, alignItems: "center", marginLeft: 10 }}
                 >
-                    <Skeleton colorMode={ColorMOde} height={60} width={60} radius={'round'} style={{ padding: 5, }} >
-                    </Skeleton>
-                    <Skeleton colorMode={ColorMOde} style={{ flex: 1, gap: 5 }} >
-                        <Skeleton colorMode={ColorMOde} height={30} width={"85%"} style={{ flexDirection: "row", justifyContent: "space-between", borderRadius: 8 }}>
-                        </Skeleton>
-                        <View style={{ height: 10 }} />
-                        <Skeleton colorMode={ColorMOde} height={20} width={"30%"} style={{ flexDirection: "row", justifyContent: "space-between", borderRadius: 8 }}>
-                        </Skeleton>
-                    </Skeleton>
-                </MotiView>
+                    <View style={{ padding: 5, backgroundColor: darkMode ? colors.SKELETON_BG_DARK : colors.SKELETON_BG, height: 60, width: 60, borderRadius: 30 }} >
+                    </View>
+                    <View style={{ flex: 1, gap: 5 }} >
+                        <View style={{ width: "90%", height: 20, flexDirection: "row", justifyContent: "space-between", backgroundColor: darkMode ? colors.SKELETON_BG_DARK : colors.SKELETON_BG, borderRadius: 8 }}>
+                        </View>
+                        <View style={{ width: "30%", height: 20, flexDirection: "row", justifyContent: "space-between", backgroundColor: darkMode ? colors.SKELETON_BG_DARK : colors.SKELETON_BG, borderRadius: 8 }}>
+                        </View>
+                    </View>
+                </TouchableOpacity>
             )
         }
 
@@ -143,10 +140,29 @@ const ChatScreen = ({ navigation }) => {
             </TouchableOpacity>
         )
     }
+
+    const SearchContact = (text)=>{
+        setSearchContact(text)
+    }
+
+    const FilteredContact = data?.filter(value =>
+        value?.saved_name?.toLowerCase().includes(searchContact?.toLowerCase()) || value?.profiles?.phone?.toLowerCase().includes(searchContact?.toLowerCase())
+    )
+
     return (
         <View style={{ backgroundColor: darkMode ? colors.BLACK : colors.WHITE, flex: 1, position: "relative" }} >
+            <View style={[{width,justifyContent:'center',alignItems:'center',marginTop:5},styles.searchBarStyle]} >
+                <View style={[styles.InputBox,{backgroundColor:darkMode?colors.SEARCH_BG_DARK:colors.SEARCH_BG}]}>
+                <Ionicons name="search-outline" size={28} color={darkMode ? colors.CHARCOLE_DARK : colors.SEARCH_TEXT} style={{marginLeft:10}} />
+                <TextInput
+                placeholder="search..."
+                placeholderTextColor={darkMode?colors.CHARCOLE_DARK:colors.SEARCH_TEXT}
+                onChangeText={SearchContact}                
+                style={[styles.InputStyle,{fontFamily:Font.Medium,fontSize:15, color:darkMode?colors.CHARCOLE_DARK:colors.SEARCH_TEXT}]}  />
+                </View>
+            </View>
             <FlatList
-                data={data}
+                data={FilteredContact}
                 renderItem={({ item }) => <ChatComponent data={item} />}
                 keyExtractor={(item, index) => index}
             />
@@ -165,6 +181,24 @@ const styles = StyleSheet.create({
         right: 15,
         borderRadius: 25,
         top: 550
-
+    },
+    searchBarStyle:{
+        height:52,
+        borderRadius:30,
+    },
+    InputBox:{
+        width:"95%",
+        height:"100%",
+        backgroundColor:"blue",
+        flexDirection:'row',
+        alignItems:'center',
+        borderRadius:25,
+        justifyContent:"space-around"
+    },
+    InputStyle:{
+        width:"90%",
+        borderRadius:25,
+        height:"100%",
+        paddingLeft:10
     }
 })

@@ -22,5 +22,8 @@ export const colors = {
     SWITCH_BG_DARK: "#1E1E1E",
     SKELETON_BG: "#D3D3D3",
     SKELETON_BG_DARK: "#203141",
+    SEARCH_BG:"#F1F1F1",
+    SEARCH_TEXT:"#767776",
+    SEARCH_BG_DARK:"#23272F"
 
 }
