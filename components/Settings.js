@@ -33,6 +33,9 @@ const Settings = ({ navigation }) => {
       setHideTyping(user.hideTyping);
       setHideLastseen(user.hideLastseen);
     }
+    console.log("user.hideActive",user.hideActive)
+    console.log("user.hideTyping",user.hideTyping)
+    console.log("user.hideLastseen",user.hideLastseen)
   }, [user]);
 
   const SetDarkmode = async () => {

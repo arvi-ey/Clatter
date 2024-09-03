@@ -182,7 +182,6 @@ const Chatbox = ({ navigation }) => {
         const year = date.getFullYear();
         return `${day}-${month}-${year}`;
     }
-
     React.useLayoutEffect(() => {
         navigation.setOptions({
             headerTitle: () => (
@@ -192,10 +191,10 @@ const Chatbox = ({ navigation }) => {
                     </TouchableOpacity>
                     <TouchableOpacity style={{ width: "40%" }}>
                         <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{data?.saved_name ? data.saved_name : data?.profiles?.phone ? data.profiles.phone : null}</Text>
-                        {userActive || lastSeen ?
-                            // <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && !typing && hideActive) ? null : (userActive && typing) ? "Typing..." : !hideLastseen ? `last seen ${GetTime(lastSeen)}` : null}</Text>
-                            <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && !typing && hideActive) ? null : (userActive && typing) ? "Typing..." : !hideLastseen ? formatTimestamp(lastSeen) : null}</Text>
-                            : null
+                         {/* <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && !typing && hideActive) ? null : (userActive && typing) ? "Typing..." : !hideLastseen ? `last seen ${GetTime(lastSeen)}` : null}</Text> */}
+                         {userActive || typing ||lastSeen?
+                         <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && typing && !hideTyping)?"typing...":(userActive && typing && hideTyping && !hideActive)?"Online": (!userActive && !hideLastseen) ? `last seen ${GetTime(lastSeen)}` : null }</Text>
+                        :null 
                         }
                     </TouchableOpacity>
                     <View style={{ flexDirection: 'row', width: "30%", gap: 18, justifyContent: "center" }}>
