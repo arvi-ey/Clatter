@@ -26,7 +26,6 @@ const Chatbox = ({ navigation }) => {
     const [userActive, setUserActive] = useState(false)
     const [lastSeen, setlastSeen] = useState()
     const [isTyping, setIsTyping] = useState(false);
-    // const [hide, setHide] = useState({ hideActive: false, hideTyping: false, hideLastseen: false })
     const [hideActive, setHideActive] = useState()
     const [hideTyping, setHideTyping] = useState()
     const [hideLastseen, setHideLastseen] = useState()
@@ -61,7 +60,6 @@ const Chatbox = ({ navigation }) => {
             setHideActive(data?.hideActive)
             setHideLastseen(data?.hideLastseen)
             setHideTyping(data?.hideTyping)
-            // setHide({ hideActive: data.hideActive, hideLastseen: data.hideLastseen, hideTyping: data.hideTyping })
         } catch (error) {
             console.error('Error fetching user by phone number:', error.message);
         }
@@ -73,7 +71,6 @@ const Chatbox = ({ navigation }) => {
             .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${userId}` }, (payload) => {
                 setUserActive(payload?.new?.active)
                 setlastSeen(payload?.new?.last_seen)
-                // setHide({ hideActive: payload?.new?.hideActive, hideLastseen: payload?.new?.hideLastseen, hideTyping: payload?.new?.hideTyping })
                 setHideActive(payload?.new?.hideActive)
                 setHideLastseen(payload?.new?.hideLastseen)
                 setHideTyping(payload?.new?.hideTyping)
@@ -110,15 +107,12 @@ const Chatbox = ({ navigation }) => {
             messageObj.react = false
             if (message.length < 1) AddToContactList(uid, data?.profiles.id, user?.phone)
             await SendMessage(messageObj)
-            // setMessage([...message, messageObj])
             setMassageText("")
-            // checkSavedContact(uid, data?.profiles.id)
 
         }
     }
 
     const AddToContactList = async (saved_id, user_id, number) => {
-        // console.log(saved_id, user_id, number)
         try {
             try {
                 const { data: insertData, error } = await supabase
@@ -152,8 +146,6 @@ const Chatbox = ({ navigation }) => {
 
         const date = new Date(timestamp);
         const now = new Date();
-
-        // Calculate the difference in days between the given date and now
         const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const startOfYesterday = new Date(startOfToday);
         startOfYesterday.setDate(startOfToday.getDate() - 1);
@@ -170,10 +162,8 @@ const Chatbox = ({ navigation }) => {
         const timeString = `${formattedHours}:${minutes} ${period}`;
 
         if (dayDifference === 0) {
-            // console.log(timeString)
             return `today at ${timeString}`;
         } else if (isYesterday) {
-            // console.log(timeString)
             return `yesterday at ${timeString}`;
         } else {
             const day = date.getDate();
@@ -199,7 +189,6 @@ const Chatbox = ({ navigation }) => {
                     </TouchableOpacity>
                     <TouchableOpacity style={{ width: "40%" }}>
                         <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{data?.saved_name ? data.saved_name : data?.profiles?.phone ? data.profiles.phone : null}</Text>
-                        {/* <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && !typing && hideActive) ? null : (userActive && typing) ? "Typing..." : !hideLastseen ? `last seen ${GetTime(lastSeen)}` : null}</Text> */}
                         {userActive || typing || lastSeen ?
                             <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && typing && !hideTyping) ? "typing..." : (userActive && typing && hideTyping && !hideActive) ? "Online" : (!userActive && !hideLastseen) ? `last seen ${GetTime(lastSeen)}` : null}</Text>
                             : null
@@ -386,14 +375,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         gap: 7,
         flexDirection: "row"
-    },
-    emogiIcon: {
-        // position: 'absolute',
-        // left: 15
-    },
-    AttachMentIcon: {
-        // position: "absolute",
-        // right: 80
     },
     SendBox: {
         backgroundColor: colors.MAIN_COLOR,
