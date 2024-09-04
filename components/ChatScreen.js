@@ -127,8 +127,6 @@ const ChatScreen = ({ navigation }) => {
             return date.toLocaleTimeString('en-US', options);
         };
 
-        settime
-
         if (loading) {
             return (
                 <TouchableOpacity style={{ marginTop: 8, flexDirection: "row", height: 70, padding: 5, gap: 20, alignItems: "center", marginLeft: 10 }}
