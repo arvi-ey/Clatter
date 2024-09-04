@@ -302,6 +302,11 @@ const Chatbox = ({ navigation }) => {
                                             colors.CHARCOLE_DARK : colors.TIME_TEXT
                                     }]}>{GetTime(data.time)}</Text>
                                 </View>
+                                    {data.sender===uid &&
+                                <View style={[{alignSelf:'flex-end',marginRight:10,marginBottom:10, marginTop:-5}]}>
+                                    <Text style={{fontFamily:Font.Medium,color:colors.MAIN_COLOR,fontSize:8}}>{data.status}</Text>
+                                </View>
+                                }
                             </KeyboardAvoidingView>
                         )
                     })}
