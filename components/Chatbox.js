@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, Platform, TouchableOpacity, Image, KeyboardAvoidingView,ImageBackground  } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, Platform, TouchableOpacity, Image, KeyboardAvoidingView, ImageBackground } from 'react-native'
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { AuthContext } from './Context/Authprovider';
 import { ContactContext } from './Context/Contactprovider';
@@ -31,6 +31,7 @@ const Chatbox = ({ navigation }) => {
     const [hideTyping, setHideTyping] = useState()
     const [hideLastseen, setHideLastseen] = useState()
     const typingTimeoutRef = useRef(null);
+    const [typingChannel, setTypingChannel] = useState()
 
     const GetTime = (timestamp) => {
         const timeStampData = Number(timestamp)
@@ -87,9 +88,14 @@ const Chatbox = ({ navigation }) => {
     useEffect(() => {
         SubscribeToMessages(uid, reciverId)
         TrackTyping(reciverId)
-
     }, [uid, reciverId])
 
+    const HandleGoBack = () => {
+        const TypingChannel = TrackTyping(reciverId)
+        supabase.removeChannel(TypingChannel);
+        navigation.goBack()
+
+    }
 
     const Send = async () => {
         if (messageText.length > 0) {
@@ -187,14 +193,14 @@ const Chatbox = ({ navigation }) => {
             headerTitle: () => (
                 <View style={styles.HeaderStyle}>
                     <TouchableOpacity>
-                        <Image source={userImage?{uri:userImage}:image} style={{ height: 45, width: 45, borderRadius: 30, resizeMode: "cover" }} />
+                        <Image source={userImage ? { uri: userImage } : image} style={{ height: 45, width: 45, borderRadius: 30, resizeMode: "cover" }} />
                     </TouchableOpacity>
                     <TouchableOpacity style={{ width: "40%" }}>
                         <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{data?.saved_name ? data.saved_name : data?.profiles?.phone ? data.profiles.phone : null}</Text>
-                         {/* <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && !typing && hideActive) ? null : (userActive && typing) ? "Typing..." : !hideLastseen ? `last seen ${GetTime(lastSeen)}` : null}</Text> */}
-                         {userActive || typing ||lastSeen?
-                         <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && typing && !hideTyping)?"typing...":(userActive && typing && hideTyping && !hideActive)?"Online": (!userActive && !hideLastseen) ? `last seen ${GetTime(lastSeen)}` : null }</Text>
-                        :null 
+                        {/* <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && !typing && hideActive) ? null : (userActive && typing) ? "Typing..." : !hideLastseen ? `last seen ${GetTime(lastSeen)}` : null}</Text> */}
+                        {userActive || typing || lastSeen ?
+                            <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && typing && !hideTyping) ? "typing..." : (userActive && typing && hideTyping && !hideActive) ? "Online" : (!userActive && !hideLastseen) ? `last seen ${GetTime(lastSeen)}` : null}</Text>
+                            : null
                         }
                     </TouchableOpacity>
                     <View style={{ flexDirection: 'row', width: "30%", gap: 18, justifyContent: "center" }}>
@@ -211,7 +217,7 @@ const Chatbox = ({ navigation }) => {
                 </View>
             ),
             headerLeft: () => (
-                <TouchableOpacity style={{ marginLeft: -2, width: "5%" }} onPress={() => navigation.goBack()}>
+                <TouchableOpacity style={{ marginLeft: -2, width: "5%" }} onPress={HandleGoBack}>
                     <Ionicons name="arrow-back-sharp" size={24} color={user.dark_mode ? colors.WHITE : colors.BLACK} />
                 </TouchableOpacity>
             ),
@@ -248,93 +254,93 @@ const Chatbox = ({ navigation }) => {
     const BG = require(".././assets/chat_bg.png")
 
     return (
-    <ImageBackground
-        source={user.dark_mode? BG_dark:BG} 
-        style={{ flex: 1 }} 
-    >
-        <View style={[styles.ChatBackGround,]}>
-            {!data.saved_name &&
-                <View style={{ width: width,justifyContent: 'center', alignItems: 'center' }} >
-                    <View style={{justifyContent: 'center', alignItems: 'center', marginVertical: 20, gap: 10, backgroundColor: user.dark_mode? colors.ADD_CONTACT_BG_DARK : colors.ADD_CONTACT_BG, width:"70%", paddingVertical:20, borderRadius:12 }}>
-                    <Image source={userImage?{uri:userImage}:image} style={{ height: 60, width: 60, borderRadius: 30, resizeMode: "cover" }} />
-                    <Text style={{ fontFamily: Font.Bold, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.profiles.full_name}</Text>
-                    <Text style={{ fontFamily: Font.Light, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.profiles.email}</Text>
-                    <View style={{ flexDirection: 'row', gap: 20 }}>
-                        <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 3, }} onPress={() => navigation.navigate('AddContact', { number: data.profiles.phone })}>
-                            <AntDesign name="adduser" size={22} color={colors.MAIN_COLOR} />
-                            <Text style={{ fontFamily: Font.Medium, fontSize: 12, color: colors.MAIN_COLOR }}>Add to contact</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 3, }}>
-                            <MaterialIcons name="block" size={22} color="red" />
-                            <Text style={{ fontFamily: Font.Medium, fontSize: 12, color: "red" }}>Block</Text>
-                        </TouchableOpacity>
-                    </View>
-                    </View>
-                </View>
-            }
-            <ScrollView
-                ref={scrollViewRef}
-                onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
-                style={{}}>
-                {message?.map((data, key) => {
-                    return (
-                        <KeyboardAvoidingView
-                        key={key}
-                            enabled
-                            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-                        >
-                            <View
-                                style={[styles.MessageBox, {
-                                    flexDirection: data.content.length < 32 ? "row" : "column",
-                                    marginBottom: 5,
-                                    alignSelf: data.sender === uid ? "flex-end" : "flex-start",
-                                    marginHorizontal: 15,
-                                    backgroundColor: (user.dark_mode && data.sender !== uid) ?
-                                        colors.MASSAGE_BOX_DARK : (!user.dark_mode && data.sender !== uid) ?
-                                        colors.WHITE : colors.MAIN_COLOR,
+        <ImageBackground
+            source={user.dark_mode ? BG_dark : BG}
+            style={{ flex: 1 }}
+        >
+            <View style={[styles.ChatBackGround,]}>
+                <ScrollView
+                    ref={scrollViewRef}
+                    onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
+                    style={{}}>
+                    {!data.saved_name &&
+                        <View style={{ width: width, justifyContent: 'center', alignItems: 'center' }} >
+                            <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: 20, gap: 10, backgroundColor: user.dark_mode ? colors.ADD_CONTACT_BG_DARK : colors.ADD_CONTACT_BG, width: "70%", paddingVertical: 20, borderRadius: 12 }}>
+                                <Image source={userImage ? { uri: userImage } : image} style={{ height: 60, width: 60, borderRadius: 30, resizeMode: "cover" }} />
+                                <Text style={{ fontFamily: Font.Bold, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.profiles.full_name}</Text>
+                                <Text style={{ fontFamily: Font.Light, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.profiles.email}</Text>
+                                <View style={{ flexDirection: 'row', gap: 20 }}>
+                                    <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 3, }} onPress={() => navigation.navigate('AddContact', { number: data.profiles.phone })}>
+                                        <AntDesign name="adduser" size={22} color={colors.MAIN_COLOR} />
+                                        <Text style={{ fontFamily: Font.Medium, fontSize: 12, color: colors.MAIN_COLOR }}>Add to contact</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 3, }}>
+                                        <MaterialIcons name="block" size={22} color="red" />
+                                        <Text style={{ fontFamily: Font.Medium, fontSize: 12, color: "red" }}>Block</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    }
+                    {message?.map((data, key) => {
+                        return (
+                            <KeyboardAvoidingView
+                                key={key}
+                                enabled
+                                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                                keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+                            >
+                                <View
+                                    style={[styles.MessageBox, {
+                                        flexDirection: data.content.length < 32 ? "row" : "column",
+                                        marginBottom: 5,
+                                        alignSelf: data.sender === uid ? "flex-end" : "flex-start",
+                                        marginHorizontal: 15,
+                                        backgroundColor: (user.dark_mode && data.sender !== uid) ?
+                                            colors.MASSAGE_BOX_DARK : (!user.dark_mode && data.sender !== uid) ?
+                                                colors.WHITE : colors.MAIN_COLOR,
                                         width: data.content.length < 32 ? "auto" : 300, borderTopRightRadius: data.sender !== uid ? 20 : 0,
                                         borderTopLeftRadius: data.sender !== uid ? 20 : 20, borderBottomRightRadius: data.sender !== uid ? 20 : 20, borderBottomLeftRadius: data.sender !== uid ? 0 : 20
                                     }]}>
-                                <Text style={[styles.MessageContent, {
-                                    color: (!user.dark_mode && data.sender !== uid) ? colors.BLACK : colors.WHITE,
-                                }]}>{data.content.trim()}
-                                </Text>
-                                <Text style={[styles.TimeText, {
-                                    color: (!user.dark_mode && data.sender !== uid) ?
-                                    colors.CHARCOLE_DARK : colors.TIME_TEXT
-                                }]}>{GetTime(data.time)}</Text>
-                            </View>
-                        </KeyboardAvoidingView>
-                    )
-                })}
-            </ScrollView>
-            <View style={styles.MassageBox}>
-                <View style={[styles.MassageField, { backgroundColor: user.dark_mode ? colors.MASSAGE_BOX_DARK : colors.MASSAGE_BOX, }]}>
-                    <TouchableOpacity style={styles.emogiIcon}>
-                        <FontAwesome6 name="smile-beam" size={24} color={user.dark_mode ? colors.WHITE : colors.CHARCOLE} />
-                    </TouchableOpacity>
-                    <TextInput
-                        autoCapitalize={false}
-                        autoCorrect={false}
-                        scrollEnabled={true}
-                        placeholder="Message"
-                        value={messageText}
-                        multiline={true}
-                        style={{ width: "75%", fontFamily: Font.Medium, color: user?.dark_mode ? colors.WHITE : colors.BLACK }}
-                        onChangeText={TypeMassage}
-                        placeholderTextColor={user.dark_mode ? colors.WHITE : colors.CHARCOLE}
+                                    <Text style={[styles.MessageContent, {
+                                        color: (!user.dark_mode && data.sender !== uid) ? colors.BLACK : colors.WHITE,
+                                    }]}>{data.content.trim()}
+                                    </Text>
+                                    <Text style={[styles.TimeText, {
+                                        color: (!user.dark_mode && data.sender !== uid) ?
+                                            colors.CHARCOLE_DARK : colors.TIME_TEXT
+                                    }]}>{GetTime(data.time)}</Text>
+                                </View>
+                            </KeyboardAvoidingView>
+                        )
+                    })}
+                </ScrollView>
+                <View style={styles.MassageBox}>
+                    <View style={[styles.MassageField, { backgroundColor: user.dark_mode ? colors.MASSAGE_BOX_DARK : colors.MASSAGE_BOX, }]}>
+                        <TouchableOpacity style={styles.emogiIcon}>
+                            <FontAwesome6 name="smile-beam" size={24} color={user.dark_mode ? colors.WHITE : colors.CHARCOLE} />
+                        </TouchableOpacity>
+                        <TextInput
+                            autoCapitalize={false}
+                            autoCorrect={false}
+                            scrollEnabled={true}
+                            placeholder="Message"
+                            value={messageText}
+                            multiline={true}
+                            style={{ width: "75%", fontFamily: Font.Medium, color: user?.dark_mode ? colors.WHITE : colors.BLACK }}
+                            onChangeText={TypeMassage}
+                            placeholderTextColor={user.dark_mode ? colors.WHITE : colors.CHARCOLE}
                         />
-                    <TouchableOpacity style={styles.AttachMentIcon}>
-                        <MaterialIcons name="attach-file" size={24} color={user.dark_mode ? colors.WHITE : colors.CHARCOLE} />
+                        <TouchableOpacity style={styles.AttachMentIcon}>
+                            <MaterialIcons name="attach-file" size={24} color={user.dark_mode ? colors.WHITE : colors.CHARCOLE} />
+                        </TouchableOpacity>
+                    </View>
+                    <TouchableOpacity style={styles.SendBox} onPress={Send} >
+                        <MaterialIcons name={messageText.length > 0 ? "send" : "keyboard-voice"} size={30} color={colors.WHITE} />
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={styles.SendBox} onPress={Send} >
-                    <MaterialIcons name={messageText.length > 0 ? "send" : "keyboard-voice"} size={30} color={colors.WHITE} />
-                </TouchableOpacity>
             </View>
-        </View>
-    </ImageBackground>
+        </ImageBackground>
     )
 }
 
