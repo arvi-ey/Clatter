@@ -58,7 +58,6 @@ export default Messageprovider = ({ children }) => {
                     ) {
                         setMessage((prevMessages) => [...prevMessages, newMessage]);
                     }
-                    // if (newMessage.sender === uid || newMessage.reciver === uid) console.log(newMessage)
                 }
             )
             .subscribe();
@@ -81,6 +80,7 @@ export default Messageprovider = ({ children }) => {
         }
     };
 
+    // console.log("Render",user.full_name)
 
     const TrackTyping = (userId) => {
 

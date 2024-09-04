@@ -92,8 +92,10 @@ const Chatbox = ({ navigation }) => {
 
     const HandleGoBack = () => {
         const TypingChannel = TrackTyping(reciverId)
+        const MessageChannel =  SubscribeToMessages(uid, reciverId)
         supabase.removeChannel(TypingChannel);
-        navigation.goBack()
+        supabase.removeChannel(MessageChannel);
+        navigation.navigate("Profile")
 
     }
 

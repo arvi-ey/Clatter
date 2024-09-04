@@ -17,7 +17,6 @@ const ChatScreen = ({ navigation }) => {
     const { user, darkMode, savedContact, uid, downloadImage, } = useContext(AuthContext)
     const { GetuserMessaged, messagedContact, SubscribeToContactChange } = useContext(ContactContext)
     const [data, setData] = useState()
-    const { GetLatestMessage } = useContext(MessageContext);
     const [searchContact,setSearchContact]= useState("")
 
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
@@ -42,8 +41,9 @@ const ChatScreen = ({ navigation }) => {
         const [time, settime] = useState()
         const [emptyMessage, setEmptyMessage] = useState(false)
         const [userImage, setuserImage] = useState()
+        const [loading,setLoading]=useState(true)
 
-
+        
         const downloadImage = async (filename) => {
             if (!filename) return
             try {
@@ -71,9 +71,15 @@ const ChatScreen = ({ navigation }) => {
         }
     }
 
-        useEffect(() => {
-            fetchUserData()
-            GetLatestMessage()
+    useEffect(()=>{
+        fetchUserData()
+        setTimeout(()=>{
+            setLoading(false)
+        },1500)
+    },[])
+    
+    useEffect(() => {
+        GetLatestMessage()
         }, [data]);
 
         useEffect(() => {
@@ -121,7 +127,9 @@ const ChatScreen = ({ navigation }) => {
             return date.toLocaleTimeString('en-US', options);
         };
 
-        if (!latestMessage || !time) {
+        settime
+
+        if (loading) {
             return (
                 <TouchableOpacity style={{ marginTop: 8, flexDirection: "row", height: 70, padding: 5, gap: 20, alignItems: "center", marginLeft: 10 }}
                 >
