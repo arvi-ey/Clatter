@@ -28,8 +28,40 @@ const ChatScreen = ({ navigation }) => {
         Try()
     }, [])
 
+    useEffect(()=>{
+        const subscription = supabase
+                .channel('custom-message-channel')
+                .on('postgres_changes', 
+                    { event: 'INSERT', schema: 'public', table: 'message' }, // Only listen for INSERT events
+                    (payload) => {
+                        if (payload.new.reciver === uid || payload.new.sender === uid) {
+                            console.log("New message received:", payload.new);
+                        }
+                    }
+                )
+                .subscribe();
+    },[uid])
 
 
+    const RealtimeSubScription = async () => {
+        console.log("Connection Established");
+        try {
+            const subscription = supabase
+                .channel('custom-message-channel')
+                .on('postgres_changes', 
+                    { event: 'INSERT', schema: 'public', table: 'message' }, // Only listen for INSERT events
+                    (payload) => {
+                        if (payload.new.reciver === uid || payload.new.sender === uid) {
+                            console.log("New message received:", payload.new);
+                        }
+                    }
+                )
+                .subscribe();
+        } catch (error) {
+            console.error('Error subscribing to channel:', error);
+        }
+    };
+    
     const Try = async () => {
         try {
           const { data, error } = await supabase
@@ -74,12 +106,13 @@ const ChatScreen = ({ navigation }) => {
     };
 
 
-    const ChatComponent = ({ data }) => {
+    const ChatComponent = ({data}) => {
         const [latestMessage, setLatestMessage] = useState(null);
         const [time, settime] = useState()
         const [emptyMessage, setEmptyMessage] = useState(false)
         const [userImage, setuserImage] = useState()
         const [loading,setLoading]=useState(true)
+        const [userInfo,setUserInfo]= useState()
 
 
         const FetchSaVedContactData = async (userId) => {
@@ -91,16 +124,12 @@ const ChatScreen = ({ navigation }) => {
                         user_id:uid,
                         saved_id:userId
                 });
-                return Savedcontact
+                setUserInfo(Savedcontact[0])
             }
             catch (error) {
                 console.log(error)
             }
         };
-
-        
-
-        
         const downloadImage = async (filename) => {
             if (!filename) return
             try {
@@ -122,30 +151,35 @@ const ChatScreen = ({ navigation }) => {
             }
         };
 
-        const fetchUserData = async () => {
-            if (data && data.profiles && data.profiles.id) {
-                downloadImage(data.profiles.profile_pic)
+        const fetchUserData = async (data) => {
+            if (data) {
+                downloadImage(data)
         }
     }
 
     useEffect(()=>{
-        fetchUserData()
+        FetchSaVedContactData(data)
         setTimeout(()=>{
             setLoading(false)
         },1500)
     },[])
+
+    useEffect(()=>{
+        fetchUserData(userInfo?.profiles?.profile_pic)
+    },[userInfo])
+
     
     useEffect(() => {
         GetLatestMessage()
         }, [data]);
 
         useEffect(() => {
-            if (!data || !data.profiles || !data.profiles.id) return;
+            if (!data) return;
             const subscription= supabase
                 .channel('custom-message-channel')
                 .on('postgres_changes',{event: '*', schema: 'public',table: 'message',},(payload) => {
                     const newData = payload.new
-                    if(newData.reciver=== uid && newData.sender===data.profiles.id) GetLatestMessage()
+                    if(newData.reciver=== uid && newData.sender===data) GetLatestMessage()
                     }
                 )
                 .subscribe();
@@ -153,12 +187,12 @@ const ChatScreen = ({ navigation }) => {
         
 
         const GetLatestMessage = async () => {
-            if(data && data.profiles && data.profiles.id){
+            if(data){
                 try {
                     let { data: messages, error } = await supabase
                     .from('message')
                     .select('*')
-                    .or(`and(sender.eq.${uid},reciver.eq.${data.profiles.id}),and(sender.eq.${data.profiles.id},reciver.eq.${uid})`)
+                    .or(`and(sender.eq.${uid},reciver.eq.${data}),and(sender.eq.${data},reciver.eq.${uid})`)
                     .order('time', { ascending: false })
                     .limit(1);
                     
@@ -203,7 +237,7 @@ const ChatScreen = ({ navigation }) => {
         return (
             !emptyMessage ?
                 <TouchableOpacity style={{ marginTop: 8, flexDirection: "row", height: 70, padding: 5, gap: 20, alignItems: "center" }}
-                    onPress={() => GotoChat(data,userImage)}
+                    onPress={() => GotoChat(userInfo,userImage)}
                 >
                     <View style={{ padding: 5, }} >
                         <Image source={userImage ? { uri: userImage } : image}
@@ -212,7 +246,7 @@ const ChatScreen = ({ navigation }) => {
                     </View>
                     <View style={{ flex: 1 }} >
                         <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
-                            <Text style={{ fontSize: 19, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: Font.Regular }}  >{data?.saved_name ? data.saved_name : data?.profiles?.phone ? data.profiles.phone : "No one"}</Text>
+                            <Text style={{ fontSize: 19, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: Font.Regular }}  >{userInfo?.saved_name ? userInfo.saved_name : userInfo?.profiles?.phone ? userInfo.profiles.phone : "No one"}</Text>
                             <Text style={{ marginRight: 10, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: Font.Regular, fontSize: 12 }} >{time && GetTime(time)}</Text>
                         </View>
                         <View>
@@ -258,7 +292,7 @@ const ChatScreen = ({ navigation }) => {
                 </View>
             </View>
             <FlatList
-                data={FilteredContact}
+                data={showdata}
                 renderItem={({ item }) => <ChatComponent data={item} />}
                 keyExtractor={(item, index) => index}
             />
