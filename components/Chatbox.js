@@ -43,7 +43,20 @@ const Chatbox = ({ navigation }) => {
         GetMessage(uid, reciverId)
         FetchReciverInfo(reciverId)
         UserStatusChanges(reciverId)
+        // UpdateMessageStatus()
     }, [])
+
+
+    const UpdateMessageStatus = async ()=>{
+        const { data } = await supabase
+        .from('message')
+        .update({status:"SEEN"})
+        .match({ 
+                status: 'SENT', 
+                   sender: reciverId, 
+                   reciver: uid 
+        });
+    }
 
     const FetchReciverInfo = async (reciverId) => {
         try {
