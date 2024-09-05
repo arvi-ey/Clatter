@@ -18,13 +18,51 @@ const ChatScreen = ({ navigation }) => {
     const { GetuserMessaged, messagedContact, SubscribeToContactChange } = useContext(ContactContext)
     const [data, setData] = useState()
     const [searchContact,setSearchContact]= useState("")
+    const [showdata,setShowdata]=useState([])
 
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
 
     useEffect(() => {
         GetuserMessaged()
         SubscribeToContactChange()
+        Try()
     }, [])
+
+
+
+    const Try = async () => {
+        try {
+          const { data, error } = await supabase
+            .from('message')
+            .select('sender, reciver')
+            .or(`or(sender.eq.${uid},reciver.eq.${uid})`)
+            .order('time', { ascending: false })
+      
+          if (error) {
+            throw error;
+          }
+      
+          const arr = []
+          const filteredData = data.filter(message => {
+            if (message.sender === uid) {
+              arr.push(message.reciver);
+            } else {
+                arr.push(message.sender); 
+            }
+          });
+          const UniqueData = removeDuplicates(arr)
+          if(UniqueData.length>0) setShowdata(UniqueData)
+        } catch (error) {
+          console.error('Error fetching messages:', error);
+          return { status: 500, error: 'Failed to fetch messages' };
+        }
+      };
+
+      function removeDuplicates(array) {
+        const uniqueSet = new Set(array);
+        return Array.from(uniqueSet);
+      }
+
     useEffect(() => {
         setData(savedContact)
     }, [savedContact])
@@ -42,6 +80,25 @@ const ChatScreen = ({ navigation }) => {
         const [emptyMessage, setEmptyMessage] = useState(false)
         const [userImage, setuserImage] = useState()
         const [loading,setLoading]=useState(true)
+
+
+        const FetchSaVedContactData = async (userId) => {
+            try {
+                let { data: Savedcontact, error } = await supabase
+                    .from('Savedcontact')
+                    .select('user_id,saved_name,profiles(*)')
+                    .match({ 
+                        user_id:uid,
+                        saved_id:userId
+                });
+                return Savedcontact
+            }
+            catch (error) {
+                console.log(error)
+            }
+        };
+
+        
 
         
         const downloadImage = async (filename) => {
