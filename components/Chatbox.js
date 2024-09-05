@@ -47,15 +47,15 @@ const Chatbox = ({ navigation }) => {
     }, [])
 
 
-    const UpdateMessageStatus = async ()=>{
+    const UpdateMessageStatus = async () => {
         const { data } = await supabase
-        .from('message')
-        .update({status:"SEEN"})
-        .match({ 
-                status: 'SENT', 
-                   sender: reciverId, 
-                   reciver: uid 
-        });
+            .from('message')
+            .update({ status: "SEEN" })
+            .match({
+                status: 'SENT',
+                sender: reciverId,
+                reciver: uid
+            });
     }
 
     const FetchReciverInfo = async (reciverId) => {
@@ -102,9 +102,7 @@ const Chatbox = ({ navigation }) => {
 
     const HandleGoBack = () => {
         const TypingChannel = TrackTyping(reciverId)
-        const MessageChannel =  SubscribeToMessages(uid, reciverId)
-        supabase.removeChannel(TypingChannel);
-        supabase.removeChannel(MessageChannel);
+        const MessageChannel = SubscribeToMessages(uid, reciverId)
         navigation.navigate("Profile")
 
     }
@@ -274,7 +272,7 @@ const Chatbox = ({ navigation }) => {
                                 <Text style={{ fontFamily: Font.Bold, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.profiles.full_name}</Text>
                                 <Text style={{ fontFamily: Font.Light, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.profiles.email}</Text>
                                 <View style={{ flexDirection: 'row', gap: 20 }}>
-                                    <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 3, }} onPress={() => navigation.navigate('AddContact', { number: data.profiles.phone })}>
+                                    <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 3, }} onPress={() => navigation.navigate('AddContact', { number: data.profiles.phone, uid: reciverId })}>
                                         <AntDesign name="adduser" size={22} color={colors.MAIN_COLOR} />
                                         <Text style={{ fontFamily: Font.Medium, fontSize: 12, color: colors.MAIN_COLOR }}>Add to contact</Text>
                                     </TouchableOpacity>
@@ -315,11 +313,6 @@ const Chatbox = ({ navigation }) => {
                                             colors.CHARCOLE_DARK : colors.TIME_TEXT
                                     }]}>{GetTime(data.time)}</Text>
                                 </View>
-                                    {data.sender===uid &&
-                                <View style={[{alignSelf:'flex-end',marginRight:10,marginBottom:10, marginTop:-5}]}>
-                                    <Text style={{fontFamily:Font.Medium,color:colors.MAIN_COLOR,fontSize:8}}>{data.status}</Text>
-                                </View>
-                                }
                             </KeyboardAvoidingView>
                         )
                     })}

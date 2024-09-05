@@ -14,7 +14,7 @@ import { useRoute } from '@react-navigation/native';
 const AddContact = ({ navigation }) => {
     const { user } = useContext(AuthContext)
     const Route = useRoute()
-    const { AddNewContact, loading } = useContext(ContactContext)
+    const { AddNewContact, loading, AddChatContact } = useContext(ContactContext)
     const [focusNumber, setFocusNumber] = useState(false)
     const [focusName, setFocusName] = useState(false)
     const [userNumber, setuserNumber] = useState()
@@ -58,11 +58,19 @@ const AddContact = ({ navigation }) => {
             Alert.alert('Enter a Valid Mobile Number')
         }
         else {
-            console.log(data)
-            const result = await AddNewContact(data)
-            if (result) navigation.goBack()
+            if (Route?.params?.number && Route?.params?.uid) {
+                const result = await AddChatContact(data.saved_name, Route.params?.uid)
+                navigation.navigate("Profile")
+            }
+            else {
+                const result = await AddNewContact(data)
+                if (result) navigation.goBack()
+            }
         }
     }
+
+
+
 
     return (
         <SafeAreaView style={[styles.AddContactContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>

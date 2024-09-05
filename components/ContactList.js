@@ -5,6 +5,7 @@ import { useState, useEffect, useContext, useRef } from 'react';
 import { colors } from './Theme';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from './Context/Authprovider';
+import { ContactContext } from './Context/Contactprovider';
 import { Font } from '../common/font';
 import { supabase } from '../lib/supabase'
 
@@ -12,8 +13,13 @@ import { supabase } from '../lib/supabase'
 const ContactList = ({ navigation }) => {
     const { user, savedContact } = useContext(AuthContext)
     const [data, setData] = useState()
+    const { GetuserMessaged, messagedContact, SubscribeToContactChange } = useContext(ContactContext)
+
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
 
+    useEffect(() => {
+        SubscribeToContactChange()
+    }, [])
     useEffect(() => {
         setData(savedContact)
     }, [savedContact])

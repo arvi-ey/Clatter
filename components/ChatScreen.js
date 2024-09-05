@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, Alert, ScrollView, ActivityIndicator, TextInput, Dimensions, } from 'react-native'
 import React from 'react'
-import { useContext, useEffect, useState, useRef,useMemo } from 'react';
+import { useContext, useEffect, useState, useRef, useMemo } from 'react';
 import { AuthContext } from "./Context/Authprovider"
 import { colors } from './Theme'
 import { MaterialIcons } from '@expo/vector-icons';
@@ -17,8 +17,8 @@ const ChatScreen = ({ navigation }) => {
     const { user, darkMode, savedContact, uid, downloadImage, } = useContext(AuthContext)
     const { GetuserMessaged, messagedContact, SubscribeToContactChange } = useContext(ContactContext)
     const [data, setData] = useState()
-    const [searchContact,setSearchContact]= useState("")
-    const [showdata,setShowdata]=useState([])
+    const [searchContact, setSearchContact] = useState("")
+    const [showdata, setShowdata] = useState([])
 
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
 
@@ -32,44 +32,44 @@ const ChatScreen = ({ navigation }) => {
 
     const Try = async () => {
         try {
-          const { data, error } = await supabase
-            .from('message')
-            .select('sender, reciver')
-            .or(`or(sender.eq.${uid},reciver.eq.${uid})`)
-            .order('time', { ascending: false })
-      
-          if (error) {
-            throw error;
-          }
-      
-          const arr = []
-          const filteredData = data.filter(message => {
-            if (message.sender === uid) {
-              arr.push(message.reciver);
-            } else {
-                arr.push(message.sender); 
-            }
-          });
-          const UniqueData = removeDuplicates(arr)
-          if(UniqueData.length>0) setShowdata(UniqueData)
-        } catch (error) {
-          console.error('Error fetching messages:', error);
-          return { status: 500, error: 'Failed to fetch messages' };
-        }
-      };
+            const { data, error } = await supabase
+                .from('message')
+                .select('sender, reciver')
+                .or(`or(sender.eq.${uid},reciver.eq.${uid})`)
+                .order('time', { ascending: false })
 
-      function removeDuplicates(array) {
+            if (error) {
+                throw error;
+            }
+
+            const arr = []
+            const filteredData = data.filter(message => {
+                if (message.sender === uid) {
+                    arr.push(message.reciver);
+                } else {
+                    arr.push(message.sender);
+                }
+            });
+            const UniqueData = removeDuplicates(arr)
+            if (UniqueData.length > 0) setShowdata(UniqueData)
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+            return { status: 500, error: 'Failed to fetch messages' };
+        }
+    };
+
+    function removeDuplicates(array) {
         const uniqueSet = new Set(array);
         return Array.from(uniqueSet);
-      }
+    }
 
     useEffect(() => {
         setData(savedContact)
     }, [savedContact])
 
-    
 
-    const GotoChat = (data,userImage) => {
+
+    const GotoChat = (data, userImage) => {
         navigation.navigate('Chatbox', { data, userImage });
     };
 
@@ -79,7 +79,7 @@ const ChatScreen = ({ navigation }) => {
         const [time, settime] = useState()
         const [emptyMessage, setEmptyMessage] = useState(false)
         const [userImage, setuserImage] = useState()
-        const [loading,setLoading]=useState(true)
+        const [loading, setLoading] = useState(true)
 
 
         const FetchSaVedContactData = async (userId) => {
@@ -87,10 +87,10 @@ const ChatScreen = ({ navigation }) => {
                 let { data: Savedcontact, error } = await supabase
                     .from('Savedcontact')
                     .select('user_id,saved_name,profiles(*)')
-                    .match({ 
-                        user_id:uid,
-                        saved_id:userId
-                });
+                    .match({
+                        user_id: uid,
+                        saved_id: userId
+                    });
                 return Savedcontact
             }
             catch (error) {
@@ -98,9 +98,9 @@ const ChatScreen = ({ navigation }) => {
             }
         };
 
-        
 
-        
+
+
         const downloadImage = async (filename) => {
             if (!filename) return
             try {
@@ -125,57 +125,57 @@ const ChatScreen = ({ navigation }) => {
         const fetchUserData = async () => {
             if (data && data.profiles && data.profiles.id) {
                 downloadImage(data.profiles.profile_pic)
+            }
         }
-    }
 
-    useEffect(()=>{
-        fetchUserData()
-        setTimeout(()=>{
-            setLoading(false)
-        },1500)
-    },[])
-    
-    useEffect(() => {
-        GetLatestMessage()
+        useEffect(() => {
+            fetchUserData()
+            setTimeout(() => {
+                setLoading(false)
+            }, 1500)
+        }, [])
+
+        useEffect(() => {
+            GetLatestMessage()
         }, [data]);
 
         useEffect(() => {
             if (!data || !data.profiles || !data.profiles.id) return;
-            const subscription= supabase
+            const subscription = supabase
                 .channel('custom-message-channel')
-                .on('postgres_changes',{event: '*', schema: 'public',table: 'message',},(payload) => {
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'message', }, (payload) => {
                     const newData = payload.new
-                    if(newData.reciver=== uid && newData.sender===data.profiles.id) GetLatestMessage()
-                    }
+                    if ((newData.reciver === uid && newData.sender === data.profiles.id) || (newData.sender === uid || newData.reciver === data.profiles.id)) GetLatestMessage()
+                }
                 )
                 .subscribe();
         }, [data, uid]);
-        
+
 
         const GetLatestMessage = async () => {
-            if(data && data.profiles && data.profiles.id){
+            if (data && data.profiles && data.profiles.id) {
                 try {
                     let { data: messages, error } = await supabase
-                    .from('message')
-                    .select('*')
-                    .or(`and(sender.eq.${uid},reciver.eq.${data.profiles.id}),and(sender.eq.${data.profiles.id},reciver.eq.${uid})`)
-                    .order('time', { ascending: false })
-                    .limit(1);
-                    
+                        .from('message')
+                        .select('*')
+                        .or(`and(sender.eq.${uid},reciver.eq.${data.profiles.id}),and(sender.eq.${data.profiles.id},reciver.eq.${uid})`)
+                        .order('time', { ascending: false })
+                        .limit(1);
+
                     if (error) throw error;
                     if (!messages) setEmptyMessage(true)
-                    if(messages[0]){
+                    if (messages[0]) {
                         setLatestMessage(messages[0]?.content);
-                    settime(messages[0].time)
+                        settime(messages[0].time)
+                    }
+                } catch (error) {
+                    console.log('Error fetching the latest message:', error);
+                    return null;
                 }
-            } catch (error) {
-                console.log('Error fetching the latest message:', error);
-                return null;
             }
-        }
-        return null
+            return null
         };
-    
+
 
         const GetTime = (timestamp) => {
             const timeStampData = Number(timestamp)
@@ -201,9 +201,9 @@ const ChatScreen = ({ navigation }) => {
         }
 
         return (
-            !emptyMessage ?
+            emptyMessage === false ?
                 <TouchableOpacity style={{ marginTop: 8, flexDirection: "row", height: 70, padding: 5, gap: 20, alignItems: "center" }}
-                    onPress={() => GotoChat(data,userImage)}
+                    onPress={() => GotoChat(data, userImage)}
                 >
                     <View style={{ padding: 5, }} >
                         <Image source={userImage ? { uri: userImage } : image}
@@ -237,7 +237,7 @@ const ChatScreen = ({ navigation }) => {
         )
     }
 
-    const SearchContact = (text)=>{
+    const SearchContact = (text) => {
         setSearchContact(text)
     }
 
@@ -247,14 +247,14 @@ const ChatScreen = ({ navigation }) => {
 
     return (
         <View style={{ backgroundColor: darkMode ? colors.BLACK : colors.WHITE, flex: 1, position: "relative" }} >
-            <View style={[{width,justifyContent:'center',alignItems:'center',marginTop:5},styles.searchBarStyle]} >
-                <View style={[styles.InputBox,{backgroundColor:darkMode?colors.SEARCH_BG_DARK:colors.SEARCH_BG}]}>
-                <Ionicons name="search-outline" size={28} color={darkMode ? colors.CHARCOLE_DARK : colors.SEARCH_TEXT} style={{marginLeft:10}} />
-                <TextInput
-                placeholder="search..."
-                placeholderTextColor={darkMode?colors.CHARCOLE_DARK:colors.SEARCH_TEXT}
-                onChangeText={SearchContact}                
-                style={[styles.InputStyle,{fontFamily:Font.Medium,fontSize:15, color:darkMode?colors.CHARCOLE_DARK:colors.SEARCH_TEXT}]}  />
+            <View style={[{ width, justifyContent: 'center', alignItems: 'center', marginTop: 5 }, styles.searchBarStyle]} >
+                <View style={[styles.InputBox, { backgroundColor: darkMode ? colors.SEARCH_BG_DARK : colors.SEARCH_BG }]}>
+                    <Ionicons name="search-outline" size={28} color={darkMode ? colors.CHARCOLE_DARK : colors.SEARCH_TEXT} style={{ marginLeft: 10 }} />
+                    <TextInput
+                        placeholder="search..."
+                        placeholderTextColor={darkMode ? colors.CHARCOLE_DARK : colors.SEARCH_TEXT}
+                        onChangeText={SearchContact}
+                        style={[styles.InputStyle, { fontFamily: Font.Medium, fontSize: 15, color: darkMode ? colors.CHARCOLE_DARK : colors.SEARCH_TEXT }]} />
                 </View>
             </View>
             <FlatList
@@ -278,23 +278,23 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         top: 550
     },
-    searchBarStyle:{
-        height:52,
-        borderRadius:30,
+    searchBarStyle: {
+        height: 52,
+        borderRadius: 30,
     },
-    InputBox:{
-        width:"95%",
-        height:"100%",
-        backgroundColor:"blue",
-        flexDirection:'row',
-        alignItems:'center',
-        borderRadius:25,
-        justifyContent:"space-around"
+    InputBox: {
+        width: "95%",
+        height: "100%",
+        backgroundColor: "blue",
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderRadius: 25,
+        justifyContent: "space-around"
     },
-    InputStyle:{
-        width:"90%",
-        borderRadius:25,
-        height:"100%",
-        paddingLeft:10
+    InputStyle: {
+        width: "90%",
+        borderRadius: 25,
+        height: "100%",
+        paddingLeft: 10
     }
 })

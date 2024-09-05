@@ -3,6 +3,7 @@ import axios from 'axios';
 import { AuthContext } from './Authprovider';
 import { Alert } from 'react-native';
 import { supabase } from '../../lib/supabase'
+import { err } from 'react-native-svg';
 
 export const ContactContext = createContext();
 
@@ -48,6 +49,33 @@ const ContactProvider = ({ children }) => {
             setLoading(false)
         }
     };
+
+
+    const AddChatContact = async (name, id) => {
+        setLoading(true)
+        try {
+
+            const { data, error } = await supabase
+                .from('Savedcontact')
+                .update({ saved_name: name })
+                .match({
+                    user_id: uid,
+                    saved_id: id,
+                });
+            if (error) {
+                setLoading(false)
+                console.log(error)
+            }
+            return data
+        }
+        catch (err) {
+            setLoading(false)
+            console.log(err)
+        }
+        finally {
+            setLoading(false)
+        }
+    }
 
     const FetchByPhone = async (phoneNumber) => {
         try {
@@ -104,7 +132,7 @@ const ContactProvider = ({ children }) => {
     };
 
 
-    value = { SubscribeToContactChange, loading, messagedContact, AddNewContact, FetchByPhone, GetuserMessaged }
+    value = { AddChatContact, SubscribeToContactChange, loading, messagedContact, AddNewContact, FetchByPhone, GetuserMessaged }
 
     return (
         <ContactContext.Provider value={value}>
