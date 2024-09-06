@@ -19,6 +19,7 @@ const ChatScreen = ({ navigation }) => {
     const [data, setData] = useState()
     const [searchContact,setSearchContact]= useState("")
     const [showdata,setShowdata]=useState([])
+    const [newData,setNew] = useState()
 
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
 
@@ -29,38 +30,8 @@ const ChatScreen = ({ navigation }) => {
     }, [])
 
     useEffect(()=>{
-        const subscription = supabase
-                .channel('custom-message-channel')
-                .on('postgres_changes', 
-                    { event: 'INSERT', schema: 'public', table: 'message' }, // Only listen for INSERT events
-                    (payload) => {
-                        if (payload.new.reciver === uid || payload.new.sender === uid) {
-                            console.log("New message received:", payload.new);
-                        }
-                    }
-                )
-                .subscribe();
-    },[uid])
-
-
-    const RealtimeSubScription = async () => {
-        console.log("Connection Established");
-        try {
-            const subscription = supabase
-                .channel('custom-message-channel')
-                .on('postgres_changes', 
-                    { event: 'INSERT', schema: 'public', table: 'message' }, // Only listen for INSERT events
-                    (payload) => {
-                        if (payload.new.reciver === uid || payload.new.sender === uid) {
-                            console.log("New message received:", payload.new);
-                        }
-                    }
-                )
-                .subscribe();
-        } catch (error) {
-            console.error('Error subscribing to channel:', error);
-        }
-    };
+        Try()
+    },[newData])
     
     const Try = async () => {
         try {
@@ -113,6 +84,7 @@ const ChatScreen = ({ navigation }) => {
         const [userImage, setuserImage] = useState()
         const [loading,setLoading]=useState(true)
         const [userInfo,setUserInfo]= useState()
+        const previousMessageRef = useRef(null);
 
 
         const FetchSaVedContactData = async (userId) => {
@@ -179,7 +151,9 @@ const ChatScreen = ({ navigation }) => {
                 .channel('custom-message-channel')
                 .on('postgres_changes',{event: '*', schema: 'public',table: 'message',},(payload) => {
                     const newData = payload.new
-                    if(newData.reciver=== uid && newData.sender===data) GetLatestMessage()
+                    if(newData.reciver=== uid && newData.sender===data || newData.sender===uid ) {
+                        setNew(payload.new)
+                    }
                     }
                 )
                 .subscribe();
@@ -197,11 +171,11 @@ const ChatScreen = ({ navigation }) => {
                     .limit(1);
                     
                     if (error) throw error;
-                    if (!messages) setEmptyMessage(true)
-                    if(messages[0]){
+                    if (messages[0]?.content !== previousMessageRef.current) {
                         setLatestMessage(messages[0]?.content);
-                    settime(messages[0].time)
-                }
+                        settime(messages[0].time);
+                        previousMessageRef.current = messages[0]?.content; // Update the ref with the new message
+                    }
             } catch (error) {
                 console.log('Error fetching the latest message:', error);
                 return null;
@@ -218,20 +192,8 @@ const ChatScreen = ({ navigation }) => {
             return date.toLocaleTimeString('en-US', options);
         };
 
-        if (loading) {
-            return (
-                <TouchableOpacity style={{ marginTop: 8, flexDirection: "row", height: 70, padding: 5, gap: 20, alignItems: "center", marginLeft: 10 }}
-                >
-                    <View style={{ padding: 5, backgroundColor: darkMode ? colors.SKELETON_BG_DARK : colors.SKELETON_BG, height: 60, width: 60, borderRadius: 30 }} >
-                    </View>
-                    <View style={{ flex: 1, gap: 5 }} >
-                        <View style={{ width: "90%", height: 20, flexDirection: "row", justifyContent: "space-between", backgroundColor: darkMode ? colors.SKELETON_BG_DARK : colors.SKELETON_BG, borderRadius: 8 }}>
-                        </View>
-                        <View style={{ width: "30%", height: 20, flexDirection: "row", justifyContent: "space-between", backgroundColor: darkMode ? colors.SKELETON_BG_DARK : colors.SKELETON_BG, borderRadius: 8 }}>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-            )
+        if (!latestMessage) {
+            return null; // Do nothing until the latest message is fetched
         }
 
         return (
@@ -247,10 +209,10 @@ const ChatScreen = ({ navigation }) => {
                     <View style={{ flex: 1 }} >
                         <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
                             <Text style={{ fontSize: 19, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: Font.Regular }}  >{userInfo?.saved_name ? userInfo.saved_name : userInfo?.profiles?.phone ? userInfo.profiles.phone : "No one"}</Text>
-                            <Text style={{ marginRight: 10, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: Font.Regular, fontSize: 12 }} >{time && GetTime(time)}</Text>
+                            <Text style={{ marginRight: 10, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: Font.Regular, fontSize: 12 }} >{GetTime(time)}</Text>
                         </View>
                         <View>
-                            <Text style={{ fontSize: 15, color: darkMode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: darkMode ? "Ubuntu-Light" : Font.Regular }}>{latestMessage && latestMessage}</Text>
+                            <Text style={{ fontSize: 15, color: darkMode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: darkMode ? "Ubuntu-Light" : Font.Regular }}>{latestMessage}</Text>
                         </View>
                     </View>
 
