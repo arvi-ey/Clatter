@@ -56,7 +56,7 @@ const ContactList = ({ navigation }) => {
         const [userImage, setuserImage] = useState()
 
         const GotoChat = (data) => {
-            navigation.navigate('Chatbox', data);
+            navigation.navigate('Chatbox', { data });
         };
         useEffect(() => {
             if (value) downloadImage(data?.profiles?.profile_pic)

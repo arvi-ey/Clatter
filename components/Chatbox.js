@@ -15,7 +15,7 @@ import { supabase } from '../lib/supabase'
 
 const Chatbox = ({ navigation }) => {
     const route = useRoute()
-    const { data, userImage } = route.params;
+    const { data } = route.params;
     const reciverId = data?.profiles.id
     const { uid, user, } = useContext(AuthContext);
     const { FetchByPhone } = useContext(ContactContext);
@@ -30,6 +30,8 @@ const Chatbox = ({ navigation }) => {
     const [hideTyping, setHideTyping] = useState()
     const [hideLastseen, setHideLastseen] = useState()
     const typingTimeoutRef = useRef(null);
+    const [userImage, setuserImage] = useState()
+
     const [typingChannel, setTypingChannel] = useState()
 
     const GetTime = (timestamp) => {
@@ -45,6 +47,32 @@ const Chatbox = ({ navigation }) => {
         UserStatusChanges(reciverId)
         // UpdateMessageStatus()
     }, [])
+
+
+    useEffect(() => {
+        if (data) downloadImage(data?.profiles?.profile_pic)
+    }, [data])
+
+    const downloadImage = async (filename) => {
+        if (!filename) return
+        try {
+            const { data, error } = await supabase.storage
+                .from('avatars')
+                .download(filename);
+
+            if (error) {
+                console.error('Error downloading image:', error.message);
+                return;
+            }
+            const fr = new FileReader();
+            fr.readAsDataURL(data);
+            fr.onload = () => {
+                setuserImage(fr.result)
+            };
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+    };
 
 
     const UpdateMessageStatus = async () => {
