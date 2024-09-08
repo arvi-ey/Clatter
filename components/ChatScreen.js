@@ -12,6 +12,7 @@ import { MotiView } from 'moti';
 import { Skeleton } from 'moti/skeleton';
 const { height, width } = Dimensions.get("window");
 import { Ionicons } from '@expo/vector-icons';
+import { isLoading } from 'expo-font';
 
 const ChatScreen = ({ navigation }) => {
     const { user, darkMode, savedContact, uid, downloadImage, } = useContext(AuthContext)
@@ -19,7 +20,7 @@ const ChatScreen = ({ navigation }) => {
     const [data, setData] = useState()
     const [searchContact, setSearchContact] = useState("")
     const [showdata, setShowdata] = useState([])
-    const [newData, setNew] = useState()
+    const [loading, setLoading] = useState(true)
 
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
 
@@ -28,11 +29,13 @@ const ChatScreen = ({ navigation }) => {
         SubscribeToMessage()
         GetuserMessaged()
         Try()
-    }, [])
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 2000);
 
-    useEffect(() => {
-        console.log("Show Data Triggring", showdata)
-    }, [showdata])
+        // Cleanup the timer in case the component unmounts before the timeout
+        return () => clearTimeout(timer);
+    }, [])
 
     const SubscribeToContactChange = () => {
         const subscription = supabase
@@ -93,11 +96,47 @@ const ChatScreen = ({ navigation }) => {
                 }
             });
             const UniqueData = removeDuplicates(arr)
-            if (UniqueData.length > 0) setShowdata(UniqueData)
+            if (UniqueData.length > 0) {
+                setShowdata(UniqueData)
+                let DataARR = []
+                let NewData = {}
+                for (let i = 0; i < UniqueData.length; i++) {
+                    NewData = await GetLatestMessage(uid, UniqueData[i])
+                    NewData.id = UniqueData[i]
+                    DataARR.push(NewData)
+                }
+                console.log(DataARR)
+
+            }
         } catch (error) {
             console.error('Error fetching messages:', error);
             return { status: 500, error: 'Failed to fetch messages' };
         }
+    };
+
+    const GetLatestMessage = async (uid, data) => {
+        if (data) {
+            try {
+                let { data: messages, error } = await supabase
+                    .from('message')
+                    .select('*')
+                    .or(`and(sender.eq.${uid},reciver.eq.${data}),and(sender.eq.${data},reciver.eq.${uid})`)
+                    .order('time', { ascending: false })
+                    .limit(1);
+
+                if (error) throw error;
+                if (messages[0]) {
+                    const content = messages[0].content
+                    const time = messages[0].time
+
+                    return { content, time }
+                }
+            } catch (error) {
+                console.log('Error fetching the latest message:', error);
+                return null;
+            }
+        }
+        return null
     };
 
     function removeDuplicates(array) {
@@ -117,6 +156,9 @@ const ChatScreen = ({ navigation }) => {
 
     function SetValue(arr, value) {
         // Check if the value is already in the array
+        if (arr[0] === value) {
+            return arr; // Do nothing and return the array as is
+        }
         const index = arr.indexOf(value);
 
         if (index !== -1) {
@@ -138,7 +180,6 @@ const ChatScreen = ({ navigation }) => {
         const [userInfo, setUserInfo] = useState()
         const previousMessageRef = useRef(null);
 
-
         const FetchSaVedContactData = async (userId) => {
             try {
                 let { data: Savedcontact, error } = await supabase
@@ -154,6 +195,9 @@ const ChatScreen = ({ navigation }) => {
                 console.log(error)
             }
         };
+
+
+
         const downloadImage = async (filename) => {
             if (!filename) return
             try {
@@ -253,8 +297,21 @@ const ChatScreen = ({ navigation }) => {
         };
 
         if (!latestMessage) {
-            return null; // Do nothing until the latest message is fetched
+            return (
+                <TouchableOpacity style={{ marginTop: 8, flexDirection: "row", height: 70, padding: 5, gap: 20, alignItems: "center", marginLeft: 10 }}
+                >
+                    <View style={{ padding: 5, backgroundColor: darkMode ? colors.SKELETON_BG_DARK : colors.SKELETON_BG, height: 60, width: 60, borderRadius: 30 }} >
+                    </View>
+                    <View style={{ flex: 1, gap: 5 }} >
+                        <View style={{ width: "90%", height: 20, flexDirection: "row", justifyContent: "space-between", backgroundColor: darkMode ? colors.SKELETON_BG_DARK : colors.SKELETON_BG, borderRadius: 8 }}>
+                        </View>
+                        <View style={{ width: "30%", height: 20, flexDirection: "row", justifyContent: "space-between", backgroundColor: darkMode ? colors.SKELETON_BG_DARK : colors.SKELETON_BG, borderRadius: 8 }}>
+                        </View>
+                    </View>
+                </TouchableOpacity>
+            )
         }
+
 
         return (
             !emptyMessage ?
