@@ -30,6 +30,9 @@ const ChatScreen = ({ navigation }) => {
         Try()
     }, [])
 
+    useEffect(() => {
+        console.log("Show Data Triggring", showdata)
+    }, [showdata])
 
     const SubscribeToContactChange = () => {
         const subscription = supabase
@@ -52,7 +55,14 @@ const ChatScreen = ({ navigation }) => {
             .channel('public:message')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'message' }, (payload) => {
                 if (payload.new.reciver === uid || payload.new.sender === uid) {
-                    Try()
+                    if (payload.new.reciver === uid) {
+                        console.log(SetValue(showdata, payload.new.sender))
+                        setShowdata(SetValue(showdata, payload.new.sender))
+                    }
+                    if (payload.new.sender === uid) {
+                        console.log(SetValue(showdata, payload.new.reciver))
+                        setShowdata(SetValue(showdata, payload.new.reciver))
+                    }
                 }
             })
             .subscribe();
@@ -61,11 +71,6 @@ const ChatScreen = ({ navigation }) => {
             supabase.removeChannel(subscription);
         };
     };
-
-
-    useEffect(() => {
-        Try()
-    }, [newData])
 
     const Try = async () => {
         try {
@@ -110,6 +115,20 @@ const ChatScreen = ({ navigation }) => {
         navigation.navigate('Chatbox', { data });
     };
 
+    function SetValue(arr, value) {
+        // Check if the value is already in the array
+        const index = arr.indexOf(value);
+
+        if (index !== -1) {
+            // If found, remove it from the current position
+            arr.splice(index, 1);
+        }
+
+        // Add the value to the beginning of the array
+        arr.unshift(value);
+
+        return arr;
+    }
 
     const ChatComponent = ({ data }) => {
         const [latestMessage, setLatestMessage] = useState(null);
@@ -177,16 +196,28 @@ const ChatScreen = ({ navigation }) => {
 
         useEffect(() => {
             if (!data) return;
+
             const subscription = supabase
                 .channel('public:message')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'message', }, (payload) => {
-                    const newData = payload.new
-                    if (newData) setNew(newData)
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'message' }, (payload) => {
+                    const newData = payload.new;
 
-                }
-                )
+                    if (payload.new.reciver === uid || payload.new.sender === uid) {
+                        setShowdata((prevData) => {
+                            // Create a new array and update it with the new value
+                            if (payload.new.reciver === uid) {
+                                return SetValue([...prevData], payload.new.sender);
+                            }
+                            if (payload.new.sender === uid) {
+                                return SetValue([...prevData], payload.new.reciver);
+                            }
+                            return prevData; // If no changes are needed, return the previous state
+                        });
+                    }
+                })
                 .subscribe();
         }, [data, uid]);
+
 
 
         const GetLatestMessage = async (uid, data) => {
