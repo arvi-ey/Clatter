@@ -8,6 +8,8 @@ export default Messageprovider = ({ children }) => {
     const { user, uid } = useContext(AuthContext);
     const [message, setMessage] = useState()
     const [typing, setTyping] = useState(false)
+    const [showdata, setShowdata] = useState([])
+    const [getvalue,setGetvalue]=useState()
 
 
     const GetMessage = async (senderId, receiverId) => {
@@ -24,25 +26,8 @@ export default Messageprovider = ({ children }) => {
             console.log(error);
         }
     };
+    
 
-
-    const GetLatestMessage = async (receiverId) => {
-        try {
-            let { data: messages, error } = await supabase
-                .from('message')
-                .select('*')
-                .or(`and(sender.eq.${uid},reciver.eq.${receiverId}),and(sender.eq.${receiverId},reciver.eq.${uid})`)
-                .order('time', { ascending: false })
-                .limit(1);
-
-            if (error) throw error;
-            // console.log(messages[0].content)
-            return messages[0];
-        } catch (error) {
-            console.log('Error fetching the latest message:', error);
-            return null;
-        }
-    };
 
 
     const SubscribeToMessages = (senderId, receiverId) => {
@@ -111,7 +96,115 @@ export default Messageprovider = ({ children }) => {
         }
     };
 
-    const value = { GetLatestMessage, message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping, typing }
+
+    const Try = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('message')
+                .select('sender, reciver')
+                .or(`or(sender.eq.${uid},reciver.eq.${uid})`)
+                .order('time', { ascending: false })
+
+            if (error) {
+                throw error;
+            }
+
+            const arr = []
+            const filteredData = data.filter(message => {
+                if (message.sender === uid) {
+                    arr.push(message.reciver);
+                } else {
+                    arr.push(message.sender);
+                }
+            });
+            const UniqueData = removeDuplicates(arr)
+            if (UniqueData.length > 0) {
+                setShowdata(UniqueData)
+                console.log(UniqueData)
+                let DataARR = []
+                let NewData = {}
+                for (let i = 0; i < UniqueData.length; i++) {
+                    NewData = await GetLatestMessage(uid, UniqueData[i])
+                    NewData.id = UniqueData[i]
+                    DataARR.push(NewData)
+                }
+                for (let i=0 ; i<UniqueData.length; i++){
+                    const newData = await FetchSaVedContact(UniqueData[i])
+                    // console.log(newData)
+                }
+                setGetvalue(DataARR)
+            }
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+            return { status: 500, error: 'Failed to fetch messages' };
+        }
+    };
+
+    const FetchSaVedContact = async (userId) => {
+        try {
+            let { data, error } = await supabase
+                .from('Savedcontact')
+                .select(`number,saved_name,profiles(phone)`)
+                .match({
+                    user_id:uid,
+                    saved_id:userId
+                });
+                return data
+        }
+        catch (error) {
+            console.log(error)
+        }
+    };
+
+    const GetLatestMessage = async (uid, data) => {
+        if (data) {
+            try {
+                let { data: messages, error } = await supabase
+                    .from('message')
+                    .select('*')
+                    .or(`and(sender.eq.${uid},reciver.eq.${data}),and(sender.eq.${data},reciver.eq.${uid})`)
+                    .order('time', { ascending: false })
+                    .limit(1);
+
+                if (error) throw error;
+                if (messages[0]) {
+                    const content = messages[0].content
+                    const time = messages[0].time
+
+                    return { content, time }
+                }
+            } catch (error) {
+                console.log('Error fetching the latest message:', error);
+                return null;
+            }
+        }
+        return null
+    };
+
+    function removeDuplicates(array) {
+        const uniqueSet = new Set(array);
+        return Array.from(uniqueSet);
+    }
+
+    function SetValue(arr, value) {
+        // Check if the value is already in the array
+        if (arr[0] === value) {
+            return arr; // Do nothing and return the array as is
+        }
+        const index = arr.indexOf(value);
+
+        if (index !== -1) {
+            // If found, remove it from the current position
+            arr.splice(index, 1);
+        }
+
+        // Add the value to the beginning of the array
+        arr.unshift(value);
+
+        return arr;
+    }
+
+    const value = {Try,getvalue, showdata, setShowdata, GetLatestMessage, message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping, typing }
     return (
         <MessageContext.Provider value={value} >
             {children}

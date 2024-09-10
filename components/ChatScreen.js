@@ -13,14 +13,14 @@ import { Skeleton } from 'moti/skeleton';
 const { height, width } = Dimensions.get("window");
 import { Ionicons } from '@expo/vector-icons';
 import { isLoading } from 'expo-font';
+import Chat from './Chat';
 
 const ChatScreen = ({ navigation }) => {
     const { user, darkMode, savedContact, uid, downloadImage, } = useContext(AuthContext)
     const { GetuserMessaged, messagedContact } = useContext(ContactContext)
+    const { Try,getvalue,showdata,setShowdata} = useContext(MessageContext)
     const [data, setData] = useState()
     const [searchContact, setSearchContact] = useState("")
-    const [showdata, setShowdata] = useState([])
-    const [loading, setLoading] = useState(true)
 
     const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
 
@@ -29,12 +29,6 @@ const ChatScreen = ({ navigation }) => {
         SubscribeToMessage()
         GetuserMessaged()
         Try()
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 2000);
-
-        // Cleanup the timer in case the component unmounts before the timeout
-        return () => clearTimeout(timer);
     }, [])
 
     const SubscribeToContactChange = () => {
@@ -75,74 +69,7 @@ const ChatScreen = ({ navigation }) => {
         };
     };
 
-    const Try = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('message')
-                .select('sender, reciver')
-                .or(`or(sender.eq.${uid},reciver.eq.${uid})`)
-                .order('time', { ascending: false })
-
-            if (error) {
-                throw error;
-            }
-
-            const arr = []
-            const filteredData = data.filter(message => {
-                if (message.sender === uid) {
-                    arr.push(message.reciver);
-                } else {
-                    arr.push(message.sender);
-                }
-            });
-            const UniqueData = removeDuplicates(arr)
-            if (UniqueData.length > 0) {
-                setShowdata(UniqueData)
-                let DataARR = []
-                let NewData = {}
-                for (let i = 0; i < UniqueData.length; i++) {
-                    NewData = await GetLatestMessage(uid, UniqueData[i])
-                    NewData.id = UniqueData[i]
-                    DataARR.push(NewData)
-                }
-                console.log(DataARR)
-
-            }
-        } catch (error) {
-            console.error('Error fetching messages:', error);
-            return { status: 500, error: 'Failed to fetch messages' };
-        }
-    };
-
-    const GetLatestMessage = async (uid, data) => {
-        if (data) {
-            try {
-                let { data: messages, error } = await supabase
-                    .from('message')
-                    .select('*')
-                    .or(`and(sender.eq.${uid},reciver.eq.${data}),and(sender.eq.${data},reciver.eq.${uid})`)
-                    .order('time', { ascending: false })
-                    .limit(1);
-
-                if (error) throw error;
-                if (messages[0]) {
-                    const content = messages[0].content
-                    const time = messages[0].time
-
-                    return { content, time }
-                }
-            } catch (error) {
-                console.log('Error fetching the latest message:', error);
-                return null;
-            }
-        }
-        return null
-    };
-
-    function removeDuplicates(array) {
-        const uniqueSet = new Set(array);
-        return Array.from(uniqueSet);
-    }
+    
 
     useEffect(() => {
         setData(savedContact)
@@ -172,171 +99,6 @@ const ChatScreen = ({ navigation }) => {
         return arr;
     }
 
-    const ChatComponent = ({ data }) => {
-        const [latestMessage, setLatestMessage] = useState(null);
-        const [time, settime] = useState()
-        const [emptyMessage, setEmptyMessage] = useState(false)
-        const [userImage, setuserImage] = useState()
-        const [userInfo, setUserInfo] = useState()
-        const previousMessageRef = useRef(null);
-
-        const FetchSaVedContactData = async (userId) => {
-            try {
-                let { data: Savedcontact, error } = await supabase
-                    .from('Savedcontact')
-                    .select('user_id,saved_name,profiles(*)')
-                    .match({
-                        user_id: uid,
-                        saved_id: userId
-                    });
-                setUserInfo(Savedcontact[0])
-            }
-            catch (error) {
-                console.log(error)
-            }
-        };
-
-
-
-        const downloadImage = async (filename) => {
-            if (!filename) return
-            try {
-                const { data, error } = await supabase.storage
-                    .from('avatars')
-                    .download(filename);
-
-                if (error) {
-                    console.error('Error downloading image:', error.message);
-                    return;
-                }
-                const fr = new FileReader();
-                fr.readAsDataURL(data);
-                fr.onload = () => {
-                    setuserImage(fr.result)
-                };
-            } catch (error) {
-                console.error('Error:', error.message);
-            }
-        };
-
-        const fetchUserData = async (data) => {
-            if (data) {
-                downloadImage(data)
-            }
-        }
-
-        useEffect(() => {
-            FetchSaVedContactData(data)
-        }, [])
-
-        useEffect(() => {
-            fetchUserData(userInfo?.profiles?.profile_pic)
-        }, [userInfo])
-
-
-        useEffect(() => {
-            GetLatestMessage(uid, data)
-        }, [data]);
-
-        useEffect(() => {
-            if (!data) return;
-
-            const subscription = supabase
-                .channel('public:message')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'message' }, (payload) => {
-                    const newData = payload.new;
-
-                    if (payload.new.reciver === uid || payload.new.sender === uid) {
-                        setShowdata((prevData) => {
-                            // Create a new array and update it with the new value
-                            if (payload.new.reciver === uid) {
-                                return SetValue([...prevData], payload.new.sender);
-                            }
-                            if (payload.new.sender === uid) {
-                                return SetValue([...prevData], payload.new.reciver);
-                            }
-                            return prevData; // If no changes are needed, return the previous state
-                        });
-                    }
-                })
-                .subscribe();
-        }, [data, uid]);
-
-
-
-        const GetLatestMessage = async (uid, data) => {
-            if (data) {
-                try {
-                    let { data: messages, error } = await supabase
-                        .from('message')
-                        .select('*')
-                        .or(`and(sender.eq.${uid},reciver.eq.${data}),and(sender.eq.${data},reciver.eq.${uid})`)
-                        .order('time', { ascending: false })
-                        .limit(1);
-
-                    if (error) throw error;
-                    if (messages[0]?.content !== previousMessageRef.current) {
-                        setLatestMessage(messages[0]?.content);
-                        settime(messages[0].time);
-                        previousMessageRef.current = messages[0]?.content; // Update the ref with the new message
-                    }
-                } catch (error) {
-                    console.log('Error fetching the latest message:', error);
-                    return null;
-                }
-            }
-            return null
-        };
-
-
-        const GetTime = (timestamp) => {
-            const timeStampData = Number(timestamp)
-            const date = new Date(timeStampData);
-            const options = { hour: '2-digit', minute: '2-digit', hour12: true };
-            return date.toLocaleTimeString('en-US', options);
-        };
-
-        if (!latestMessage) {
-            return (
-                <TouchableOpacity style={{ marginTop: 8, flexDirection: "row", height: 70, padding: 5, gap: 20, alignItems: "center", marginLeft: 10 }}
-                >
-                    <View style={{ padding: 5, backgroundColor: darkMode ? colors.SKELETON_BG_DARK : colors.SKELETON_BG, height: 60, width: 60, borderRadius: 30 }} >
-                    </View>
-                    <View style={{ flex: 1, gap: 5 }} >
-                        <View style={{ width: "90%", height: 20, flexDirection: "row", justifyContent: "space-between", backgroundColor: darkMode ? colors.SKELETON_BG_DARK : colors.SKELETON_BG, borderRadius: 8 }}>
-                        </View>
-                        <View style={{ width: "30%", height: 20, flexDirection: "row", justifyContent: "space-between", backgroundColor: darkMode ? colors.SKELETON_BG_DARK : colors.SKELETON_BG, borderRadius: 8 }}>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-            )
-        }
-
-
-        return (
-            !emptyMessage ?
-                <TouchableOpacity style={{ marginTop: 8, flexDirection: "row", height: 70, padding: 5, gap: 20, alignItems: "center" }}
-                    onPress={() => GotoChat(userInfo, userImage)}
-                >
-                    <View style={{ padding: 5, }} >
-                        <Image source={userImage ? { uri: userImage } : image}
-                            style={{ height: 55, width: 55, borderRadius: 30, resizeMode: "cover" }}
-                        />
-                    </View>
-                    <View style={{ flex: 1 }} >
-                        <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
-                            <Text style={{ fontSize: 19, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: Font.Regular }}  >{userInfo?.saved_name ? userInfo.saved_name : userInfo?.profiles?.phone ? userInfo.profiles.phone : "No one"}</Text>
-                            <Text style={{ marginRight: 10, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: Font.Regular, fontSize: 12 }} >{GetTime(time)}</Text>
-                        </View>
-                        <View>
-                            <Text style={{ fontSize: 15, color: darkMode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: darkMode ? "Ubuntu-Light" : Font.Regular }}>{latestMessage}</Text>
-                        </View>
-                    </View>
-
-                </TouchableOpacity>
-                : null
-        )
-    }
 
     const AddChat = () => {
         navigation.navigate("ContactList")
@@ -372,7 +134,7 @@ const ChatScreen = ({ navigation }) => {
             </View>
             <FlatList
                 data={showdata}
-                renderItem={({ item }) => <ChatComponent data={item} />}
+                renderItem={({ item }) => <Chat data={item} />}
                 keyExtractor={(item, index) => index}
             />
             {AddContact()}
@@ -389,7 +151,7 @@ const styles = StyleSheet.create({
         padding: 20,
         right: 15,
         borderRadius: 25,
-        top: 550
+        top: 300
     },
     searchBarStyle: {
         height: 52,
