@@ -41,7 +41,8 @@
     "react-native-svg": "15.2.0",
     "socket.io-client": "^4.7.5",
     "toggle-switch-react-native": "^3.3.0",
-    "expo-linear-gradient": "~13.0.2"
+    "expo-linear-gradient": "~13.0.2",
+    "expo-notifications": "~0.28.16"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0"

@@ -13,6 +13,10 @@ import { Skeleton } from 'moti/skeleton';
 const { height, width } = Dimensions.get("window");
 import { Ionicons } from '@expo/vector-icons';
 import { isLoading } from 'expo-font';
+import * as Notifications from 'expo-notifications'
+
+
+
 
 const ChatScreen = ({ navigation }) => {
     const { user, darkMode, savedContact, uid, downloadImage, } = useContext(AuthContext)
@@ -339,7 +343,16 @@ const ChatScreen = ({ navigation }) => {
     }
 
     const AddChat = () => {
-        navigation.navigate("ContactList")
+        // navigation.navigate("ContactList")
+        Notifications.scheduleNotificationAsync({
+            content: {
+                title: "New",
+                body: "New Notification recived"
+            },
+            trigger: {
+                seconds: 5
+            }
+        })
     }
 
     const AddContact = () => {

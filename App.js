@@ -4,9 +4,18 @@ import Authprovider from './components/Context/Authprovider';
 import ContactProvider from './components/Context/Contactprovider';
 import Messageprovider from './components/Context/Messageprovider';
 import Initialpage from './components/Initialpage';
+import * as Notifications from 'expo-notifications'
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => {
+    return {
+      shouldPlaySound: true,
+      shouldShowAlert: true
+    }
+  }
+})
 
 export default function App() {
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Authprovider>

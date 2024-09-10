@@ -18,6 +18,8 @@ import Chatbox from './Chatbox';
 import LottieView from 'lottie-react-native';
 import Settings from './Settings';
 import EntryPage from './EntryPage';
+import * as Notifications from 'expo-notifications'
+
 
 export default function Initialpage() {
     const Stack = createNativeStackNavigator();
@@ -27,6 +29,14 @@ export default function Initialpage() {
 
     useEffect(() => {
         GetUserOnce()
+        const requestPermissions = async () => {
+            const { status } = await Notifications.requestPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permission not granted!', 'You need to allow notifications to receive updates.');
+            }
+        };
+
+        requestPermissions();
         setTimeout(() => {
             loadFonts()
         }, 1000)
