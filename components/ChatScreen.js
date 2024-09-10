@@ -52,14 +52,15 @@ const ChatScreen = ({ navigation }) => {
             .channel('public:message')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'message' }, (payload) => {
                 if (payload.new.reciver === uid || payload.new.sender === uid) {
-                    if (payload.new.reciver === uid) {
-                        console.log(SetValue(showdata, payload.new.sender))
-                        setShowdata(SetValue(showdata, payload.new.sender))
-                    }
-                    if (payload.new.sender === uid) {
-                        console.log(SetValue(showdata, payload.new.reciver))
-                        setShowdata(SetValue(showdata, payload.new.reciver))
-                    }
+                    // if (payload.new.reciver === uid) {
+                    //     console.log(SetValue(showdata, payload.new.sender))
+                    //     setShowdata(SetValue(showdata, payload.new.sender))
+                    // }
+                    // if (payload.new.sender === uid) {
+                    //     console.log(SetValue(showdata, payload.new.reciver))
+                    //     setShowdata(SetValue(showdata, payload.new.reciver))
+                    // }
+                    Try()
                 }
             })
             .subscribe();
@@ -72,8 +73,8 @@ const ChatScreen = ({ navigation }) => {
     
 
     useEffect(() => {
-        setData(savedContact)
-    }, [savedContact])
+        setData(getvalue)
+    }, [getvalue])
 
 
 
@@ -133,7 +134,7 @@ const ChatScreen = ({ navigation }) => {
                 </View>
             </View>
             <FlatList
-                data={showdata}
+                data={data}
                 renderItem={({ item }) => <Chat data={item} />}
                 keyExtractor={(item, index) => index}
             />

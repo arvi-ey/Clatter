@@ -18,6 +18,7 @@ import Chatbox from './Chatbox';
 import LottieView from 'lottie-react-native';
 import Settings from './Settings';
 import EntryPage from './EntryPage';
+import Chat from './Chat';
 
 export default function Initialpage() {
     const Stack = createNativeStackNavigator();
@@ -86,6 +87,7 @@ export default function Initialpage() {
                     }
 
                     <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+                    <Stack.Screen name="Chat" component={Chat} options={{ headerShown: false }} />
                     <Stack.Screen name="Myprofile" component={Myprofile} options={{ headerShown: false }} />
                     <Stack.Screen name="Editprofile" component={Editprofile} options={{ title: "Edit profile" }} />
                     <Stack.Screen name="ContactList" component={ContactList} options={{ title: "Select contact" }} />

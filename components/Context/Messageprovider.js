@@ -98,6 +98,7 @@ export default Messageprovider = ({ children }) => {
 
 
     const Try = async () => {
+        console.log("TY function Calling")
         try {
             const { data, error } = await supabase
                 .from('message')
@@ -120,7 +121,7 @@ export default Messageprovider = ({ children }) => {
             const UniqueData = removeDuplicates(arr)
             if (UniqueData.length > 0) {
                 setShowdata(UniqueData)
-                console.log(UniqueData)
+                // console.log(UniqueData)
                 let DataARR = []
                 let NewData = {}
                 for (let i = 0; i < UniqueData.length; i++) {
@@ -128,9 +129,12 @@ export default Messageprovider = ({ children }) => {
                     NewData.id = UniqueData[i]
                     DataARR.push(NewData)
                 }
-                for (let i=0 ; i<UniqueData.length; i++){
-                    const newData = await FetchSaVedContact(UniqueData[i])
-                    // console.log(newData)
+                for (let i=0 ; i<DataARR.length; i++){
+                    const newData = await FetchSaVedContact(DataARR[i].id)
+                    DataARR[i].saved_name=newData[0].saved_name
+                    DataARR[i].number=newData[0].number
+                    DataARR[i].profile_pic=newData[0].profiles.profile_pic
+                    DataARR[i].email=newData[0].profiles.email
                 }
                 setGetvalue(DataARR)
             }
@@ -144,7 +148,7 @@ export default Messageprovider = ({ children }) => {
         try {
             let { data, error } = await supabase
                 .from('Savedcontact')
-                .select(`number,saved_name,profiles(phone)`)
+                .select(`number,saved_name,profiles(phone,full_name,profile_pic,email)`)
                 .match({
                     user_id:uid,
                     saved_id:userId

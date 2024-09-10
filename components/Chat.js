@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const Chat = ({data}) => {
-    const { user, darkMode, savedContact, uid, } = useContext(AuthContext)
+    const { user, darkMode, savedContact, uid} = useContext(AuthContext)
     const { GetuserMessaged, messagedContact } = useContext(ContactContext)
     const [searchContact, setSearchContact] = useState("")
     const [loading, setLoading] = useState(true)
@@ -27,11 +27,11 @@ const Chat = ({data}) => {
         const [userInfo, setUserInfo] = useState()
         const previousMessageRef = useRef(null);
         const navigation = useNavigation()
-        const {showdata,setShowdata} = useContext(MessageContext)
+        const {showdata,setShowdata,Try} = useContext(MessageContext)
 
         const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
         const GotoChat = (data) => {
-            navigation.navigate('Chatbox', { data });
+            navigation.navigate('Chatbox',data );
         };
         
     function SetValue(arr, value) {
@@ -52,22 +52,6 @@ const Chat = ({data}) => {
         return arr;
     }
     
-
-        const FetchSaVedContactData = async (userId) => {
-            try {
-                let { data: Savedcontact, error } = await supabase
-                    .from('Savedcontact')
-                    .select('user_id,saved_name,profiles(*)')
-                    .match({
-                        user_id: uid,
-                        saved_id: userId
-                    });
-                setUserInfo(Savedcontact[0])
-            }
-            catch (error) {
-                console.log(error)
-            }
-        };
 
 
 
@@ -99,17 +83,8 @@ const Chat = ({data}) => {
         }
 
         useEffect(() => {
-            FetchSaVedContactData(data)
-        }, [])
-
-        useEffect(() => {
-            fetchUserData(userInfo?.profiles?.profile_pic)
-        }, [userInfo])
-
-
-        useEffect(() => {
-            GetLatestMessage(uid, data)
-        }, [data]);
+            fetchUserData(data.profile_pic)
+        }, [data])
 
         useEffect(() => {
             if (!data) return;
@@ -120,16 +95,17 @@ const Chat = ({data}) => {
                     const newData = payload.new;
 
                     if (payload.new.reciver === uid || payload.new.sender === uid) {
-                        setShowdata((prevData) => {
-                            // Create a new array and update it with the new value
-                            if (payload.new.reciver === uid) {
-                                return SetValue([...prevData], payload.new.sender);
-                            }
-                            if (payload.new.sender === uid) {
-                                return SetValue([...prevData], payload.new.reciver);
-                            }
-                            return prevData; // If no changes are needed, return the previous state
-                        });
+                        // setShowdata((prevData) => {
+                        //     // Create a new array and update it with the new value
+                        //     if (payload.new.reciver === uid) {
+                        //         return SetValue([...prevData], payload.new.sender);
+                        //     }
+                        //     if (payload.new.sender === uid) {
+                        //         return SetValue([...prevData], payload.new.reciver);
+                        //     }
+                        //     return prevData; // If no changes are needed, return the previous state
+                        // });
+                        Try()
                     }
                 })
                 .subscribe();
@@ -169,7 +145,7 @@ const Chat = ({data}) => {
             return date.toLocaleTimeString('en-US', options);
         };
 
-        if (!latestMessage) {
+        if (!data) {
             return (
                 <TouchableOpacity style={{ marginTop: 8, flexDirection: "row", height: 70, padding: 5, gap: 20, alignItems: "center", marginLeft: 10 }}
                 >
@@ -196,11 +172,11 @@ const Chat = ({data}) => {
             </View>
             <View style={{ flex: 1 }} >
                 <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
-                    <Text style={{ fontSize: 19, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: Font.Regular }}  >{userInfo?.saved_name ? userInfo.saved_name : userInfo?.profiles?.phone ? userInfo.profiles.phone : "No one"}</Text>
-                    <Text style={{ marginRight: 10, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: Font.Regular, fontSize: 12 }} >{GetTime(time)}</Text>
+                    <Text style={{ fontSize: 19, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: Font.Regular }}  >{data?.saved_name ? data.saved_name : data?.number ? data.number : "No one"}</Text>
+                    <Text style={{ marginRight: 10, color: darkMode ? colors.WHITE : colors.BLACK, fontFamily: Font.Regular, fontSize: 12 }} >{GetTime(data.time)}</Text>
                 </View>
                 <View>
-                    <Text style={{ fontSize: 15, color: darkMode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: darkMode ? "Ubuntu-Light" : Font.Regular }}>{latestMessage}</Text>
+                    <Text style={{ fontSize: 15, color: darkMode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: darkMode ? "Ubuntu-Light" : Font.Regular }}>{data.content}</Text>
                 </View>
             </View>
 
@@ -209,6 +185,6 @@ const Chat = ({data}) => {
 )
 }
 
-export default  React.memo(Chat)
+export default  Chat
 
 const styles = StyleSheet.create({})

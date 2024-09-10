@@ -15,8 +15,9 @@ import { supabase } from '../lib/supabase'
 
 const Chatbox = ({ navigation }) => {
     const route = useRoute()
-    const { data } = route.params;
-    const reciverId = data?.profiles.id
+    const data = route.params || "";
+    const reciverId = data?.id
+    console.log(data)
     const { uid, user, } = useContext(AuthContext);
     const { FetchByPhone } = useContext(ContactContext);
     const { message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping, typing } = useContext(MessageContext);
@@ -31,8 +32,6 @@ const Chatbox = ({ navigation }) => {
     const [hideLastseen, setHideLastseen] = useState()
     const typingTimeoutRef = useRef(null);
     const [userImage, setuserImage] = useState()
-
-    const [typingChannel, setTypingChannel] = useState()
 
     const GetTime = (timestamp) => {
         const timeStampData = Number(timestamp)
@@ -50,7 +49,7 @@ const Chatbox = ({ navigation }) => {
 
 
     useEffect(() => {
-        if (data) downloadImage(data?.profiles?.profile_pic)
+        if (data) downloadImage(data?.profile_pic)
     }, [data])
 
     const downloadImage = async (filename) => {
@@ -140,11 +139,11 @@ const Chatbox = ({ navigation }) => {
             const messageObj = {}
             messageObj.time = Date.now()
             messageObj.sender = uid
-            messageObj.reciver = data?.profiles.id
+            messageObj.reciver = data?.id
             messageObj.content = messageText
             messageObj.status = "SENT"
             messageObj.react = false
-            if (message.length < 1) AddToContactList(uid, data?.profiles.id, user?.phone)
+            if (message.length < 1) AddToContactList(uid, data?.id, user?.phone)
             await SendMessage(messageObj)
             setMassageText("")
 
@@ -227,7 +226,7 @@ const Chatbox = ({ navigation }) => {
                         <Image source={userImage ? { uri: userImage } : image} style={{ height: 45, width: 45, borderRadius: 30, resizeMode: "cover" }} />
                     </TouchableOpacity>
                     <TouchableOpacity style={{ width: "40%" }}>
-                        <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{data?.saved_name ? data.saved_name : data?.profiles?.phone ? data.profiles.phone : null}</Text>
+                        <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{data?.saved_name ? data.saved_name : data?.number ? data.number : null}</Text>
                         {userActive || typing || lastSeen ?
                             <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && typing && !hideTyping) ? "typing..." : (userActive && typing && hideTyping && !hideActive) ? "Online" : (!userActive && !hideLastseen) ? `last seen ${GetTime(lastSeen)}` : null}</Text>
                             : null
@@ -297,10 +296,10 @@ const Chatbox = ({ navigation }) => {
                         <View style={{ width: width, justifyContent: 'center', alignItems: 'center' }} >
                             <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: 20, gap: 10, backgroundColor: user.dark_mode ? colors.ADD_CONTACT_BG_DARK : colors.ADD_CONTACT_BG, width: "70%", paddingVertical: 20, borderRadius: 12 }}>
                                 <Image source={userImage ? { uri: userImage } : image} style={{ height: 60, width: 60, borderRadius: 30, resizeMode: "cover" }} />
-                                <Text style={{ fontFamily: Font.Bold, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.profiles.full_name}</Text>
-                                <Text style={{ fontFamily: Font.Light, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.profiles.email}</Text>
+                                <Text style={{ fontFamily: Font.Bold, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.full_name}</Text>
+                                <Text style={{ fontFamily: Font.Light, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.email}</Text>
                                 <View style={{ flexDirection: 'row', gap: 20 }}>
-                                    <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 3, }} onPress={() => navigation.navigate('AddContact', { number: data.profiles.phone, uid: reciverId })}>
+                                    <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 3, }} onPress={() => navigation.navigate('AddContact', { number: data.number, uid: reciverId })}>
                                         <AntDesign name="adduser" size={22} color={colors.MAIN_COLOR} />
                                         <Text style={{ fontFamily: Font.Medium, fontSize: 12, color: colors.MAIN_COLOR }}>Add to contact</Text>
                                     </TouchableOpacity>
