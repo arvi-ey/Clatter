@@ -15,13 +15,13 @@ import { supabase } from '../lib/supabase'
 
 const Chatbox = ({ navigation }) => {
     const route = useRoute()
-    const data = route.params || "";
-    const reciverId = data?.id
-    console.log(data)
+    const { email, id, saved_name, profile_pic, number } = route.params || "";
+    const reciverId = id
+    // console.log(data)
     const { uid, user, } = useContext(AuthContext);
     const { FetchByPhone } = useContext(ContactContext);
     const { message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping, typing } = useContext(MessageContext);
-    const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
+    const image = "https://i.pinimg.com/280x280_RS/e1/08/21/e10821c74b533d465ba888ea66daa30f.jpg";
     const [messageText, setMassageText] = useState("");
     const scrollViewRef = useRef();
     const [userActive, setUserActive] = useState(false)
@@ -32,6 +32,7 @@ const Chatbox = ({ navigation }) => {
     const [hideLastseen, setHideLastseen] = useState()
     const typingTimeoutRef = useRef(null);
     const [userImage, setuserImage] = useState()
+    const [full_name, setFullname] = useState()
 
     const GetTime = (timestamp) => {
         const timeStampData = Number(timestamp)
@@ -42,15 +43,14 @@ const Chatbox = ({ navigation }) => {
 
     useEffect(() => {
         GetMessage(uid, reciverId)
-        FetchReciverInfo(reciverId)
         UserStatusChanges(reciverId)
+        FetchReciverInfo(reciverId)
         // UpdateMessageStatus()
     }, [])
 
-
     useEffect(() => {
-        if (data) downloadImage(data?.profile_pic)
-    }, [data])
+        if (profile_pic) downloadImage(profile_pic)
+    }, [profile_pic])
 
     const downloadImage = async (filename) => {
         if (!filename) return
@@ -100,6 +100,7 @@ const Chatbox = ({ navigation }) => {
             setHideActive(data?.hideActive)
             setHideLastseen(data?.hideLastseen)
             setHideTyping(data?.hideTyping)
+            // setFullname(data?.full_name)
         } catch (error) {
             console.error('Error fetching user by phone number:', error.message);
         }
@@ -139,11 +140,11 @@ const Chatbox = ({ navigation }) => {
             const messageObj = {}
             messageObj.time = Date.now()
             messageObj.sender = uid
-            messageObj.reciver = data?.id
+            messageObj.reciver = id
             messageObj.content = messageText
             messageObj.status = "SENT"
             messageObj.react = false
-            if (message.length < 1) AddToContactList(uid, data?.id, user?.phone)
+            if (message.length < 1) AddToContactList(uid, id, user?.phone)
             await SendMessage(messageObj)
             setMassageText("")
 
@@ -223,10 +224,10 @@ const Chatbox = ({ navigation }) => {
             headerTitle: () => (
                 <View style={styles.HeaderStyle}>
                     <TouchableOpacity>
-                        <Image source={userImage ? { uri: userImage } : image} style={{ height: 45, width: 45, borderRadius: 30, resizeMode: "cover" }} />
+                        <Image source={userImage ? { uri: userImage } : { uri: image }} style={{ height: 45, width: 45, borderRadius: 30, resizeMode: "cover" }} />
                     </TouchableOpacity>
                     <TouchableOpacity style={{ width: "40%" }}>
-                        <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{data?.saved_name ? data.saved_name : data?.number ? data.number : null}</Text>
+                        <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{saved_name ? saved_name : number ? number : null}</Text>
                         {userActive || typing || lastSeen ?
                             <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && typing && !hideTyping) ? "typing..." : (userActive && typing && hideTyping && !hideActive) ? "Online" : (!userActive && !hideLastseen) ? `last seen ${GetTime(lastSeen)}` : null}</Text>
                             : null
@@ -292,14 +293,14 @@ const Chatbox = ({ navigation }) => {
                     ref={scrollViewRef}
                     onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
                     style={{}}>
-                    {!data.saved_name &&
+                    {!saved_name &&
                         <View style={{ width: width, justifyContent: 'center', alignItems: 'center' }} >
                             <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: 20, gap: 10, backgroundColor: user.dark_mode ? colors.ADD_CONTACT_BG_DARK : colors.ADD_CONTACT_BG, width: "70%", paddingVertical: 20, borderRadius: 12 }}>
                                 <Image source={userImage ? { uri: userImage } : image} style={{ height: 60, width: 60, borderRadius: 30, resizeMode: "cover" }} />
-                                <Text style={{ fontFamily: Font.Bold, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.full_name}</Text>
-                                <Text style={{ fontFamily: Font.Light, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data.email}</Text>
+                                {/* <Text style={{ fontFamily: Font.Bold, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{full_name}</Text> */}
+                                <Text style={{ fontFamily: Font.Light, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{email}</Text>
                                 <View style={{ flexDirection: 'row', gap: 20 }}>
-                                    <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 3, }} onPress={() => navigation.navigate('AddContact', { number: data.number, uid: reciverId })}>
+                                    <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 3, }} onPress={() => navigation.navigate('AddContact', { number: number, uid: reciverId })}>
                                         <AntDesign name="adduser" size={22} color={colors.MAIN_COLOR} />
                                         <Text style={{ fontFamily: Font.Medium, fontSize: 12, color: colors.MAIN_COLOR }}>Add to contact</Text>
                                     </TouchableOpacity>

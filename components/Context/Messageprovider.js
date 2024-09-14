@@ -9,7 +9,7 @@ export default Messageprovider = ({ children }) => {
     const [message, setMessage] = useState()
     const [typing, setTyping] = useState(false)
     const [showdata, setShowdata] = useState([])
-    const [getvalue,setGetvalue]=useState()
+    const [getvalue, setGetvalue] = useState()
 
 
     const GetMessage = async (senderId, receiverId) => {
@@ -26,7 +26,7 @@ export default Messageprovider = ({ children }) => {
             console.log(error);
         }
     };
-    
+
 
 
 
@@ -129,12 +129,22 @@ export default Messageprovider = ({ children }) => {
                     NewData.id = UniqueData[i]
                     DataARR.push(NewData)
                 }
-                for (let i=0 ; i<DataARR.length; i++){
+                for (let i = 0; i < DataARR.length; i++) {
                     const newData = await FetchSaVedContact(DataARR[i].id)
-                    DataARR[i].saved_name=newData[0].saved_name
-                    DataARR[i].number=newData[0].number
-                    DataARR[i].profile_pic=newData[0].profiles.profile_pic
-                    DataARR[i].email=newData[0].profiles.email
+                    if (newData && newData.length > 0) {
+                        // console.log(newData)
+                        DataARR[i].saved_name = newData[0].saved_name
+                        DataARR[i].number = newData[0].number
+                        DataARR[i].profile_pic = newData[0].profiles.profile_pic
+                        DataARR[i].email = newData[0].profiles.email
+                    }
+                }
+                for (let i = 0; i < DataARR.length; i++) {
+                    if (DataARR[i].profile_pic) {
+                        const newData = await downloadImage(DataARR[i].profile_pic)
+                        DataARR[i].profile_image = newData
+                    }
+                    else DataARR[i].profile_image = null
                 }
                 setGetvalue(DataARR)
             }
@@ -150,15 +160,45 @@ export default Messageprovider = ({ children }) => {
                 .from('Savedcontact')
                 .select(`number,saved_name,profiles(phone,full_name,profile_pic,email)`)
                 .match({
-                    user_id:uid,
-                    saved_id:userId
+                    user_id: uid,
+                    saved_id: userId
                 });
-                return data
+            return data
+            // console.log(data)
         }
         catch (error) {
             console.log(error)
         }
     };
+
+
+    const downloadImage = async (filename) => {
+        if (!filename) return null;
+        try {
+            const { data, error } = await supabase.storage
+                .from('avatars')
+                .download(filename);
+
+            if (error) {
+                console.error('Error downloading image:', error.message);
+                return null;
+            }
+            return new Promise((resolve, reject) => {
+                const fr = new FileReader();
+                fr.readAsDataURL(data);
+                fr.onload = () => {
+                    resolve(fr.result);
+                };
+                fr.onerror = (err) => {
+                    reject(err);
+                };
+            });
+        } catch (error) {
+            console.error('Error:', error.message);
+            return null;
+        }
+    };
+
 
     const GetLatestMessage = async (uid, data) => {
         if (data) {
@@ -208,7 +248,7 @@ export default Messageprovider = ({ children }) => {
         return arr;
     }
 
-    const value = {Try,getvalue, showdata, setShowdata, GetLatestMessage, message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping, typing }
+    const value = { Try, getvalue, showdata, setShowdata, GetLatestMessage, message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping, typing }
     return (
         <MessageContext.Provider value={value} >
             {children}
