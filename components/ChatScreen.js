@@ -18,7 +18,7 @@ import Chat from './Chat';
 const ChatScreen = ({ navigation }) => {
     const { darkMode, uid, } = useContext(AuthContext)
     const { GetuserMessaged, } = useContext(ContactContext)
-    const { Try, getvalue } = useContext(MessageContext)
+    const { FetchChat, getvalue } = useContext(MessageContext)
     const [data, setData] = useState()
     const [searchContact, setSearchContact] = useState("")
     const [loading, setLoading] = useState(true)
@@ -27,7 +27,7 @@ const ChatScreen = ({ navigation }) => {
         SubscribeToContactChange()
         SubscribeToMessage()
         GetuserMessaged()
-        Try()
+        FetchChat()
     }, [])
 
     setTimeout(() => {
@@ -40,7 +40,7 @@ const ChatScreen = ({ navigation }) => {
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'Savedcontact' }, (payload) => {
 
                 if (payload.new && payload.new.user_id === uid) {
-                    Try()
+                    FetchChat()
                 }
             })
             .subscribe();
@@ -55,7 +55,7 @@ const ChatScreen = ({ navigation }) => {
             .channel('public:message')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'message' }, (payload) => {
                 if (payload.new.reciver === uid || payload.new.sender === uid) {
-                    Try()
+                    FetchChat()
                 }
             })
             .subscribe();
@@ -86,7 +86,7 @@ const ChatScreen = ({ navigation }) => {
     }
 
     const FilteredContact = data?.filter(value =>
-        value?.saved_name?.toLowerCase().includes(searchContact?.toLowerCase()) || value?.profiles?.phone?.toLowerCase().includes(searchContact?.toLowerCase())
+        value?.saved_name?.toLowerCase().includes(searchContact?.toLowerCase()) || value?.number?.toLowerCase().includes(searchContact?.toLowerCase())
     )
 
     const Loading = () => {
@@ -126,7 +126,7 @@ const ChatScreen = ({ navigation }) => {
                     />
                     :
                     <FlatList
-                        data={data}
+                        data={FilteredContact}
                         renderItem={({ item }) => <Chat data={item} />}
                         keyExtractor={(item, index) => index}
                     />
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
         padding: 20,
         right: 15,
         borderRadius: 25,
-        top: 300
+        top: 550
     },
     searchBarStyle: {
         height: 52,

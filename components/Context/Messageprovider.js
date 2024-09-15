@@ -97,7 +97,7 @@ export default Messageprovider = ({ children }) => {
     };
 
 
-    const Try = async () => {
+    const FetchChat = async () => {
         console.log("TY function Calling")
         try {
             const { data, error } = await supabase
@@ -248,7 +248,7 @@ export default Messageprovider = ({ children }) => {
         return arr;
     }
 
-    const value = { Try, getvalue, showdata, setShowdata, GetLatestMessage, message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping, typing }
+    const value = { FetchChat, getvalue, showdata, setShowdata, GetLatestMessage, message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping, typing }
     return (
         <MessageContext.Provider value={value} >
             {children}

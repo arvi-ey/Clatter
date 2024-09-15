@@ -1,39 +1,18 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, Alert, ScrollView, ActivityIndicator, TextInput, Dimensions, } from 'react-native'
+import { Text, View, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { useContext, useEffect, useState, useRef, useMemo } from 'react';
 import { AuthContext } from "./Context/Authprovider"
 import { colors } from './Theme'
-import { MaterialIcons } from '@expo/vector-icons';
-import { ContactContext } from './Context/Contactprovider';
 import { Font } from '../common/font';
 import { MessageContext } from './Context/Messageprovider'
 import { supabase } from '../lib/supabase'
-import { MotiView } from 'moti';
-import { Skeleton } from 'moti/skeleton';
-const { height, width } = Dimensions.get("window");
-import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const Chat = ({ data }) => {
-
     const { darkMode, uid } = useContext(AuthContext)
-
     const navigation = useNavigation()
-    const { Try } = useContext(MessageContext)
-
+    const { FetchChat } = useContext(MessageContext)
     const image = "https://i.pinimg.com/280x280_RS/e1/08/21/e10821c74b533d465ba888ea66daa30f.jpg";
-
-    // {
-    //     "content": "leo",
-    //     "email": "arviey@gmail.com",
-    //     "id": "57acb0a0-9a95-460f-9ad1-530e2e629a36",
-    //     "number": "1234567890",
-    //     "profile_image": null,
-    //     "profile_pic": null,
-    //     "saved_name": "Arviey",
-    //     "time": "1726321501757"
-    // }
-
 
     const GotoChat = () => {
         navigation.navigate('Chatbox', {
@@ -45,7 +24,6 @@ const Chat = ({ data }) => {
         });
     };
 
-
     useEffect(() => {
         if (!data) return;
 
@@ -55,7 +33,7 @@ const Chat = ({ data }) => {
                 const newData = payload.new;
 
                 if (payload.new.reciver === uid || payload.new.sender === uid) {
-                    Try()
+                    FetchChat()
                 }
             })
             .subscribe();
@@ -95,4 +73,3 @@ const Chat = ({ data }) => {
 
 export default Chat
 
-const styles = StyleSheet.create({})

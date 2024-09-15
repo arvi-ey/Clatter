@@ -1,4 +1,4 @@
-import { View, Platform, Image, StatusBar } from 'react-native';
+import { View, Platform, Image, StatusBar, Dimensions, Text } from 'react-native';
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -19,13 +19,14 @@ import LottieView from 'lottie-react-native';
 import Settings from './Settings';
 import EntryPage from './EntryPage';
 import Chat from './Chat';
+const { height, width } = Dimensions.get("window");
 
 export default function Initialpage() {
     const Stack = createNativeStackNavigator();
     const { firstLoad, session, GetUserOnce, user, uid, loggedIn, } = useContext(AuthContext)
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const [newUser, setNewUser] = useState(false)
-
+    // const logo = require("../assets/clatter_logo.png")
     useEffect(() => {
         GetUserOnce()
         setTimeout(() => {
@@ -44,21 +45,15 @@ export default function Initialpage() {
             'Ubuntu-Medium': require('../assets/fonts/Ubuntu-Medium.ttf'),
             'Ubuntu-Light': require('../assets/fonts/Ubuntu-Light.ttf'),
             'Ubuntu-Regular': require('../assets/fonts/Ubuntu-Regular.ttf'),
+            'PermanentMarker-Regular': require('../assets/fonts/PermanentMarker-Regular.ttf'),
         });
         setFontsLoaded(true);
     };
 
     if (!fontsLoaded) {
         return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
-                <LottieView
-                    autoPlay
-                    style={{
-                        width: 500,
-                        height: 500,
-                    }}
-                    source={require('../assets/logo.json')}
-                />
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width }} >
+                <Image source={require("../assets/clatter_logo.png")} style={{ height: 350, width: 350 }} />
             </View>
         )
     }

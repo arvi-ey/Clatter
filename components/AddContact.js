@@ -11,8 +11,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Button from '../common/Button';
 import { ContactContext } from './Context/Contactprovider';
 import { useRoute } from '@react-navigation/native';
+import { MessageContext } from './Context/Messageprovider';
 const AddContact = ({ navigation }) => {
     const { user } = useContext(AuthContext)
+    const { FetchChat } = useContext(MessageContext)
     const Route = useRoute()
     const { AddNewContact, loading, AddChatContact } = useContext(ContactContext)
     const [focusNumber, setFocusNumber] = useState(false)
@@ -60,6 +62,7 @@ const AddContact = ({ navigation }) => {
         else {
             if (Route?.params?.number && Route?.params?.uid) {
                 const result = await AddChatContact(data.saved_name, Route.params?.uid)
+                FetchChat()
                 navigation.navigate("Profile")
             }
             else {
@@ -68,9 +71,6 @@ const AddContact = ({ navigation }) => {
             }
         }
     }
-
-
-
 
     return (
         <SafeAreaView style={[styles.AddContactContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>

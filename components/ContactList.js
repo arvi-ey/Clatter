@@ -54,10 +54,16 @@ const ContactList = ({ navigation }) => {
 
     const UserInfo = ({ data }) => {
         const [userImage, setuserImage] = useState()
-
         const GotoChat = (data) => {
-            navigation.navigate('Chatbox', { data });
+            navigation.navigate('Chatbox', {
+                email: data.profiles.email,
+                id: data.profiles.id,
+                saved_name: data.saved_name,
+                profile_pic: data.profiles.profile_pic,
+                number: data.profiles.phone
+            });
         };
+
         useEffect(() => {
             if (value) downloadImage(data?.profiles?.profile_pic)
         }, [value])
