@@ -75,7 +75,7 @@ const Profile = () => {
                 title: 'Clatter',
                 headerTintColor: darkMode ? colors.WHITE : colors.BLACK,
                 headerRight: () => (
-                    <View style={{ flexDirection: "row", marginRight: 30, gap: 25}} >
+                    <View style={{ flexDirection: "row", marginRight: 30, gap: 25 }} >
                         <Feather name="camera" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
                         <MaterialIcons name="qr-code-scanner" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
                         {/* <Ionicons name="search-outline" size={28} color={darkMode ? colors.WHITE : colors.BLACK} /> */}
@@ -94,6 +94,15 @@ const Profile = () => {
                 )
             }} />
             <Tab.Screen name="Story" component={StoryScreen} options={{
+                headerTitleStyle: {
+                    fontSize: 30,
+                    fontFamily: Font.Regular
+                },
+                headerStyle: {
+                    backgroundColor: darkMode ? colors.BLACK : colors.WHITE,
+                    height: 60
+                },
+                headerTintColor: darkMode ? colors.WHITE : colors.BLACK,
                 tabBarIcon: ({ focused }) => (
                     <View style={{ justifyContent: "center", alignItems: "center" }} >
                         <Entypo name="circular-graph" size={28} color={darkMode ? colors.WHITE : (!darkMode && focused) ? colors.WHITE : colors.BLACK} style={{ backgroundColor: focused ? colors.MAIN_COLOR : null, paddingHorizontal: 18, paddingVertical: 5, borderRadius: 50, }} />

@@ -6,6 +6,7 @@ import Onboardingpage from './Onboardingpage';
 import Signinpage from './Signinpage';
 import Register from './Register';
 import Profile from './Profile';
+import Story from './Story';
 import { useEffect, useState, useContext } from 'react';
 import Myprofile from './Myprofile';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -19,6 +20,7 @@ import LottieView from 'lottie-react-native';
 import Settings from './Settings';
 import EntryPage from './EntryPage';
 import Chat from './Chat';
+import StoryScreen from './StoryScreen';
 const { height, width } = Dimensions.get("window");
 
 export default function Initialpage() {
@@ -87,6 +89,8 @@ export default function Initialpage() {
                     <Stack.Screen name="Editprofile" component={Editprofile} options={{ title: "Edit profile" }} />
                     <Stack.Screen name="ContactList" component={ContactList} options={{ title: "Select contact" }} />
                     <Stack.Screen name="AddContact" component={AddContact} options={{ title: "Add contact" }} />
+                    <Stack.Screen name="Story" component={StoryScreen} options={{ title: "Story" }} />
+                    <Stack.Screen name="StoryBox" component={Story} />
                     <Stack.Screen name="Chatbox" component={Chatbox} />
                     <Stack.Screen name="Settings" component={Settings} options={{ title: "Account Settings" }} />
                 </Stack.Navigator>
