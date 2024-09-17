@@ -144,6 +144,52 @@ export default AuthProvider = ({ children }) => {
         }
     };
 
+    const UploadStory = async (imageUrl, content) => {
+        try {
+            const arraybuffer = await fetch(imageUrl).then((res) => res.arrayBuffer())
+            const filename = `${uid}.jpg`;
+            await supabase
+                .storage
+                .from('story')
+                .remove([filename]);
+
+            const { data, error } = await supabase
+                .storage
+                .from('story')
+                .upload(filename, arraybuffer, {
+                    contentType: 'image/jpeg',
+                    upsert: true
+                });
+            if (error) {
+                console.log(error);
+                return
+            }
+            const storyObj = {}
+            storyObj.created_at = Date.now()
+            storyObj.story = filename
+            storyObj.uploader = uid
+            storyObj.content = content
+            InsertStory(storyObj)
+        } catch (error) {
+            setImageLoading(false)
+            console.log('Error uploading image:', error.message);
+        }
+    }
+
+    const InsertStory = async (story) => {
+        try {
+            const { data: obj, error } = await supabase
+                .from('story')
+                .insert([story]);
+
+            if (error) {
+                throw error;
+            }
+        } catch (error) {
+            console.error('Error inserting data:', error.message);
+        }
+    }
+
     const uploadImage = async (imageUri) => {
         setImageLoading(true)
         try {
@@ -274,7 +320,7 @@ export default AuthProvider = ({ children }) => {
     }
 
 
-    const value = { FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
+    const value = { UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
     return (
         <AuthContext.Provider value={value} >
             {children}

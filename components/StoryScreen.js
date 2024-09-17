@@ -17,6 +17,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Font } from '../common/font';
 import { supabase } from '../lib/supabase'
 import Story from './Story';
+import Mystory from './Mystory';
 
 const StoryScreen = ({ navigation }) => {
     const { user, darkMode, image } = useContext(AuthContext)
@@ -24,39 +25,70 @@ const StoryScreen = ({ navigation }) => {
 
     const Data = [
         {
-            image: "https://i.pinimg.com/280x280_RS/e1/08/21/e10821c74b533d465ba888ea66daa30f.jpg",
+            image: "https://images.unsplash.com/photo-1529778873920-4da4926a72c2?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGNhdHxlbnwwfHwwfHx8MA%3D%3D",
             name: "Arviey",
+            time: "12:00 PM"
+        },
+        {
+            image: "https://images.unsplash.com/photo-1529778873920-4da4926a72c2?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGNhdHxlbnwwfHwwfHx8MA%3D%3D",
+            name: "Arviey",
+            time: "12:00 PM"
+        },
+        {
+            image: "https://images.unsplash.com/photo-1529778873920-4da4926a72c2?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGNhdHxlbnwwfHwwfHx8MA%3D%3D",
+            name: "Arviey",
+            time: "12:00 PM"
+        },
+        {
+            image: "https://images.unsplash.com/photo-1529778873920-4da4926a72c2?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGNhdHxlbnwwfHwwfHx8MA%3D%3D",
+            name: "Arviey",
+            time: "12:00 PM"
+        },
+        {
+            image: "https://images.unsplash.com/photo-1529778873920-4da4926a72c2?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGNhdHxlbnwwfHwwfHx8MA%3D%3D",
+            name: "Arviey",
+            time: "12:00 PM"
+        },
+        {
+            image: "https://images.unsplash.com/photo-1529778873920-4da4926a72c2?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGNhdHxlbnwwfHwwfHx8MA%3D%3D",
+            name: "Arviey",
+            time: "12:00 PM"
+        },
+        {
+            image: "https://images.unsplash.com/photo-1529778873920-4da4926a72c2?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGNhdHxlbnwwfHwwfHx8MA%3D%3D",
+            name: "Arviey",
+            time: "12:00 PM"
+        },
+        {
+            image: "https://images.unsplash.com/photo-1529778873920-4da4926a72c2?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGNhdHxlbnwwfHwwfHx8MA%3D%3D",
+            name: "Arviey",
+            time: "12:00 PM"
+        },
+        {
+            image: "https://images.unsplash.com/photo-1529778873920-4da4926a72c2?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGNhdHxlbnwwfHwwfHx8MA%3D%3D",
+            name: "Arviey",
+            time: "12:00 PM"
+        },
+        {
+            image: "https://images.unsplash.com/photo-1529778873920-4da4926a72c2?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGNhdHxlbnwwfHwwfHx8MA%3D%3D",
+            name: "Arviey",
+            time: "12:00 PM"
+        },
+        {
+            image: "https://images.unsplash.com/photo-1529778873920-4da4926a72c2?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGNhdHxlbnwwfHwwfHx8MA%3D%3D",
+            name: "Arviey",
+            time: "12:00 PM"
         }
     ]
-
-    const MyStory = () => {
-        return (
-            <>
-                <View style={{ width: width - 30, marginLeft: 15, marginTop: 5, flexDirection: 'row', gap: 15, borderBottomWidth: 0.5, borderColor: darkMode ? colors.CHARCOLE_DARK : colors.GREY, paddingBottom: 10 }}>
-                    <View style={{ gap: 5, justifyContent: 'center', width: 80, alignItems: 'center', }}>
-                        <TouchableOpacity onPress={() => console.log("HEllo")} style={{ height: 70, width: 70, justifyContent: 'center', alignItems: 'center' }} >
-                            <SimpleLineIcons name="camera" size={30} color={darkMode ? colors.WHITE : colors.CHARCOLE} style={{ marginRight: 10, }} />
-                        </TouchableOpacity>
-                        <Text style={{ fontFamily: Font.Regular, fontSize: 15, color: darkMode ? colors.WHITE : colors.CHARCOLE }} >Add Story</Text>
-                    </View>
-                    <View style={{ gap: 5, justifyContent: 'center', width: 80, alignItems: 'center', }}>
-                        <Image source={image ? { uri: image } : User_image} style={{ borderRadius: 35, borderWidth: 1, borderColor: colors.MAIN_COLOR, height: 70, width: 70 }} />
-                        <Text style={{ fontFamily: Font.Regular, fontSize: 15, color: darkMode ? colors.WHITE : colors.CHARCOLE }} >My Story</Text>
-                    </View>
-                </View>
-                <View style={{ marginLeft: 20, marginTop: 15 }}>
-                    <Text style={{ fontFamily: Font.Regular, fontSize: 15, color: darkMode ? colors.WHITE : colors.CHARCOLE }}  >All updates</Text>
-                </View>
-            </>
-        )
-    }
 
     return (
         <View style={{ backgroundColor: darkMode ? colors.BLACK : colors.WHITE, flex: 1, position: "relative" }} >
             <FlatList
-                ListHeaderComponent={MyStory}
+                ListHeaderComponent={Mystory}
                 data={Data}
                 renderItem={({ item }) => <Story data={item} />}
+                keyExtractor={(item, index) => index}
+
             />
 
         </View>

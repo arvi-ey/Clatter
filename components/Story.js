@@ -17,11 +17,17 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Font } from '../common/font';
 import { supabase } from '../lib/supabase'
 
-const Story = () => {
+const Story = (item) => {
+    const { user, darkMode, image } = useContext(AuthContext)
+
     return (
-        <View>
-            <Text>Story</Text>
-        </View>
+        <TouchableOpacity style={{ width, flexDirection: 'row', alignItems: "center", gap: 12, marginVertical: 13 }} >
+            <Image source={{ uri: item.data.image }} style={{ height: 60, width: 60, borderRadius: 40, marginLeft: 15, borderWidth: 1, borderColor: colors.MAIN_COLOR }} />
+            <View style={{ gap: 5 }} >
+                <Text style={{ fontFamily: Font.Light, fontSize: 18, color: darkMode ? colors.WHITE : colors.CHARCOLE }} >{item.data.name}</Text>
+                <Text style={{ fontFamily: Font.Light, fontSize: 12, color: darkMode ? colors.WHITE : colors.CHARCOLE }} >{item.data.time}</Text>
+            </View>
+        </TouchableOpacity>
     )
 }
 

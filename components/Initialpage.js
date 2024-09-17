@@ -21,7 +21,9 @@ import Settings from './Settings';
 import EntryPage from './EntryPage';
 import Chat from './Chat';
 import StoryScreen from './StoryScreen';
+import Mystory from './Mystory';
 const { height, width } = Dimensions.get("window");
+
 
 export default function Initialpage() {
     const Stack = createNativeStackNavigator();
