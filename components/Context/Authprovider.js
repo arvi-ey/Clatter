@@ -27,6 +27,8 @@ export default AuthProvider = ({ children }) => {
     const [imageLoading, setImageLoading] = useState(false)
     const [savedContact, setSavedContact] = useState()
     const [country, setCountry] = useState()
+    const [userStory, setUserStory] = useState()
+    const [storyContent, setStoryContent] = useState()
 
     useEffect(() => {
         AppLoaded()
@@ -37,6 +39,7 @@ export default AuthProvider = ({ children }) => {
         if (uid) {
             subscribeToUserChanges(uid)
         }
+        GetStoryInfo()
     }, [uid])
 
     useEffect(() => {
@@ -107,6 +110,7 @@ export default AuthProvider = ({ children }) => {
                 .select(`user_id,saved_name,profiles(*)`)
                 .eq('user_id', uid);
             setSavedContact(Savedcontact)
+
         }
         catch (error) {
             console.log(error)
@@ -169,7 +173,9 @@ export default AuthProvider = ({ children }) => {
             storyObj.story = filename
             storyObj.uploader = uid
             storyObj.content = content
-            InsertStory(storyObj)
+            await InsertStory(storyObj)
+            DownloadStory(filename)
+            GetStoryInfo()
         } catch (error) {
             setImageLoading(false)
             console.log('Error uploading image:', error.message);
@@ -189,6 +195,46 @@ export default AuthProvider = ({ children }) => {
             console.error('Error inserting data:', error.message);
         }
     }
+
+    const GetStoryInfo = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('story')
+                .select('*')
+                .eq("uploader", uid)
+            if (!error) setCountry(data)
+            setStoryContent(data[0])
+            DownloadStory(data[0].story)
+        }
+        catch (error) {
+            console.log(error)
+
+        }
+    }
+
+    const DownloadStory = async (filename) => {
+        try {
+            const { data, error } = await supabase.storage
+                .from('story')
+                .download(filename);
+
+            if (error) {
+                console.error('Error downloading image:', error.message);
+                return;
+            }
+            const fr = new FileReader();
+            fr.readAsDataURL(data);
+            fr.onload = () => {
+                setUserStory(fr.result)
+            };
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+        finally {
+
+        }
+    };
+
 
     const uploadImage = async (imageUri) => {
         setImageLoading(true)
@@ -212,7 +258,7 @@ export default AuthProvider = ({ children }) => {
                 setImageLoading(false)
                 return
             }
-            UpdateUser(uid, { profile_pic: filename })
+            await UpdateUser(uid, { profile_pic: filename })
             downloadImage(filename)
         } catch (error) {
             setImageLoading(false)
@@ -320,7 +366,7 @@ export default AuthProvider = ({ children }) => {
     }
 
 
-    const value = { UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
+    const value = { GetStoryInfo, storyContent, userStory, UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
     return (
         <AuthContext.Provider value={value} >
             {children}

@@ -10,13 +10,15 @@ import { Font } from '../common/font';
 import Entypo from '@expo/vector-icons/Entypo';
 
 const Mystory = () => {
-    const { user, darkMode, image, UploadStory } = useContext(AuthContext)
+    const { user, darkMode, image, UploadStory, userStory, storyContent, GetStoryInfo } = useContext(AuthContext)
     const [localImage, setLocalImage] = useState()
     const [modal, setModal] = useState(false)
     const [content, setContent] = useState()
+    const [storyView, setStoryView] = useState(false)
 
-
-
+    useEffect(() => {
+        GetStoryInfo()
+    }, [])
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
@@ -45,11 +47,10 @@ const Mystory = () => {
     }
 
     const StoryModal = () => {
-
         return (
 
             <Modal
-                animationType="slide"
+                animationType="fade"
                 transparent={true}
                 visible={modal}
                 onRequestClose={() => {
@@ -79,7 +80,44 @@ const Mystory = () => {
             </Modal>
         );
     };
+    const GetTime = (timestamp) => {
+        const timeStampData = Number(timestamp)
+        const date = new Date(timeStampData);
+        const options = { hour: '2-digit', minute: '2-digit', hour12: true };
+        return date.toLocaleTimeString('en-US', options);
+    };
 
+    const StoryViewMOdal = () => {
+        return (
+
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={storyView}
+                onRequestClose={() => {
+                    setStoryView(false);
+                }}
+            >
+                <View style={{ flex: 1, justifyContent: "center", alignItems: 'center', backgroundColor: colors.BLACK }}>
+                    <View style={{ width: width - 10, marginLeft: 10, alignItems: 'center', flexDirection: "row", gap: 10 }} >
+                        <AntDesign name="arrowleft" size={28} color={colors.WHITE} onPress={() => setStoryView(false)} />
+                        <Image source={{ uri: image }} style={{ width: 50, height: 50, borderRadius: 25, borderWidth: 1, borderColor: colors.MAIN_COLOR }} />
+                        <View style={{ gap: 5 }}>
+                            <Text style={{ fontFamily: Font.Regular, color: colors.WHITE, fontSize: 18 }}>My story</Text>
+                            <Text style={{ fontFamily: Font.Light, color: colors.WHITE, fontSize: 14 }}>{GetTime(storyContent?.created_at)}</Text>
+                        </View>
+                    </View>
+                    <View style={{ height: "90%", justifyContent: "center", alignItems: "center", }} >
+                        <Image source={{ uri: userStory }} style={{ height: 500, width: 500 }} />
+                        {storyContent && storyContent.content &&
+                            <Text style={{ fontFamily: Font.Regular, color: colors.WHITE, fontSize: 18, marginTop: 40 }}>{storyContent.content}</Text>
+                        }
+                        <Feather name="eye" size={30} color={colors.WHITE} style={{ marginTop: 40 }} />
+                    </View>
+                </View>
+            </Modal>
+        );
+    };
 
     return (
         <>
@@ -90,15 +128,19 @@ const Mystory = () => {
                     </TouchableOpacity>
                     <Text style={{ fontFamily: Font.Regular, fontSize: 15, color: darkMode ? colors.WHITE : colors.CHARCOLE }} >Add Story</Text>
                 </View>
-                <View style={{ gap: 5, justifyContent: 'center', width: 80, alignItems: 'center', }}>
-                    <Image source={image ? { uri: image } : User_image} style={{ borderRadius: 35, borderWidth: 1, borderColor: colors.MAIN_COLOR, height: 70, width: 70 }} />
-                    <Text style={{ fontFamily: Font.Regular, fontSize: 15, color: darkMode ? colors.WHITE : colors.CHARCOLE }} >My Story</Text>
-                </View>
+                {
+                    userStory ?
+                        <TouchableOpacity style={{ gap: 5, justifyContent: 'center', width: 80, alignItems: 'center', }} onPress={() => setStoryView(true)} >
+                            <Image source={{ uri: userStory }} style={{ borderRadius: 35, borderWidth: 1, borderColor: colors.MAIN_COLOR, height: 70, width: 70 }} />
+                            <Text style={{ fontFamily: Font.Regular, fontSize: 15, color: darkMode ? colors.WHITE : colors.CHARCOLE }} >My Story</Text>
+                        </TouchableOpacity> : null
+                }
             </View>
             <View style={{ marginLeft: 20, marginTop: 15 }}>
                 <Text style={{ fontFamily: Font.Regular, fontSize: 15, color: darkMode ? colors.WHITE : colors.CHARCOLE }}  >Recent Updates</Text>
             </View>
             {StoryModal()}
+            {StoryViewMOdal()}
         </>
     )
 }
