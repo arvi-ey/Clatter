@@ -12,7 +12,6 @@ import { FlatList, ScrollView } from 'react-native-gesture-handler'
 import { supabase } from '../lib/supabase'
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import LottieView from 'lottie-react-native';
 
 
 const Signinpage = () => {

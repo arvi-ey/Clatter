@@ -20,7 +20,7 @@ import Story from './Story';
 import Mystory from './Mystory';
 
 const StoryScreen = ({ navigation }) => {
-    const { user, darkMode, image } = useContext(AuthContext)
+    const { user, darkMode, contactStory } = useContext(AuthContext)
 
 
     const Data = [
@@ -85,7 +85,7 @@ const StoryScreen = ({ navigation }) => {
         <View style={{ backgroundColor: darkMode ? colors.BLACK : colors.WHITE, flex: 1, position: "relative" }} >
             <FlatList
                 ListHeaderComponent={Mystory}
-                data={Data}
+                data={contactStory}
                 renderItem={({ item }) => <Story data={item} />}
                 keyExtractor={(item, index) => index}
 

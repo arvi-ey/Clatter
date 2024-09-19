@@ -29,6 +29,7 @@ export default AuthProvider = ({ children }) => {
     const [country, setCountry] = useState()
     const [userStory, setUserStory] = useState()
     const [storyContent, setStoryContent] = useState()
+    const [contactStory, setContactStory] = useState()
 
     useEffect(() => {
         AppLoaded()
@@ -45,6 +46,10 @@ export default AuthProvider = ({ children }) => {
     useEffect(() => {
         GetUserOnce()
     }, [loggedIn])
+
+    useEffect(() => {
+        FetchAllUpdates()
+    }, [savedContact])
 
     useEffect(() => {
         if (user) {
@@ -202,9 +207,10 @@ export default AuthProvider = ({ children }) => {
                 .from('story')
                 .select('*')
                 .eq("uploader", uid)
-            if (!error) setCountry(data)
-            setStoryContent(data[0])
-            DownloadStory(data[0].story)
+            if (!error) {
+                setStoryContent(data[0])
+                DownloadStory(data[0].story)
+            }
         }
         catch (error) {
             console.log(error)
@@ -366,7 +372,66 @@ export default AuthProvider = ({ children }) => {
     }
 
 
-    const value = { GetStoryInfo, storyContent, userStory, UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
+
+    const FetchAllUpdates = async () => {
+        if (savedContact && savedContact.length > 0) {
+            let StoryData = []
+            for (let contactData in savedContact) {
+                const UpdatedData = await FetchContactStory(savedContact[contactData].profiles.id)
+                StoryData.push(UpdatedData[0])
+            }
+            if (StoryData && StoryData.length > 0) {
+                for (let storyImage in StoryData) {
+                    const ImageData = await DownloadContactStoryImage(StoryData[storyImage].story)
+                }
+            }
+        }
+
+    }
+
+
+
+    const FetchContactStory = async (contactId) => {
+        try {
+            const { data, error } = await supabase
+                .from('story')
+                .select("*")
+                .eq("uploader", contactId)
+            if (error) {
+                console.log(error)
+                return
+            }
+            return data
+        }
+        catch (error) {
+            console.log(error)
+            return
+        }
+    }
+
+    const DownloadContactStoryImage = async (fileName) => {
+        try {
+            const { data, error } = await supabase.storage
+                .from('story')
+                .download(fileName);
+
+            if (error) {
+                console.error('Error downloading image:', error.message);
+                return;
+            }
+            const fr = new FileReader();
+            fr.readAsDataURL(data);
+            fr.onload = () => {
+                return fr.result
+            };
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+    }
+
+
+
+    const value = { contactStory, GetStoryInfo, storyContent, userStory, UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
     return (
         <AuthContext.Provider value={value} >
             {children}

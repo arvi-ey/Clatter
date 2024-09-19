@@ -10,7 +10,7 @@ import { Font } from '../common/font';
 import Entypo from '@expo/vector-icons/Entypo';
 
 const Mystory = () => {
-    const { user, darkMode, image, UploadStory, userStory, storyContent, GetStoryInfo } = useContext(AuthContext)
+    const { user, darkMode, image, UploadStory, userStory, storyContent, GetStoryInfo, contactStory } = useContext(AuthContext)
     const [localImage, setLocalImage] = useState()
     const [modal, setModal] = useState(false)
     const [content, setContent] = useState()
@@ -19,6 +19,7 @@ const Mystory = () => {
     useEffect(() => {
         GetStoryInfo()
     }, [])
+    console.log(contactStory)
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
@@ -123,21 +124,24 @@ const Mystory = () => {
         <>
             <View style={{ width: width - 30, marginLeft: 15, marginTop: 5, flexDirection: 'row', gap: 15, borderBottomWidth: 0.5, borderColor: darkMode ? colors.CHARCOLE_DARK : colors.GREY, paddingBottom: 10 }}>
                 <View style={{ gap: 5, justifyContent: 'center', width: 80, alignItems: 'center', }}>
-                    <TouchableOpacity onPress={pickImage} style={{ height: 70, width: 70, justifyContent: 'center', alignItems: 'center' }} >
-                        <SimpleLineIcons name="camera" size={30} color={darkMode ? colors.WHITE : colors.CHARCOLE} style={{ marginRight: 10, }} />
-                    </TouchableOpacity>
-                    <Text style={{ fontFamily: Font.Regular, fontSize: 15, color: darkMode ? colors.WHITE : colors.CHARCOLE }} >Add Story</Text>
+                    <View style={{ height: 70, width: 70, justifyContent: 'center', alignItems: 'center', position: 'relative', }} >
+                        <Image source={{ uri: image }} style={{ borderRadius: 35, borderWidth: 1, borderColor: colors.BLACK, height: 70, width: 70 }} />
+                        <TouchableOpacity activeOpacity={0.5} onPress={pickImage} style={{ position: 'absolute', backgroundColor: colors.MAIN_COLOR, height: 25, width: 25, borderRadius: 20, alignItems: 'center', justifyContent: 'center', bottom: -4, right: -4 }} >
+                            <SimpleLineIcons name="camera" size={15} color={colors.WHITE} />
+                        </TouchableOpacity>
+                    </View>
+                    <Text style={{ fontFamily: Font.Regular, fontSize: 12, color: darkMode ? colors.WHITE : colors.CHARCOLE }} >Add Story</Text>
                 </View>
                 {
                     userStory ?
                         <TouchableOpacity style={{ gap: 5, justifyContent: 'center', width: 80, alignItems: 'center', }} onPress={() => setStoryView(true)} >
                             <Image source={{ uri: userStory }} style={{ borderRadius: 35, borderWidth: 1, borderColor: colors.MAIN_COLOR, height: 70, width: 70 }} />
-                            <Text style={{ fontFamily: Font.Regular, fontSize: 15, color: darkMode ? colors.WHITE : colors.CHARCOLE }} >My Story</Text>
+                            <Text style={{ fontFamily: Font.Regular, fontSize: 12, color: darkMode ? colors.WHITE : colors.CHARCOLE }} >My Story</Text>
                         </TouchableOpacity> : null
                 }
             </View>
             <View style={{ marginLeft: 20, marginTop: 15 }}>
-                <Text style={{ fontFamily: Font.Regular, fontSize: 15, color: darkMode ? colors.WHITE : colors.CHARCOLE }}  >Recent Updates</Text>
+                <Text style={{ fontFamily: Font.Regular, fontSize: 12, color: darkMode ? colors.WHITE : colors.CHARCOLE }}  >Recent Updates</Text>
             </View>
             {StoryModal()}
             {StoryViewMOdal()}
