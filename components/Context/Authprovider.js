@@ -49,6 +49,7 @@ export default AuthProvider = ({ children }) => {
 
     useEffect(() => {
         FetchAllUpdates()
+        SubScribeToStatus()
     }, [savedContact])
 
     useEffect(() => {
@@ -379,12 +380,19 @@ export default AuthProvider = ({ children }) => {
             for (let contactData in savedContact) {
                 const UpdatedData = await FetchContactStory(savedContact[contactData].profiles.id)
                 StoryData.push(UpdatedData[0])
+                StoryData[contactData].saved_name = savedContact[contactData].saved_name
             }
             if (StoryData && StoryData.length > 0) {
                 for (let storyImage in StoryData) {
                     const ImageData = await DownloadContactStoryImage(StoryData[storyImage].story)
+                    StoryData[storyImage].image = ImageData
+                }
+                for (let profileImage in savedContact) {
+                    const UserImage = await FetchContactProfileImage(savedContact[profileImage].profiles.profile_pic)
+                    StoryData[profileImage].user_image = UserImage
                 }
             }
+            setContactStory(StoryData)
         }
 
     }
@@ -419,16 +427,61 @@ export default AuthProvider = ({ children }) => {
                 console.error('Error downloading image:', error.message);
                 return;
             }
-            const fr = new FileReader();
-            fr.readAsDataURL(data);
-            fr.onload = () => {
-                return fr.result
-            };
+            return new Promise((resolve, reject) => {
+                const fr = new FileReader();
+                fr.readAsDataURL(data);
+                fr.onload = () => {
+                    resolve(fr.result);
+                };
+                fr.onerror = (err) => {
+                    reject(err);
+                };
+            });
         } catch (error) {
             console.error('Error:', error.message);
         }
     }
 
+
+    const FetchContactProfileImage = async (filename) => {
+        if (!filename) return null;
+        try {
+            const { data, error } = await supabase.storage
+                .from('avatars')
+                .download(filename);
+
+            if (error) {
+                console.error('Error downloading image:', error.message);
+                return null;
+            }
+            return new Promise((resolve, reject) => {
+                const fr = new FileReader();
+                fr.readAsDataURL(data);
+                fr.onload = () => {
+                    resolve(fr.result);
+                };
+                fr.onerror = (err) => {
+                    reject(err);
+                };
+            });
+        } catch (error) {
+            console.error('Error:', error.message);
+            return null;
+        }
+    };
+
+
+    const SubScribeToStatus = async () => {
+        const subscription = supabase
+            .channel('public:story')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'story' }, (payload) => {
+                const newData = payload.new;
+                if (newData) {
+                    // console.log(newData)
+                }
+            })
+            .subscribe();
+    }
 
 
     const value = { contactStory, GetStoryInfo, storyContent, userStory, UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }

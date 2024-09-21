@@ -19,7 +19,7 @@ const Mystory = () => {
     useEffect(() => {
         GetStoryInfo()
     }, [])
-    console.log(contactStory)
+
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
