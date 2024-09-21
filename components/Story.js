@@ -9,7 +9,7 @@ import { Font } from '../common/font';
 import { supabase } from '../lib/supabase'
 
 const Story = (item) => {
-    const { darkMode } = useContext(AuthContext)
+    const { darkMode, StatusViewed, uid, storyviewed } = useContext(AuthContext)
     const [storyView, setStoryView] = useState(false)
 
 
@@ -22,7 +22,14 @@ const Story = (item) => {
 
     const HandleView = () => {
         setStoryView(true)
+        const viewedObj = {}
+        viewedObj.viewed = Date.now()
+        viewedObj.viewer = uid
+        viewedObj.status_id = item.data.id
+        viewedObj.status_owner = item.data.uploader
+        StatusViewed(viewedObj)
     }
+    console.log("This ", storyviewed)
 
     const StoryViewMOdal = () => {
         return (

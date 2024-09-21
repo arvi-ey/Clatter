@@ -30,6 +30,7 @@ export default AuthProvider = ({ children }) => {
     const [userStory, setUserStory] = useState()
     const [storyContent, setStoryContent] = useState()
     const [contactStory, setContactStory] = useState()
+    const [storyviewed, setstoryviewed] = useState()
 
     useEffect(() => {
         AppLoaded()
@@ -41,6 +42,7 @@ export default AuthProvider = ({ children }) => {
             subscribeToUserChanges(uid)
         }
         GetStoryInfo()
+        GetStatusViewd()
     }, [uid])
 
     useEffect(() => {
@@ -477,14 +479,84 @@ export default AuthProvider = ({ children }) => {
             .on('postgres_changes', { event: '*', schema: 'public', table: 'story' }, (payload) => {
                 const newData = payload.new;
                 if (newData) {
-                    // console.log(newData)
+                    const newStatus = GetnewStatus(newData.uploader)
+                    if (newStatus) FetchAllUpdates()
                 }
             })
             .subscribe();
     }
 
 
-    const value = { contactStory, GetStoryInfo, storyContent, userStory, UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
+    const GetnewStatus = (data) => {
+        for (let newData in savedContact) {
+            if (savedContact[newData].profiles.id === data) return true
+        }
+        return false
+    }
+
+    const StatusViewed = async (vieweddata) => {
+        if (vieweddata) {
+            const check = await CheckStatusView(vieweddata.status_id, vieweddata.viewer)
+            if (check) return
+            else {
+                try {
+                    const { data, error } = await supabase
+                        .from('statusView')
+                        .insert([vieweddata]);
+                    if (error) {
+                        console.log(error)
+                    }
+                }
+                catch (error) {
+                    console.log(error)
+                }
+            }
+        }
+    }
+
+    const CheckStatusView = async (status_id, viewer) => {
+        try {
+            const { data, error } = await supabase
+                .from('statusView')
+                .select("*")
+                .match(
+                    {
+                        status_id,
+                        viewer
+                    }
+                )
+            if (error) {
+                console.log(error)
+                return
+            }
+            if (data.length > 0) return true
+            else return false
+        }
+        catch (error) {
+
+        }
+    }
+
+    const GetStatusViewd = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('statusView')
+                .select("*")
+                .eq("status_owner", uid)
+            if (error) {
+                console.log("1", error)
+            }
+            if (data.length > 0) {
+                setstoryviewed(data)
+            }
+        }
+        catch (error) {
+            console.log("2", error)
+        }
+    }
+
+
+    const value = { storyviewed, StatusViewed, contactStory, GetStoryInfo, storyContent, userStory, UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
     return (
         <AuthContext.Provider value={value} >
             {children}
@@ -493,16 +565,3 @@ export default AuthProvider = ({ children }) => {
 
 }
 
-// console.log(data)
-// const { data: publicUrlData } = supabase
-//     .storage
-//     .from('avatars')
-//     .getPublicUrl(filename);
-
-// const publicURL = publicUrlData.publicUrl;
-// if (!publicURL) {
-//     setImageLoading(false)
-//     throw new Error('Failed to retrieve public URL.');
-// }
-// UpdateUser(uid, { profile_pic: publicURL })
-// setImageLoading(false)
