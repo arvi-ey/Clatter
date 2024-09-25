@@ -8,13 +8,26 @@ const { height, width } = Dimensions.get('window');
 import { AuthContext } from './Context/Authprovider';
 import { Font } from '../common/font';
 import Entypo from '@expo/vector-icons/Entypo';
+import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 
 const Mystory = () => {
-    const { user, darkMode, image, UploadStory, userStory, storyContent, GetStoryInfo, contactStory } = useContext(AuthContext)
+    const { user, darkMode, image, UploadStory, userStory, storyContent, GetStoryInfo, Viewerinfo } = useContext(AuthContext)
     const [localImage, setLocalImage] = useState()
     const [modal, setModal] = useState(false)
     const [content, setContent] = useState()
     const [storyView, setStoryView] = useState(false)
+    const snapPoints = useMemo(() => ['25%'], []);
+    const sheetRef = useRef(null);
+
+
+    const OpenButtomSheet = () => sheetRef?.current?.expand()
+    const closeBottomSheet = () => sheetRef.current?.close();
+    const handleCollapsePress = () => sheetRef.current?.collapse();
+    const renderBackdrop = (props) => (
+        <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />
+    );
 
     useEffect(() => {
         GetStoryInfo()
@@ -99,24 +112,59 @@ const Mystory = () => {
                     setStoryView(false);
                 }}
             >
-                <View style={{ flex: 1, justifyContent: "center", alignItems: 'center', backgroundColor: colors.BLACK }}>
-                    <View style={{ width: width - 10, marginLeft: 10, alignItems: 'center', flexDirection: "row", gap: 10 }} >
-                        <AntDesign name="arrowleft" size={28} color={colors.WHITE} onPress={() => setStoryView(false)} />
-                        <Image source={{ uri: image }} style={{ width: 50, height: 50, borderRadius: 25, borderWidth: 1, borderColor: colors.MAIN_COLOR }} />
-                        <View style={{ gap: 5 }}>
-                            <Text style={{ fontFamily: Font.Regular, color: colors.WHITE, fontSize: 18 }}>My story</Text>
-                            <Text style={{ fontFamily: Font.Light, color: colors.WHITE, fontSize: 14 }}>{GetTime(storyContent?.created_at)}</Text>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+
+                    <View style={{ flex: 1, justifyContent: "center", alignItems: 'center', backgroundColor: colors.BLACK }}>
+                        <View style={{ width: width - 10, marginLeft: 10, alignItems: 'center', flexDirection: "row", gap: 10 }} >
+                            <AntDesign name="arrowleft" size={28} color={colors.WHITE} onPress={() => setStoryView(false)} />
+                            <Image source={{ uri: image }} style={{ width: 50, height: 50, borderRadius: 25, borderWidth: 1, borderColor: colors.MAIN_COLOR }} />
+                            <View style={{ gap: 5 }}>
+                                <Text style={{ fontFamily: Font.Regular, color: colors.WHITE, fontSize: 18 }}>My story</Text>
+                                <Text style={{ fontFamily: Font.Light, color: colors.WHITE, fontSize: 14 }}>{GetTime(storyContent?.created_at)}</Text>
+                            </View>
                         </View>
+                        <View style={{ height: "90%", justifyContent: "center", alignItems: "center", }} >
+                            <Image source={{ uri: userStory }} style={{ height: 500, width: 500 }} />
+                            {storyContent && storyContent.content &&
+                                <Text style={{ fontFamily: Font.Regular, color: colors.WHITE, fontSize: 18, marginTop: 40 }}>{storyContent.content}</Text>
+                            }
+                            <TouchableOpacity activeOpacity={0.5} onPress={OpenButtomSheet} style={{ flexDirection: "row", height: "auto", marginTop: 40, alignItems: 'center', gap: 5 }} >
+                                <Feather name="eye" size={30} color={colors.WHITE} />
+                                <Text style={{ color: darkMode ? colors.WHITE : colors.BLACK, fontSize: 18, fontFamily: Font.Bold }}>{Viewerinfo ? Viewerinfo.length : 0}</Text>
+
+                            </TouchableOpacity>
+                        </View>
+                        <BottomSheet
+                            ref={sheetRef}
+                            index={-1}
+                            backgroundStyle={{ backgroundColor: colors.MAIN_COLOR, }}
+                            enablePanDownToClose={true}
+                            snapPoints={snapPoints}
+                            backdropComponent={renderBackdrop}
+                            style={{}}
+                            handleStyle={{ backgroundColor: colors.MAIN_COLOR, height: 40, width: "97%", alignSelf: "center" }}
+                            handleIndicatorStyle={{ backgroundColor: colors.WHITE }}
+                        >
+                            <View style={{ flex: 1, backgroundColor: darkMode ? colors.BLACK : colors.WHITE }} >
+                                {Viewerinfo && Viewerinfo?.map((data, index) => {
+                                    return (
+                                        <View style={{ width, height: 60, flexDirection: 'row', marginLeft: 10, gap: 25, marginTop: 20, alignItems: 'center' }} key={index} >
+                                            <Image source={{ uri: data.profile_pic }} style={{ height: 55, width: 55, borderRadius: 30 }} />
+                                            <View>
+                                                <Text style={{ fontFamily: Font.Medium, color: darkMode ? colors.WHITE : colors.BLACK, fontSize: 20 }} >{data.saved_name}</Text>
+                                                <Text style={{ fontFamily: Font.Light, color: darkMode ? colors.WHITE : colors.BLACK, fontSize: 15 }} >{GetTime(data.time)}</Text>
+                                            </View>
+
+                                        </View>
+
+                                    )
+                                })}
+
+                            </View>
+                        </BottomSheet>
                     </View>
-                    <View style={{ height: "90%", justifyContent: "center", alignItems: "center", }} >
-                        <Image source={{ uri: userStory }} style={{ height: 500, width: 500 }} />
-                        {storyContent && storyContent.content &&
-                            <Text style={{ fontFamily: Font.Regular, color: colors.WHITE, fontSize: 18, marginTop: 40 }}>{storyContent.content}</Text>
-                        }
-                        <Feather name="eye" size={30} color={colors.WHITE} style={{ marginTop: 40 }} />
-                    </View>
-                </View>
-            </Modal>
+                </GestureHandlerRootView>
+            </Modal >
         );
     };
 
@@ -141,7 +189,7 @@ const Mystory = () => {
                 }
             </View>
             <View style={{ marginLeft: 20, marginTop: 15 }}>
-                <Text style={{ fontFamily: Font.Regular, fontSize: 12, color: darkMode ? colors.WHITE : colors.CHARCOLE }}  >Recent Updates</Text>
+                <Text style={{ fontFamily: Font.Regular, fontSize: 12, color: darkMode ? colors.WHITE : colors.CHARCOLE }} >Recent Updates</Text>
             </View>
             {StoryModal()}
             {StoryViewMOdal()}

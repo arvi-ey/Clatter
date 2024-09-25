@@ -9,7 +9,7 @@ import { Font } from '../common/font';
 import { supabase } from '../lib/supabase'
 
 const Story = (item) => {
-    const { darkMode, StatusViewed, uid, storyviewed } = useContext(AuthContext)
+    const { darkMode, StatusViewed, uid, } = useContext(AuthContext)
     const [storyView, setStoryView] = useState(false)
 
 
@@ -29,7 +29,6 @@ const Story = (item) => {
         viewedObj.status_owner = item.data.uploader
         StatusViewed(viewedObj)
     }
-    console.log("This ", storyviewed)
 
     const StoryViewMOdal = () => {
         return (

@@ -30,7 +30,7 @@ export default AuthProvider = ({ children }) => {
     const [userStory, setUserStory] = useState()
     const [storyContent, setStoryContent] = useState()
     const [contactStory, setContactStory] = useState()
-    const [storyviewed, setstoryviewed] = useState()
+    const [Viewerinfo, setViewerinfo] = useState()
 
     useEffect(() => {
         AppLoaded()
@@ -42,7 +42,7 @@ export default AuthProvider = ({ children }) => {
             subscribeToUserChanges(uid)
         }
         GetStoryInfo()
-        GetStatusViewd()
+        GetStoryViewedUserData()
     }, [uid])
 
     useEffect(() => {
@@ -381,16 +381,19 @@ export default AuthProvider = ({ children }) => {
             let StoryData = []
             for (let contactData in savedContact) {
                 const UpdatedData = await FetchContactStory(savedContact[contactData].profiles.id)
-                StoryData.push(UpdatedData[0])
-                StoryData[contactData].saved_name = savedContact[contactData].saved_name
+                if (UpdatedData[0] !== undefined) {
+                    StoryData.push(UpdatedData[0])
+                    StoryData[contactData].saved_name = savedContact[contactData].saved_name
+                }
             }
             if (StoryData && StoryData.length > 0) {
                 for (let storyImage in StoryData) {
                     const ImageData = await DownloadContactStoryImage(StoryData[storyImage].story)
                     StoryData[storyImage].image = ImageData
                 }
-                for (let profileImage in savedContact) {
-                    const UserImage = await FetchContactProfileImage(savedContact[profileImage].profiles.profile_pic)
+                for (let profileImage in StoryData) {
+                    const profile_pic = `${StoryData[profileImage].uploader}.jpg`
+                    const UserImage = await FetchContactProfileImage(profile_pic)
                     StoryData[profileImage].user_image = UserImage
                 }
             }
@@ -398,8 +401,6 @@ export default AuthProvider = ({ children }) => {
         }
 
     }
-
-
 
     const FetchContactStory = async (contactId) => {
         try {
@@ -446,7 +447,7 @@ export default AuthProvider = ({ children }) => {
 
 
     const FetchContactProfileImage = async (filename) => {
-        if (!filename) return null;
+        // if (!filename) return null;
         try {
             const { data, error } = await supabase.storage
                 .from('avatars')
@@ -537,18 +538,58 @@ export default AuthProvider = ({ children }) => {
         }
     }
 
-    const GetStatusViewd = async () => {
+
+    const GetStoryViewedUserData = async () => {
+        let Vieweduser
         try {
-            const { data, error } = await supabase
+            const { data: UserData, error } = await supabase
                 .from('statusView')
                 .select("*")
                 .eq("status_owner", uid)
             if (error) {
                 console.log("1", error)
             }
-            if (data.length > 0) {
-                setstoryviewed(data)
+            if (UserData) Vieweduser = UserData
+        }
+        catch (error) {
+            console.log("2", error)
+        }
+        if (Vieweduser && Vieweduser.length > 0) {
+            const ViewerArray = []
+            let viewObj = {}
+            for (let data in Vieweduser) {
+                const resultdata = await GetContactData(Vieweduser[data].viewer)
+                viewObj.saved_name = resultdata[0].saved_name
+                viewObj.viewer_id = resultdata[0].profiles.id
+                viewObj.profile_pic = resultdata[0].profiles.profile_pic
+                viewObj.time = Vieweduser[data].viewed
+                viewObj.status_owner = Vieweduser[data].status_owner
+                viewObj.status_id = Vieweduser[data].status_id
+                ViewerArray.push(viewObj)
             }
+            if (ViewerArray && ViewerArray.length > 0) {
+                for (let data in ViewerArray) {
+                    const result = await FetchContactProfileImage(ViewerArray[data].profile_pic)
+                    ViewerArray[data].profile_pic = result
+                }
+                setViewerinfo(ViewerArray)
+            }
+        }
+    }
+
+    const GetContactData = async (viewer) => {
+        try {
+            const { data, error } = await supabase
+                .from('Savedcontact')
+                .select(`user_id,saved_name,profiles(*)`)
+                .match({
+                    user_id: uid,
+                    saved_id: viewer
+                })
+            if (error) {
+                console.log(error)
+            }
+            if (data) return data
         }
         catch (error) {
             console.log("2", error)
@@ -556,7 +597,7 @@ export default AuthProvider = ({ children }) => {
     }
 
 
-    const value = { storyviewed, StatusViewed, contactStory, GetStoryInfo, storyContent, userStory, UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
+    const value = { Viewerinfo, StatusViewed, contactStory, GetStoryInfo, storyContent, userStory, UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
     return (
         <AuthContext.Provider value={value} >
             {children}
