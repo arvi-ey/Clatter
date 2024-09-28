@@ -13,6 +13,8 @@ import { Feather } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { AuthContext } from './Context/Authprovider';
 import { Font } from '../common/font';
+import Switch from "../common/Switch";
+
 
 
 const Profile = () => {
@@ -42,6 +44,16 @@ const Profile = () => {
             subscription.remove();
         };
     }, [uid])
+
+    const SetDarkmode = async () => {
+        // setdarkModeon(!darkModeon)
+        await UpdateUser(uid, { dark_mode: !darkMode })
+    }
+    const DarkModeIcon = () => {
+        return (
+            <Ionicons name={darkMode ? "moon" : "sunny-sharp"} size={20} color={darkMode ? colors.BLACK : "#facc15"} />
+        )
+    }
 
     return (
         <Tab.Navigator screenOptions={{
@@ -75,10 +87,19 @@ const Profile = () => {
                 title: 'Clatter',
                 headerTintColor: darkMode ? colors.WHITE : colors.BLACK,
                 headerRight: () => (
-                    <View style={{ flexDirection: "row", marginRight: 30, gap: 25}} >
-                        <Feather name="camera" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
-                        <MaterialIcons name="qr-code-scanner" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
-                        {/* <Ionicons name="search-outline" size={28} color={darkMode ? colors.WHITE : colors.BLACK} /> */}
+                    <View style={{ flexDirection: "row", marginRight: 30, gap: 25 }} >
+                        <Feather name="camera" size={25} color={darkMode ? colors.WHITE : colors.BLACK} />
+                        <MaterialIcons name="qr-code-scanner" size={25} color={darkMode ? colors.WHITE : colors.BLACK} />
+                        <Switch
+                            onToggle={SetDarkmode}
+                            size={'large'}
+                            isOn={darkMode}
+                            onColor={colors.MAIN_COLOR}
+                            offColor={colors.SWITCH_BG}
+                            animationSpeed={250}
+                            thumbOnStyle={{ backgroundColor: colors.WHITE }}
+                            icon={<DarkModeIcon />}
+                        />
                     </View>
                 ),
                 headerTitleStyle: {
@@ -94,6 +115,15 @@ const Profile = () => {
                 )
             }} />
             <Tab.Screen name="Story" component={StoryScreen} options={{
+                headerTitleStyle: {
+                    fontSize: 30,
+                    fontFamily: Font.Regular
+                },
+                headerStyle: {
+                    backgroundColor: darkMode ? colors.BLACK : colors.WHITE,
+                    height: 60
+                },
+                headerTintColor: darkMode ? colors.WHITE : colors.BLACK,
                 tabBarIcon: ({ focused }) => (
                     <View style={{ justifyContent: "center", alignItems: "center" }} >
                         <Entypo name="circular-graph" size={28} color={darkMode ? colors.WHITE : (!darkMode && focused) ? colors.WHITE : colors.BLACK} style={{ backgroundColor: focused ? colors.MAIN_COLOR : null, paddingHorizontal: 18, paddingVertical: 5, borderRadius: 50, }} />

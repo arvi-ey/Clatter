@@ -50,7 +50,6 @@ const ContactProvider = ({ children }) => {
         }
     };
 
-
     const AddChatContact = async (name, id) => {
         setLoading(true)
         try {

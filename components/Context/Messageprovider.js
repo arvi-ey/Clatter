@@ -98,7 +98,7 @@ export default Messageprovider = ({ children }) => {
 
 
     const FetchChat = async () => {
-        console.log("TY function Calling")
+        // console.log("TY function Calling")
         try {
             const { data, error } = await supabase
                 .from('message')

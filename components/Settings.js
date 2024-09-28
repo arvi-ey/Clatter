@@ -33,23 +33,11 @@ const Settings = ({ navigation }) => {
       setHideTyping(user.hideTyping);
       setHideLastseen(user.hideLastseen);
     }
-    console.log("user.hideActive",user.hideActive)
-    console.log("user.hideTyping",user.hideTyping)
-    console.log("user.hideLastseen",user.hideLastseen)
+    console.log("user.hideActive", user.hideActive)
+    console.log("user.hideTyping", user.hideTyping)
+    console.log("user.hideLastseen", user.hideLastseen)
   }, [user]);
 
-  const SetDarkmode = async () => {
-    await UpdateUser(uid, { dark_mode: !darkMode });
-  };
-  const DarkModeIcon = () => {
-    return (
-      <Ionicons
-        name={darkMode ? "moon" : "sunny-sharp"}
-        size={20}
-        color={darkMode ? colors.BLACK : "#facc15"}
-      />
-    );
-  };
 
   const Info = [
     {
@@ -96,7 +84,7 @@ const Settings = ({ navigation }) => {
       },
       headerTintColor: user.dark_mode ? colors.WHITE : colors.BLACK,
     });
-  }, [navigation,darkMode]);
+  }, [navigation, darkMode]);
 
   return (
     <ScrollView
@@ -105,34 +93,14 @@ const Settings = ({ navigation }) => {
         backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE,
       }}
     >
-      <View style={styles.MainView}>
-        <View style={{ width: "75%" }}>
-          <Text style={{fontFamily: Font.Medium,color: user.dark_mode ? colors.WHITE : colors.BLACK,fontSize: 15,}}>
-            Dark Mode
-          </Text>
-          <Text style={{fontFamily: Font.Light,color: user.dark_mode ? colors.CHARCOLE_DARK : colors.CHAT_DESC,fontSize: 12,}}>
-            Switch between light and dark for comfort and style. Dark Mode reduces eye strain and looks sleek
-          </Text>
-        </View>
-        <Switch
-          onToggle={SetDarkmode}
-          size={"large"}
-          isOn={darkMode}
-          onColor={colors.MAIN_COLOR}
-          offColor={colors.SWITCH_BG}
-          animationSpeed={300}
-          thumbOnStyle={{ backgroundColor: colors.WHITE }}
-          icon={<DarkModeIcon />}
-        />
-      </View>
       {Info?.map((item, index) => {
         return (
           <View style={styles.MainView} key={index}>
             <View style={{ width: "80%" }}>
-              <Text style={{fontFamily: Font.Medium,color: user.dark_mode ? colors.WHITE : colors.BLACK,fontSize: 15,}}>
+              <Text style={{ fontFamily: Font.Medium, color: user.dark_mode ? colors.WHITE : colors.BLACK, fontSize: 15, }}>
                 {item.name}
               </Text>
-              <Text style={{fontFamily: Font.Light,color: user.dark_mode? colors.CHARCOLE_DARK: colors.CHAT_DESC,fontSize: 12,}}>
+              <Text style={{ fontFamily: Font.Light, color: user.dark_mode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontSize: 12, }}>
                 {item.Desc}
               </Text>
             </View>
@@ -143,10 +111,10 @@ const Settings = ({ navigation }) => {
                 item.value === "Active"
                   ? hideActive
                   : item.value === "Typing"
-                  ? hideTyping
-                  : item.value === "Lastseen"
-                  ? hideLastseen
-                  : null
+                    ? hideTyping
+                    : item.value === "Lastseen"
+                      ? hideLastseen
+                      : null
               }
               onColor={colors.MAIN_COLOR}
               offColor={colors.SWITCH_BG}

@@ -12,7 +12,6 @@ import { FlatList, ScrollView } from 'react-native-gesture-handler'
 import { supabase } from '../lib/supabase'
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import LottieView from 'lottie-react-native';
 
 
 const Signinpage = () => {
@@ -45,11 +44,11 @@ const Signinpage = () => {
         setLoading(true)
         try {
             const { data, error } = await supabase.auth.signInWithOtp({
-                // phone: `+${selectCountry.code}${mobileNumber}`,
-                phone: `1234567891`,
+                phone: `+${selectCountry.code}${mobileNumber}`,
+                // phone: `1234567891`,
             })
-            // if (!error) Navigation.navigate('Register', { phone: `+${selectCountry.code}${mobileNumber}` })
-            if (!error) Navigation.navigate('Register', { phone: `1234567891` })
+            if (!error) Navigation.navigate('Register', { phone: `+${selectCountry.code}${mobileNumber}` })
+            // if (!error) Navigation.navigate('Register', { phone: `1234567891` })
             setLoading(false)
         }
         catch (err) {

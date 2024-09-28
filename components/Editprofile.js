@@ -18,7 +18,7 @@ import { supabase } from '../lib/supabase'
 
 
 const Editprofile = ({ navigation }) => {
-    const { user, UpdateUser, loading, uid, downloadImage, image, setImage, uploadImage, imageLoading } = useContext(AuthContext)
+    const { user, UpdateUser, loading, uid, downloadImage, image, uploadImage, imageLoading } = useContext(AuthContext)
     const snapPoints = useMemo(() => ['25%'], []);
     const sheetRef = useRef(null);
     const [focusEmail, setFocuEmail] = useState(false)
