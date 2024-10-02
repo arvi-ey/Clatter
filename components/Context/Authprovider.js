@@ -216,7 +216,7 @@ export default AuthProvider = ({ children }) => {
             }
         }
         catch (error) {
-            console.log(error)
+            // console.log(error)
 
         }
     }
@@ -546,9 +546,6 @@ export default AuthProvider = ({ children }) => {
                 .from('statusView')
                 .select("*")
                 .eq("status_owner", uid)
-            if (error) {
-                console.log("1", error)
-            }
             if (UserData) Vieweduser = UserData
         }
         catch (error) {
