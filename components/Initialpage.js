@@ -57,7 +57,7 @@ export default function Initialpage() {
     if (!fontsLoaded) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width }} >
-                <Image source={require("../assets/clatter_logo.png")} style={{ height: 350, width: 350 }} />
+                <Image source={require("../assets/clatter_logo.png")} style={{ height: 300, width: 300 }} />
             </View>
         )
     }

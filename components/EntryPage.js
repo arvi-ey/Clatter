@@ -20,7 +20,7 @@ import LottieView from 'lottie-react-native';
 
 
 const EntryPage = ({ navigation }) => {
-    const { loading, AddUser, user, GetUserOnce, uploadImage, imageLoading, image } = useContext(AuthContext)
+    const { loading, AddUser, user, GetUserOnce, downloadImage, uploadImage, imageLoading, image, darkMode } = useContext(AuthContext)
     const snapPoints = useMemo(() => ['25%'], []);
     const sheetRef = useRef(null);
     // const [image, setImage] = useState(null);
@@ -51,6 +51,7 @@ const EntryPage = ({ navigation }) => {
                 full_name: user.full_name || "",
                 email: user.email || ""
             }));
+            downloadImage(user.profile_pic)
         }
     }, [user]);
     const User_image = require("../assets/user1.jpg")
@@ -161,10 +162,9 @@ const EntryPage = ({ navigation }) => {
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaView style={[styles.profileContainer, { backgroundColor: colors.WHITE }]}>
-                <View style={{ alignItems: 'center', gap: 25, backgroundColor: colors.WHITE }}>
-
-                    <View style={{ backgroundColor: colors.WHITE, alignItems: "center", gap: 8, }}>
+            <SafeAreaView style={[styles.profileContainer, { backgroundColor: darkMode ? colors.BLACK : colors.WHITE }]}>
+                <View style={{ alignItems: 'center', gap: 25, backgroundColor: darkMode ? colors.BLACK : colors.WHITE }}>
+                    <View style={{ backgroundColor: darkMode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, }}>
                         <View style={{ position: "relative", justifyContent: 'center', alignItems: "center", }}>
                             {imageLoading ?
                                 <ActivityIndicator size="large" style={{ position: 'absolute', zIndex: 10 }} color={colors.WHITE} />
@@ -182,7 +182,7 @@ const EntryPage = ({ navigation }) => {
                             <TextInput
                                 onFocus={() => setFocusName(!focusName)}
                                 onBlur={() => setFocusName(!focusName)}
-                                style={[styles.inputBox, { color: colors.BLACK }]}
+                                style={[styles.inputBox, { color: darkMode ? colors.WHITE : colors.BLACK }]}
                                 value={data?.full_name}
                                 placeholder='Enter Name'
                                 placeholderTextColor="gray"
@@ -194,7 +194,7 @@ const EntryPage = ({ navigation }) => {
                             <TextInput
                                 onFocus={() => setFocuEmail(!focusEmail)}
                                 onBlur={() => setFocuEmail(!focusEmail)}
-                                style={[styles.inputBox, { color: colors.BLACK }]}
+                                style={[styles.inputBox, { color: darkMode ? colors.WHITE : colors.BLACK }]}
                                 value={data?.email}
                                 placeholder='Enter Email'
                                 placeholderTextColor="gray"
@@ -207,7 +207,7 @@ const EntryPage = ({ navigation }) => {
                                 // editable={false}
                                 onFocus={() => setFocusNumber(!focusNumber)}
                                 onBlur={() => setFocusNumber(!focusNumber)}
-                                style={[styles.inputBox, { color: colors.BLACK }]}
+                                style={[styles.inputBox, { color: darkMode ? colors.WHITE : colors.BLACK }]}
                                 value={data?.phone}
                                 placeholder='Enter Mobile Number'
                                 placeholderTextColor="gray"

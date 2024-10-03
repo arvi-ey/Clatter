@@ -28,11 +28,10 @@ const ChatScreen = ({ navigation }) => {
         SubscribeToMessage()
         GetuserMessaged()
         FetchChat()
+        setTimeout(() => {
+            setLoading(false)
+        }, 2000)
     }, [])
-
-    setTimeout(() => {
-        setLoading(false)
-    }, 2000)
 
     const SubscribeToContactChange = () => {
         const subscription = supabase
