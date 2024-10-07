@@ -21,7 +21,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.tuhinroy.Clatter"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -31,7 +35,14 @@
         "expo-font",
         {
           "fonts": [
-            "path/to/file.ttf"
+            "./assets/fonts/Ubuntu-Regular.ttf",
+            "./assets/fonts/Ubuntu-Bold.ttf",
+            "./assets/fonts/Ubuntu-Italic.ttf",
+            "./assets/fonts/Ubuntu-BoldItalic.ttf",
+            "./assets/fonts/Ubuntu-Light.ttf",
+            "./assets/fonts/Ubuntu-LightItalic.ttf",
+            "./assets/fonts/Ubuntu-Medium.ttf",
+            "./assets/fonts/Ubuntu-MediumItalic.ttf"
           ]
         }
       ],
@@ -44,6 +55,11 @@
       ],
       "expo-secure-store",
       "expo-asset"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "12c4ae7a-45e2-4c86-892a-60ef72973fdf"
+      }
+    }
   }
 }

@@ -49,7 +49,6 @@ export default function Initialpage() {
             'Ubuntu-Medium': require('../assets/fonts/Ubuntu-Medium.ttf'),
             'Ubuntu-Light': require('../assets/fonts/Ubuntu-Light.ttf'),
             'Ubuntu-Regular': require('../assets/fonts/Ubuntu-Regular.ttf'),
-            'PermanentMarker-Regular': require('../assets/fonts/PermanentMarker-Regular.ttf'),
         });
         setFontsLoaded(true);
     };
