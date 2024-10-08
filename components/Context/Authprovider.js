@@ -62,6 +62,7 @@ export default AuthProvider = ({ children }) => {
         }
     }, [user])
 
+
     const AddCountry = async (country) => {
         try {
             const { data, error } = await supabase
@@ -131,12 +132,29 @@ export default AuthProvider = ({ children }) => {
             .channel('public:profiles')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${userId}` }, (payload) => {
                 setUser(payload.new);
+                // SetDarkmodeData(payload.new.dark_mode)
             })
             .subscribe();
         return () => {
             supabase.removeChannel(subscription);
         };
     };
+
+    // const SetDarkmodeData = async (value) => {
+    //     try {
+    //         await AsyncStorage.setItem("darkMode", value.toString());
+    //     } catch (e) {
+    //         console.log('Error storing data:', e);
+    //     }
+    //     try {
+    //         const value = await AsyncStorage.getItem("darkMode");
+    //         if (value === "true") setDarkMode(true)
+    //         if (value === "false") setDarkMode(false)
+    //     } catch (e) {
+    //         console.log('Error reading data:', e);
+    //     }
+    // };
+
 
     const UpdateUser = async (userId, updates) => {
         try {

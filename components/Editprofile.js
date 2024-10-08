@@ -18,13 +18,14 @@ import { supabase } from '../lib/supabase'
 
 
 const Editprofile = ({ navigation }) => {
-    const { user, UpdateUser, loading, uid, downloadImage, image, uploadImage, imageLoading } = useContext(AuthContext)
+    const { user, UpdateUser, darkMode, loading, uid, downloadImage, image, uploadImage, imageLoading } = useContext(AuthContext)
     const snapPoints = useMemo(() => ['25%'], []);
     const sheetRef = useRef(null);
     const [focusEmail, setFocuEmail] = useState(false)
     const [focusNumber, setFocusNumber] = useState(false)
     const [focusName, setFocusName] = useState(false)
     const [localImage, setLocalImage] = useState()
+    const [dark_mode, setDark_Mode] = useState()
     const [data, setData] = useState({
         full_name: "",
         email: "",
@@ -32,6 +33,10 @@ const Editprofile = ({ navigation }) => {
         profile_image: ""
     })
     const User_image = require("../assets/user1.jpg")
+
+    useEffect(() => {
+        setDark_Mode(darkMode)
+    }, [darkMode])
 
     useEffect(() => {
         if (user) {
@@ -43,7 +48,6 @@ const Editprofile = ({ navigation }) => {
             downloadImage(user.profile_pic)
         }
     }, [user])
-
 
     const openCamera = async () => {
         const { status, canAskAgain } = await ImagePicker.requestCameraPermissionsAsync();
@@ -121,14 +125,14 @@ const Editprofile = ({ navigation }) => {
             headerTitleStyle: {
                 fontFamily: Font.Medium,
                 fontSize: 20,
-                color: user.dark_mode ? colors.WHITE : colors.BLACK
+                color: dark_mode ? colors.WHITE : colors.BLACK
             },
             headerStyle: {
-                backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE,
+                backgroundColor: dark_mode ? colors.BLACK : colors.WHITE,
             },
-            headerTintColor: user.dark_mode ? colors.WHITE : colors.BLACK,
+            headerTintColor: dark_mode ? colors.WHITE : colors.BLACK,
         });
-    }, [navigation]);
+    }, [navigation, dark_mode]);
 
 
     const HandleUpdate = () => {
@@ -150,9 +154,9 @@ const Editprofile = ({ navigation }) => {
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaView style={[styles.profileContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>
-                <View style={{ alignItems: 'center', gap: 25, backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }}>
-                    <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, }}>
+            <SafeAreaView style={[styles.profileContainer, { backgroundColor: dark_mode ? colors.BLACK : colors.WHITE }]}>
+                <View style={{ alignItems: 'center', gap: 25, backgroundColor: dark_mode ? colors.BLACK : colors.WHITE }}>
+                    <View style={{ backgroundColor: dark_mode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, }}>
                         <View style={{ position: "relative", justifyContent: 'center', alignItems: "center" }}>
 
                             {imageLoading ?
@@ -172,7 +176,7 @@ const Editprofile = ({ navigation }) => {
                             <TextInput
                                 onFocus={() => setFocusName(!focusName)}
                                 onBlur={() => setFocusName(!focusName)}
-                                style={[styles.inputBox, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}
+                                style={[styles.inputBox, { color: dark_mode ? colors.WHITE : colors.BLACK }]}
                                 value={data?.full_name}
                                 placeholder='Enter Name'
                                 placeholderTextColor="gray"
@@ -184,7 +188,7 @@ const Editprofile = ({ navigation }) => {
                             <TextInput
                                 onFocus={() => setFocuEmail(!focusEmail)}
                                 onBlur={() => setFocuEmail(!focusEmail)}
-                                style={[styles.inputBox, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}
+                                style={[styles.inputBox, { color: dark_mode ? colors.WHITE : colors.BLACK }]}
                                 value={data?.email}
                                 placeholder='Enter Email'
                                 placeholderTextColor="gray"
@@ -197,7 +201,7 @@ const Editprofile = ({ navigation }) => {
                                 editable={false}
                                 onFocus={() => setFocusNumber(!focusNumber)}
                                 onBlur={() => setFocusNumber(!focusNumber)}
-                                style={[styles.inputBox, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}
+                                style={[styles.inputBox, { color: dark_mode ? colors.WHITE : colors.BLACK }]}
                                 value={data?.phone}
                                 placeholder='Enter Mobile Number'
                                 placeholderTextColor="gray"
@@ -206,7 +210,7 @@ const Editprofile = ({ navigation }) => {
                             />
                         </View>
                         <Button
-                            buttonStyle={[loading === true ? styles.loadingButtonStyle : styles.buttonStyle, { backgroundColor: (user.dark_mode && loading) ? colors.BLACK : ((user.dark_mode || !user.dark_mode) && !loading) ? colors.MAIN_COLOR : colors.WHITE }]}
+                            buttonStyle={[loading === true ? styles.loadingButtonStyle : styles.buttonStyle, { backgroundColor: (dark_mode && loading) ? colors.BLACK : ((dark_mode || !dark_mode) && !loading) ? colors.MAIN_COLOR : colors.WHITE }]}
                             title="Edit Profile"
                             textStyle={styles.textStyle}
                             activeOpacity={0.8}

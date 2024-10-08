@@ -22,6 +22,7 @@ import EntryPage from './EntryPage';
 import Chat from './Chat';
 import StoryScreen from './StoryScreen';
 import Mystory from './Mystory';
+import { colors } from './Theme';
 const { height, width } = Dimensions.get("window");
 
 
@@ -65,6 +66,8 @@ export default function Initialpage() {
         <GestureHandlerRootView style={{ flex: 1 }}>
             <NavigationContainer>
                 <StatusBar
+                    backgroundColor={user && user.dark_mode ? colors.BLACK : colors.WHITE}
+                    barStyle={'default'}
                     hidden={false}
                 />
                 <Stack.Navigator

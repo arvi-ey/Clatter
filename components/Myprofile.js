@@ -11,10 +11,10 @@ import { Font } from '../common/font';
 const { height, width } = Dimensions.get('window');
 
 const Myprofile = ({ navigation }) => {
-    const { user, image } = useContext(AuthContext)
+    const { user, image, darkMode } = useContext(AuthContext)
     const Navigation = useNavigation();
     const size = 24;
-    const color = user.dark_mode ? colors.CHAT_DESC_DARK : colors.CHAT_DESC;
+    const color = darkMode ? colors.CHAT_DESC_DARK : colors.CHAT_DESC;
     // const [image, setImage] = useState(null);
     const [data, setData] = useState({
         name: "",
@@ -94,22 +94,22 @@ const Myprofile = ({ navigation }) => {
             headerTitleStyle: {
                 fontFamily: Font.Medium,
                 fontSize: 20,
-                color: user.dark_mode ? colors.WHITE : colors.BLACK
+                color: darkMode ? colors.WHITE : colors.BLACK
             },
             headerStyle: {
-                backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE,
+                backgroundColor: darkMode ? colors.BLACK : colors.WHITE,
             },
-            headerTintColor: user.dark_mode ? colors.WHITE : colors.BLACK,
+            headerTintColor: darkMode ? colors.WHITE : colors.BLACK,
         });
     }, [Navigation, user]);
     return (
 
-        <ScrollView style={[styles.profileContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>
-            <View style={{ backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, }}>
+        <ScrollView style={[styles.profileContainer, { backgroundColor: darkMode ? colors.BLACK : colors.WHITE }]}>
+            <View style={{ backgroundColor: darkMode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, }}>
                 <Image source={image ? { uri: image } : User_image} style={{ borderRadius: 80, borderWidth: 2, borderWidth: 2, borderColor: colors.MAIN_COLOR, height: 160, width: 160 }} />
                 <View style={styles.nameContainer}>
-                    <Text style={{ fontSize: 25, fontFamily: Font.Bold, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{user.name}</Text>
-                    <Text style={{ color: user.dark_mode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: Font.Regular }}>{user.email}</Text>
+                    <Text style={{ fontSize: 25, fontFamily: Font.Bold, color: darkMode ? colors.WHITE : colors.BLACK }}>{user.name}</Text>
+                    <Text style={{ color: darkMode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: Font.Regular }}>{user.email}</Text>
                 </View>
                 <Button
                     title="Edit profile"
@@ -126,8 +126,8 @@ const Myprofile = ({ navigation }) => {
                             {item?.icon}
                         </View>
                         <View>
-                            <Text style={{ fontSize: 20, fontFamily: Font.Regular, color: item.name === 'Log out' ? colors.ERROR_TEXT : user.dark_mode ? colors.CHAT_DESC_DARK : colors.CHARCOLE }}>{item?.name}</Text>
-                            {item?.info ? <Text style={{ color: user.dark_mode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: Font.Regular }}>{item?.info}</Text> : null}
+                            <Text style={{ fontSize: 20, fontFamily: Font.Regular, color: item.name === 'Log out' ? colors.ERROR_TEXT : darkMode ? colors.CHAT_DESC_DARK : colors.CHARCOLE }}>{item?.name}</Text>
+                            {item?.info ? <Text style={{ color: darkMode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: Font.Regular }}>{item?.info}</Text> : null}
                         </View>
                     </TouchableOpacity>
                 )
