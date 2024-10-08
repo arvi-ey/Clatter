@@ -18,7 +18,7 @@ import { supabase } from '../lib/supabase'
 
 
 const Editprofile = ({ navigation }) => {
-    const { user, UpdateUser, darkMode, loading, uid, downloadImage, image, uploadImage, imageLoading } = useContext(AuthContext)
+    const { user, UpdateUserData, darkMode, loading, uid, downloadImage, image, uploadImage, imageLoading } = useContext(AuthContext)
     const snapPoints = useMemo(() => ['25%'], []);
     const sheetRef = useRef(null);
     const [focusEmail, setFocuEmail] = useState(false)
@@ -45,8 +45,10 @@ const Editprofile = ({ navigation }) => {
                 email: user.email,
                 phone: user.phone,
             })
-            downloadImage(user.profile_pic)
         }
+    }, [])
+    useEffect(() => {
+        if (user) downloadImage(user.profile_pic)
     }, [user])
 
     const openCamera = async () => {
@@ -148,7 +150,7 @@ const Editprofile = ({ navigation }) => {
             Alert.alert('Please enter your mobile phone');
         }
         else {
-            UpdateUser(uid, data)
+            UpdateUserData(uid, data)
         }
     }
 

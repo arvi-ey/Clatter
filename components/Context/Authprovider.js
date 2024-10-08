@@ -174,6 +174,30 @@ export default AuthProvider = ({ children }) => {
         }
     };
 
+    const UpdateUserData = async (userId, updates) => {
+        setLoading(true)
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .update(updates)
+                .eq('id', userId);
+
+            if (error) {
+                throw error;
+            }
+            setUser({ ...user, ...updates })
+            setLoading(false)
+            return data;
+        } catch (error) {
+            setLoading(false)
+            console.error('Error updating user:', error.message);
+            return null;
+        }
+        finally {
+            setLoading(false)
+        }
+    };
+
     const UploadStory = async (imageUrl, content) => {
         try {
             const arraybuffer = await fetch(imageUrl).then((res) => res.arrayBuffer())
@@ -294,7 +318,6 @@ export default AuthProvider = ({ children }) => {
     };
 
     const downloadImage = async (filename) => {
-        // setImageLoading(true)
         try {
             const { data, error } = await supabase.storage
                 .from('avatars')
@@ -612,7 +635,7 @@ export default AuthProvider = ({ children }) => {
     }
 
 
-    const value = { Viewerinfo, StatusViewed, contactStory, GetStoryInfo, storyContent, userStory, UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, AppLoaded, darkMode }
+    const value = { Viewerinfo, StatusViewed, contactStory, GetStoryInfo, storyContent, userStory, UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, UpdateUserData, AppLoaded, darkMode }
     return (
         <AuthContext.Provider value={value} >
             {children}
