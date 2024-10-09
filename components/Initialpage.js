@@ -86,7 +86,7 @@ export default function Initialpage() {
                     {
                         loggedIn === false && <Stack.Screen name="Entry" component={EntryPage} options={{ headerShown: false }} />
                     }
-
+                    <Stack.Screen name="Entry" component={EntryPage} options={{ headerShown: false }} />
                     <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
                     <Stack.Screen name="Chat" component={Chat} options={{ headerShown: false }} />
                     <Stack.Screen name="Myprofile" component={Myprofile} options={{ headerShown: false }} />

@@ -36,7 +36,7 @@ const Mystory = () => {
 
     useEffect(() => {
         setDark_Mode(darkMode)
-    }, [darkMode])
+    }, [])
 
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -64,6 +64,7 @@ const Mystory = () => {
         await UploadStory(localImage, content)
         setModal(false)
     }
+
 
     const StoryModal = () => {
         return (

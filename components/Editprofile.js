@@ -36,7 +36,7 @@ const Editprofile = ({ navigation }) => {
 
     useEffect(() => {
         setDark_Mode(darkMode)
-    }, [darkMode])
+    }, [])
 
     useEffect(() => {
         if (user) {

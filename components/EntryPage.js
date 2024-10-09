@@ -17,7 +17,7 @@ import { Font } from '../common/font';
 import { useRoute } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
 
-
+// eas build - p android--profile preview
 
 const EntryPage = ({ navigation }) => {
     const { loading, AddUser, user, GetUserOnce, downloadImage, uploadImage, imageLoading, image, darkMode } = useContext(AuthContext)
