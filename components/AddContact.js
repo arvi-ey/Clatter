@@ -13,7 +13,7 @@ import { ContactContext } from './Context/Contactprovider';
 import { useRoute } from '@react-navigation/native';
 import { MessageContext } from './Context/Messageprovider';
 const AddContact = ({ navigation }) => {
-    const { user } = useContext(AuthContext)
+    const { user, darkMode } = useContext(AuthContext)
     const { FetchChat } = useContext(MessageContext)
     const Route = useRoute()
     const { AddNewContact, loading, AddChatContact } = useContext(ContactContext)
@@ -35,12 +35,12 @@ const AddContact = ({ navigation }) => {
             headerTitleStyle: {
                 fontFamily: Font.Medium,
                 fontSize: 25,
-                color: user.dark_mode ? colors.WHITE : colors.BLACK
+                color: darkMode ? colors.WHITE : colors.BLACK
             },
             headerStyle: {
-                backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE,
+                backgroundColor: darkMode ? colors.BLACK : colors.WHITE,
             },
-            headerTintColor: user.dark_mode ? colors.WHITE : colors.BLACK,
+            headerTintColor: darkMode ? colors.WHITE : colors.BLACK,
         });
     }, [navigation]);
 
@@ -73,26 +73,26 @@ const AddContact = ({ navigation }) => {
     }
 
     return (
-        <SafeAreaView style={[styles.AddContactContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>
+        <SafeAreaView style={[styles.AddContactContainer, { backgroundColor: darkMode ? colors.BLACK : colors.WHITE }]}>
             <View style={{ gap: 25, alignItems: 'center', }}>
-                <View style={[(focusName || (data.saved_name && data.saved_name.length > 0)) ? styles.FocusinputContainer : user.dark_mode ? styles.darkModeInput : styles.inputContainer, {}]}>
-                    <Ionicons name="person-outline" size={24} color={(focusName || (data.saved_name && data.saved_name.length > 0)) ? colors.MAIN_COLOR : user.dark_mode ? colors.WHITE : colors.CHAT_DESC} />
+                <View style={[(focusName || (data.saved_name && data.saved_name.length > 0)) ? styles.FocusinputContainer : darkMode ? styles.darkModeInput : styles.inputContainer, {}]}>
+                    <Ionicons name="person-outline" size={24} color={(focusName || (data.saved_name && data.saved_name.length > 0)) ? colors.MAIN_COLOR : darkMode ? colors.WHITE : colors.CHAT_DESC} />
                     <TextInput
                         onFocus={() => setFocusName(!focusName)}
                         onBlur={() => setFocusName(!focusName)}
-                        style={[styles.inputBox, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}
+                        style={[styles.inputBox, { color: darkMode ? colors.WHITE : colors.BLACK }]}
                         value={data?.saved_name}
                         placeholder='Enter Name'
                         placeholderTextColor="gray"
                         onChangeText={handleNameChange}
                     />
                 </View>
-                <View style={(focusNumber || (data?.number && data.number.length > 0)) ? styles.FocusinputContainer : user.dark_mode ? styles.darkModeInput : styles.inputContainer} >
-                    <Ionicons name="phone-portrait-outline" size={24} color={(focusNumber || (data?.number && data.number.length > 0)) ? colors.MAIN_COLOR : user.dark_mode ? colors.WHITE : colors.CHAT_DESC} />
+                <View style={(focusNumber || (data?.number && data.number.length > 0)) ? styles.FocusinputContainer : darkMode ? styles.darkModeInput : styles.inputContainer} >
+                    <Ionicons name="phone-portrait-outline" size={24} color={(focusNumber || (data?.number && data.number.length > 0)) ? colors.MAIN_COLOR : darkMode ? colors.WHITE : colors.CHAT_DESC} />
                     <TextInput
                         onFocus={() => setFocusNumber(!focusNumber)}
                         onBlur={() => setFocusNumber(!focusNumber)}
-                        style={[styles.inputBox, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}
+                        style={[styles.inputBox, { color: darkMode ? colors.WHITE : colors.BLACK }]}
                         value={data?.number}
                         placeholder='Enter Mobile Number'
                         placeholderTextColor="gray"
@@ -101,7 +101,7 @@ const AddContact = ({ navigation }) => {
                     />
                 </View>
                 <Button
-                    buttonStyle={[loading === true ? styles.loadingButtonStyle : styles.buttonStyle, { backgroundColor: (user.dark_mode && loading) ? colors.BLACK : ((user.dark_mode || !user.dark_mode) && !loading) ? colors.MAIN_COLOR : colors.WHITE }]}
+                    buttonStyle={[loading === true ? styles.loadingButtonStyle : styles.buttonStyle, { backgroundColor: (darkMode && loading) ? colors.BLACK : ((darkMode || !darkMode) && !loading) ? colors.MAIN_COLOR : colors.WHITE }]}
                     title="Add Contact"
                     textStyle={styles.textStyle}
                     activeOpacity={0.8}

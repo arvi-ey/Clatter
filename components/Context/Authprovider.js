@@ -35,6 +35,7 @@ export default AuthProvider = ({ children }) => {
     useEffect(() => {
         AppLoaded()
         LoggedIN()
+        GetDarKModeStatus()
     }, [])
 
     useEffect(() => {
@@ -56,7 +57,6 @@ export default AuthProvider = ({ children }) => {
 
     useEffect(() => {
         if (user) {
-            setDarkMode(user?.dark_mode)
             if (user.profile_pic) downloadImage(user.profile_pic)
             FetchSaVedContactData()
         }
@@ -132,7 +132,6 @@ export default AuthProvider = ({ children }) => {
             .channel('public:profiles')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${userId}` }, (payload) => {
                 setUser(payload.new);
-                // SetDarkmodeData(payload.new.dark_mode)
             })
             .subscribe();
         return () => {
@@ -140,20 +139,26 @@ export default AuthProvider = ({ children }) => {
         };
     };
 
-    // const SetDarkmodeData = async (value) => {
-    //     try {
-    //         await AsyncStorage.setItem("darkMode", value.toString());
-    //     } catch (e) {
-    //         console.log('Error storing data:', e);
-    //     }
-    //     try {
-    //         const value = await AsyncStorage.getItem("darkMode");
-    //         if (value === "true") setDarkMode(true)
-    //         if (value === "false") setDarkMode(false)
-    //     } catch (e) {
-    //         console.log('Error reading data:', e);
-    //     }
-    // };
+    const SetDarkmodeData = async (value) => {
+        try {
+            await AsyncStorage.setItem("darkMode", value.toString());
+            GetDarKModeStatus()
+        } catch (e) {
+            console.log('Error storing data:', e);
+        }
+    };
+
+
+    const GetDarKModeStatus = async () => {
+        try {
+            const value = await AsyncStorage.getItem("darkMode");
+            if (value === "true") setDarkMode(true)
+            if (value === "false") setDarkMode(false)
+            console.log(value)
+        } catch (e) {
+            console.log('Error reading data:', e);
+        }
+    }
 
 
     const UpdateUser = async (userId, updates) => {
@@ -635,7 +640,7 @@ export default AuthProvider = ({ children }) => {
     }
 
 
-    const value = { Viewerinfo, StatusViewed, contactStory, GetStoryInfo, storyContent, userStory, UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, UpdateUserData, AppLoaded, darkMode }
+    const value = { SetDarkmodeData, Viewerinfo, StatusViewed, contactStory, GetStoryInfo, storyContent, userStory, UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, UpdateUserData, AppLoaded, darkMode }
     return (
         <AuthContext.Provider value={value} >
             {children}

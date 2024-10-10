@@ -18,7 +18,7 @@ const Chatbox = ({ navigation }) => {
     const { email, id, saved_name, profile_pic, number } = route.params || "";
     const reciverId = id
     // console.log(data)
-    const { uid, user, } = useContext(AuthContext);
+    const { uid, user, darkMode } = useContext(AuthContext);
     const { FetchByPhone } = useContext(ContactContext);
     const { message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping, typing } = useContext(MessageContext);
     const image = "https://i.pinimg.com/280x280_RS/e1/08/21/e10821c74b533d465ba888ea66daa30f.jpg";
@@ -227,7 +227,7 @@ const Chatbox = ({ navigation }) => {
                         <Image source={userImage ? { uri: userImage } : { uri: image }} style={{ height: 45, width: 45, borderRadius: 30, resizeMode: "cover" }} />
                     </TouchableOpacity>
                     <TouchableOpacity style={{ width: "40%" }}>
-                        <Text style={[styles.HeaderTextStyle, { color: user.dark_mode ? colors.WHITE : colors.BLACK }]}>{saved_name ? saved_name : number ? number : null}</Text>
+                        <Text style={[styles.HeaderTextStyle, { color: darkMode ? colors.WHITE : colors.BLACK }]}>{saved_name ? saved_name : number ? number : null}</Text>
                         {userActive || typing || lastSeen ?
                             <Text style={{ color: colors.MAIN_COLOR, fontFamily: Font.Medium }}>{(userActive && !typing && !hideActive) ? "Online" : (userActive && typing && !hideTyping) ? "typing..." : (userActive && typing && hideTyping && !hideActive) ? "Online" : (!userActive && !hideLastseen) ? `last seen ${GetTime(lastSeen)}` : null}</Text>
                             : null
@@ -235,31 +235,31 @@ const Chatbox = ({ navigation }) => {
                     </TouchableOpacity>
                     <View style={{ flexDirection: 'row', width: "30%", gap: 18, justifyContent: "center" }}>
                         <TouchableOpacity>
-                            <Feather name="video" size={28} color={user.dark_mode ? colors.WHITE : colors.BLACK} />
+                            <Feather name="video" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
                         </TouchableOpacity>
                         <TouchableOpacity>
-                            <MaterialIcons name="call" size={28} color={user.dark_mode ? colors.WHITE : colors.BLACK} />
+                            <MaterialIcons name="call" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
                         </TouchableOpacity>
                         <TouchableOpacity>
-                            <MaterialCommunityIcons name="dots-vertical" size={28} color={user.dark_mode ? colors.WHITE : colors.BLACK} />
+                            <MaterialCommunityIcons name="dots-vertical" size={28} color={darkMode ? colors.WHITE : colors.BLACK} />
                         </TouchableOpacity>
                     </View>
                 </View>
             ),
             headerLeft: () => (
                 <TouchableOpacity style={{ marginLeft: -2, width: "5%" }} onPress={HandleGoBack}>
-                    <Ionicons name="arrow-back-sharp" size={24} color={user.dark_mode ? colors.WHITE : colors.BLACK} />
+                    <Ionicons name="arrow-back-sharp" size={24} color={darkMode ? colors.WHITE : colors.BLACK} />
                 </TouchableOpacity>
             ),
             headerTitleStyle: {
                 fontFamily: Font.Bold,
                 fontSize: 20,
-                color: user.dark_mode ? colors.WHITE : colors.BLACK
+                color: darkMode ? colors.WHITE : colors.BLACK
             },
             headerStyle: {
-                backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE,
+                backgroundColor: darkMode ? colors.BLACK : colors.WHITE,
             },
-            headerTintColor: user.dark_mode ? colors.BLACK : colors.WHITE
+            headerTintColor: darkMode ? colors.BLACK : colors.WHITE
         });
     }, [navigation, image, user, colors, Font, typing, userActive, lastSeen, hideActive, hideLastseen, hideTyping]);
 
@@ -285,7 +285,7 @@ const Chatbox = ({ navigation }) => {
 
     return (
         <ImageBackground
-            source={user.dark_mode ? BG_dark : BG}
+            source={darkMode ? BG_dark : BG}
             style={{ flex: 1 }}
         >
             <View style={[styles.ChatBackGround,]}>
@@ -295,10 +295,10 @@ const Chatbox = ({ navigation }) => {
                     style={{}}>
                     {!saved_name &&
                         <View style={{ width: width, justifyContent: 'center', alignItems: 'center' }} >
-                            <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: 20, gap: 10, backgroundColor: user.dark_mode ? colors.ADD_CONTACT_BG_DARK : colors.ADD_CONTACT_BG, width: "70%", paddingVertical: 20, borderRadius: 12 }}>
+                            <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: 20, gap: 10, backgroundColor: darkMode ? colors.ADD_CONTACT_BG_DARK : colors.ADD_CONTACT_BG, width: "70%", paddingVertical: 20, borderRadius: 12 }}>
                                 <Image source={userImage ? { uri: userImage } : image} style={{ height: 60, width: 60, borderRadius: 30, resizeMode: "cover" }} />
-                                {/* <Text style={{ fontFamily: Font.Bold, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{full_name}</Text> */}
-                                <Text style={{ fontFamily: Font.Light, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{email}</Text>
+                                {/* <Text style={{ fontFamily: Font.Bold, color: darkMode ? colors.WHITE : colors.BLACK }}>{full_name}</Text> */}
+                                <Text style={{ fontFamily: Font.Light, color: darkMode ? colors.WHITE : colors.BLACK }}>{email}</Text>
                                 <View style={{ flexDirection: 'row', gap: 20 }}>
                                     <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 3, }} onPress={() => navigation.navigate('AddContact', { number: number, uid: reciverId })}>
                                         <AntDesign name="adduser" size={22} color={colors.MAIN_COLOR} />
@@ -326,18 +326,18 @@ const Chatbox = ({ navigation }) => {
                                         marginBottom: 5,
                                         alignSelf: data.sender === uid ? "flex-end" : "flex-start",
                                         marginHorizontal: 15,
-                                        backgroundColor: (user.dark_mode && data.sender !== uid) ?
-                                            colors.MASSAGE_BOX_DARK : (!user.dark_mode && data.sender !== uid) ?
+                                        backgroundColor: (darkMode && data.sender !== uid) ?
+                                            colors.MASSAGE_BOX_DARK : (!darkMode && data.sender !== uid) ?
                                                 colors.WHITE : colors.MAIN_COLOR,
                                         width: data.content.length < 32 ? "auto" : 300, borderTopRightRadius: data.sender !== uid ? 20 : 0,
                                         borderTopLeftRadius: data.sender !== uid ? 20 : 20, borderBottomRightRadius: data.sender !== uid ? 20 : 20, borderBottomLeftRadius: data.sender !== uid ? 0 : 20
                                     }]}>
                                     <Text style={[styles.MessageContent, {
-                                        color: (!user.dark_mode && data.sender !== uid) ? colors.BLACK : colors.WHITE,
+                                        color: (!darkMode && data.sender !== uid) ? colors.BLACK : colors.WHITE,
                                     }]}>{data.content.trim()}
                                     </Text>
                                     <Text style={[styles.TimeText, {
-                                        color: (!user.dark_mode && data.sender !== uid) ?
+                                        color: (!darkMode && data.sender !== uid) ?
                                             colors.CHARCOLE_DARK : colors.TIME_TEXT
                                     }]}>{GetTime(data.time)}</Text>
                                 </View>
@@ -346,9 +346,9 @@ const Chatbox = ({ navigation }) => {
                     })}
                 </ScrollView>
                 <View style={styles.MassageBox}>
-                    <View style={[styles.MassageField, { backgroundColor: user.dark_mode ? colors.MASSAGE_BOX_DARK : colors.MASSAGE_BOX, }]}>
+                    <View style={[styles.MassageField, { backgroundColor: darkMode ? colors.MASSAGE_BOX_DARK : colors.MASSAGE_BOX, }]}>
                         <TouchableOpacity style={styles.emogiIcon}>
-                            <FontAwesome6 name="smile-beam" size={24} color={user.dark_mode ? colors.WHITE : colors.CHARCOLE} />
+                            <FontAwesome6 name="smile-beam" size={24} color={darkMode ? colors.WHITE : colors.CHARCOLE} />
                         </TouchableOpacity>
                         <TextInput
                             autoCapitalize={false}
@@ -357,12 +357,12 @@ const Chatbox = ({ navigation }) => {
                             placeholder="Message"
                             value={messageText}
                             multiline={true}
-                            style={{ width: "75%", fontFamily: Font.Medium, color: user?.dark_mode ? colors.WHITE : colors.BLACK }}
+                            style={{ width: "75%", fontFamily: Font.Medium, color: darkMode ? colors.WHITE : colors.BLACK }}
                             onChangeText={TypeMassage}
-                            placeholderTextColor={user.dark_mode ? colors.WHITE : colors.CHARCOLE}
+                            placeholderTextColor={darkMode ? colors.WHITE : colors.CHARCOLE}
                         />
                         <TouchableOpacity style={styles.AttachMentIcon}>
-                            <MaterialIcons name="attach-file" size={24} color={user.dark_mode ? colors.WHITE : colors.CHARCOLE} />
+                            <MaterialIcons name="attach-file" size={24} color={darkMode ? colors.WHITE : colors.CHARCOLE} />
                         </TouchableOpacity>
                     </View>
                     <TouchableOpacity style={styles.SendBox} onPress={Send} >

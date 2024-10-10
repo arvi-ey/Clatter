@@ -77,12 +77,12 @@ const Settings = ({ navigation }) => {
       headerTitleStyle: {
         fontFamily: Font.Medium,
         fontSize: 20,
-        color: user.dark_mode ? colors.WHITE : colors.BLACK,
+        color: darkMode ? colors.WHITE : colors.BLACK,
       },
       headerStyle: {
-        backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE,
+        backgroundColor: darkMode ? colors.BLACK : colors.WHITE,
       },
-      headerTintColor: user.dark_mode ? colors.WHITE : colors.BLACK,
+      headerTintColor: darkMode ? colors.WHITE : colors.BLACK,
     });
   }, [navigation, darkMode]);
 
@@ -90,17 +90,17 @@ const Settings = ({ navigation }) => {
     <ScrollView
       style={{
         flex: 1,
-        backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE,
+        backgroundColor: darkMode ? colors.BLACK : colors.WHITE,
       }}
     >
       {Info?.map((item, index) => {
         return (
           <View style={styles.MainView} key={index}>
             <View style={{ width: "80%" }}>
-              <Text style={{ fontFamily: Font.Medium, color: user.dark_mode ? colors.WHITE : colors.BLACK, fontSize: 15, }}>
+              <Text style={{ fontFamily: Font.Medium, color: darkMode ? colors.WHITE : colors.BLACK, fontSize: 15, }}>
                 {item.name}
               </Text>
-              <Text style={{ fontFamily: Font.Light, color: user.dark_mode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontSize: 12, }}>
+              <Text style={{ fontFamily: Font.Light, color: darkMode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontSize: 12, }}>
                 {item.Desc}
               </Text>
             </View>

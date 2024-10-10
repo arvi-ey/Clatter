@@ -18,7 +18,7 @@ import Switch from "../common/Switch";
 
 
 const Profile = () => {
-    const { GetUserOnce, user, uid, UpdateUser, darkMode, image } = useContext(AuthContext)
+    const { SetDarkmodeData, GetUserOnce, user, uid, UpdateUser, darkMode, image } = useContext(AuthContext)
     const Tab = createBottomTabNavigator();
 
 
@@ -46,8 +46,7 @@ const Profile = () => {
     }, [uid])
 
     const SetDarkmode = async () => {
-        // setdarkModeon(!darkModeon)
-        await UpdateUser(uid, { dark_mode: !darkMode })
+        SetDarkmodeData(!darkMode)
     }
     const DarkModeIcon = () => {
         return (

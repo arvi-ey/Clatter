@@ -28,7 +28,7 @@ const { height, width } = Dimensions.get("window");
 
 export default function Initialpage() {
     const Stack = createNativeStackNavigator();
-    const { firstLoad, session, GetUserOnce, user, uid, loggedIn, } = useContext(AuthContext)
+    const { firstLoad, session, darkMode, GetUserOnce, user, uid, loggedIn, } = useContext(AuthContext)
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const [newUser, setNewUser] = useState(false)
     // const logo = require("../assets/clatter_logo.png")
@@ -66,7 +66,7 @@ export default function Initialpage() {
         <GestureHandlerRootView style={{ flex: 1 }}>
             <NavigationContainer>
                 <StatusBar
-                    backgroundColor={user && user.dark_mode ? colors.BLACK : colors.WHITE}
+                    backgroundColor={darkMode ? colors.BLACK : colors.WHITE}
                     barStyle={'default'}
                     hidden={false}
                 />

@@ -20,8 +20,6 @@ const Mystory = () => {
     const [storyView, setStoryView] = useState(false)
     const snapPoints = useMemo(() => ['25%'], []);
     const sheetRef = useRef(null);
-    const [dark_mode, setDark_Mode] = useState()
-
 
     const OpenButtomSheet = () => sheetRef?.current?.expand()
     const closeBottomSheet = () => sheetRef.current?.close();
@@ -32,10 +30,6 @@ const Mystory = () => {
 
     useEffect(() => {
         GetStoryInfo()
-    }, [])
-
-    useEffect(() => {
-        setDark_Mode(darkMode)
     }, [])
 
     const pickImage = async () => {
@@ -82,13 +76,13 @@ const Mystory = () => {
                         <Image source={{ uri: localImage }} style={{ height: 500, width: 500 }} />
                     </View>
                     <View style={{ width, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, }} >
-                        <View style={[styles.InputBox, { backgroundColor: dark_mode ? colors.SEARCH_BG_DARK : colors.SEARCH_BG }]}>
-                            <Entypo name="emoji-happy" size={28} color={dark_mode ? colors.CHARCOLE_DARK : colors.SEARCH_TEXT} style={{ marginLeft: 10 }} />
+                        <View style={[styles.InputBox, { backgroundColor: darkMode ? colors.SEARCH_BG_DARK : colors.SEARCH_BG }]}>
+                            <Entypo name="emoji-happy" size={28} color={darkMode ? colors.CHARCOLE_DARK : colors.SEARCH_TEXT} style={{ marginLeft: 10 }} />
                             <TextInput
                                 placeholder="Write a caption ..."
-                                placeholderTextColor={dark_mode ? colors.CHARCOLE_DARK : colors.SEARCH_TEXT}
+                                placeholderTextColor={darkMode ? colors.CHARCOLE_DARK : colors.SEARCH_TEXT}
                                 onChangeText={HandleTextContent}
-                                style={[styles.InputStyle, { fontFamily: Font.Medium, fontSize: 15, color: dark_mode ? colors.CHARCOLE_DARK : colors.SEARCH_TEXT }]} />
+                                style={[styles.InputStyle, { fontFamily: Font.Medium, fontSize: 15, color: darkMode ? colors.CHARCOLE_DARK : colors.SEARCH_TEXT }]} />
                         </View>
                         <TouchableOpacity
                             onPress={SendStatus}
@@ -136,7 +130,7 @@ const Mystory = () => {
                             }
                             <TouchableOpacity activeOpacity={0.5} onPress={OpenButtomSheet} style={{ flexDirection: "row", height: "auto", marginTop: 40, alignItems: 'center', gap: 5 }} >
                                 <Feather name="eye" size={30} color={colors.WHITE} />
-                                <Text style={{ color: dark_mode ? colors.WHITE : colors.BLACK, fontSize: 18, fontFamily: Font.Bold }}>{Viewerinfo ? Viewerinfo.length : 0}</Text>
+                                <Text style={{ color: darkMode ? colors.WHITE : colors.BLACK, fontSize: 18, fontFamily: Font.Bold }}>{Viewerinfo ? Viewerinfo.length : 0}</Text>
 
                             </TouchableOpacity>
                         </View>
@@ -151,14 +145,14 @@ const Mystory = () => {
                             handleStyle={{ backgroundColor: colors.MAIN_COLOR, height: 40, width: "97%", alignSelf: "center" }}
                             handleIndicatorStyle={{ backgroundColor: colors.WHITE }}
                         >
-                            <View style={{ flex: 1, backgroundColor: dark_mode ? colors.BLACK : colors.WHITE }} >
+                            <View style={{ flex: 1, backgroundColor: darkMode ? colors.BLACK : colors.WHITE }} >
                                 {Viewerinfo && Viewerinfo?.map((data, index) => {
                                     return (
                                         <View style={{ width, height: 60, flexDirection: 'row', marginLeft: 10, gap: 25, marginTop: 20, alignItems: 'center' }} key={index} >
                                             <Image source={{ uri: data.profile_pic }} style={{ height: 55, width: 55, borderRadius: 30 }} />
                                             <View>
-                                                <Text style={{ fontFamily: Font.Medium, color: dark_mode ? colors.WHITE : colors.BLACK, fontSize: 20 }} >{data.saved_name}</Text>
-                                                <Text style={{ fontFamily: Font.Light, color: dark_mode ? colors.WHITE : colors.BLACK, fontSize: 15 }} >{GetTime(data.time)}</Text>
+                                                <Text style={{ fontFamily: Font.Medium, color: darkMode ? colors.WHITE : colors.BLACK, fontSize: 20 }} >{data.saved_name}</Text>
+                                                <Text style={{ fontFamily: Font.Light, color: darkMode ? colors.WHITE : colors.BLACK, fontSize: 15 }} >{GetTime(data.time)}</Text>
                                             </View>
 
                                         </View>
@@ -176,7 +170,7 @@ const Mystory = () => {
 
     return (
         <>
-            <View style={{ width: width - 30, marginLeft: 15, marginTop: 5, flexDirection: 'row', gap: 15, borderBottomWidth: 0.5, borderColor: dark_mode ? colors.CHARCOLE_DARK : colors.GREY, paddingBottom: 10 }}>
+            <View style={{ width: width - 30, marginLeft: 15, marginTop: 5, flexDirection: 'row', gap: 15, borderBottomWidth: 0.5, borderColor: darkMode ? colors.CHARCOLE_DARK : colors.GREY, paddingBottom: 10 }}>
                 <View style={{ gap: 5, justifyContent: 'center', width: 80, alignItems: 'center', }}>
                     <View style={{ height: 70, width: 70, justifyContent: 'center', alignItems: 'center', position: 'relative', }} >
                         <Image source={{ uri: image }} style={{ borderRadius: 35, borderWidth: 1, borderColor: colors.BLACK, height: 70, width: 70 }} />
@@ -184,18 +178,18 @@ const Mystory = () => {
                             <SimpleLineIcons name="camera" size={15} color={colors.WHITE} />
                         </TouchableOpacity>
                     </View>
-                    <Text style={{ fontFamily: Font.Regular, fontSize: 12, color: dark_mode ? colors.WHITE : colors.CHARCOLE }} >Add Story</Text>
+                    <Text style={{ fontFamily: Font.Regular, fontSize: 12, color: darkMode ? colors.WHITE : colors.CHARCOLE }} >Add Story</Text>
                 </View>
                 {
                     userStory ?
                         <TouchableOpacity style={{ gap: 5, justifyContent: 'center', width: 80, alignItems: 'center', }} onPress={() => setStoryView(true)} >
                             <Image source={{ uri: userStory }} style={{ borderRadius: 35, borderWidth: 1, borderColor: colors.MAIN_COLOR, height: 70, width: 70 }} />
-                            <Text style={{ fontFamily: Font.Regular, fontSize: 12, color: dark_mode ? colors.WHITE : colors.CHARCOLE }} >My Story</Text>
+                            <Text style={{ fontFamily: Font.Regular, fontSize: 12, color: darkMode ? colors.WHITE : colors.CHARCOLE }} >My Story</Text>
                         </TouchableOpacity> : null
                 }
             </View>
             <View style={{ marginLeft: 20, marginTop: 15 }}>
-                <Text style={{ fontFamily: Font.Regular, fontSize: 12, color: dark_mode ? colors.WHITE : colors.CHARCOLE }} >Recent Updates</Text>
+                <Text style={{ fontFamily: Font.Regular, fontSize: 12, color: darkMode ? colors.WHITE : colors.CHARCOLE }} >Recent Updates</Text>
             </View>
             {StoryModal()}
             {StoryViewMOdal()}

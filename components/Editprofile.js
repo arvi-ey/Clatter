@@ -25,7 +25,6 @@ const Editprofile = ({ navigation }) => {
     const [focusNumber, setFocusNumber] = useState(false)
     const [focusName, setFocusName] = useState(false)
     const [localImage, setLocalImage] = useState()
-    const [dark_mode, setDark_Mode] = useState()
     const [data, setData] = useState({
         full_name: "",
         email: "",
@@ -34,9 +33,6 @@ const Editprofile = ({ navigation }) => {
     })
     const User_image = require("../assets/user1.jpg")
 
-    useEffect(() => {
-        setDark_Mode(darkMode)
-    }, [])
 
     useEffect(() => {
         if (user) {
@@ -127,14 +123,14 @@ const Editprofile = ({ navigation }) => {
             headerTitleStyle: {
                 fontFamily: Font.Medium,
                 fontSize: 20,
-                color: dark_mode ? colors.WHITE : colors.BLACK
+                color: darkMode ? colors.WHITE : colors.BLACK
             },
             headerStyle: {
-                backgroundColor: dark_mode ? colors.BLACK : colors.WHITE,
+                backgroundColor: darkMode ? colors.BLACK : colors.WHITE,
             },
-            headerTintColor: dark_mode ? colors.WHITE : colors.BLACK,
+            headerTintColor: darkMode ? colors.WHITE : colors.BLACK,
         });
-    }, [navigation, dark_mode]);
+    }, [navigation, darkMode]);
 
 
     const HandleUpdate = () => {
@@ -156,16 +152,16 @@ const Editprofile = ({ navigation }) => {
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaView style={[styles.profileContainer, { backgroundColor: dark_mode ? colors.BLACK : colors.WHITE }]}>
-                <View style={{ alignItems: 'center', gap: 25, backgroundColor: dark_mode ? colors.BLACK : colors.WHITE }}>
-                    <View style={{ backgroundColor: dark_mode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, }}>
+            <SafeAreaView style={[styles.profileContainer, { backgroundColor: darkMode ? colors.BLACK : colors.WHITE }]}>
+                <View style={{ alignItems: 'center', gap: 25, backgroundColor: darkMode ? colors.BLACK : colors.WHITE }}>
+                    <View style={{ backgroundColor: darkMode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, }}>
                         <View style={{ position: "relative", justifyContent: 'center', alignItems: "center" }}>
 
                             {imageLoading ?
                                 <ActivityIndicator size="large" style={{ position: 'absolute', zIndex: 10 }} color={colors.WHITE} />
                                 : null
                             }
-                            {/* <Image source={data.profile_image ? { uri: data.profile_image } : User_image} style={{ borderRadius: 90, height: 180, width: 180, borderWidth: 2, borderColor: colors.MAIN_COLOR }} /> */}
+                            {/* <Image source={data.profile_image ? { uri: data.profile_image } : User_image} style={{ borderRadius: 90, height: 180, width: 180, borderBottomWidth: 2, borderColor: colors.MAIN_COLOR }} /> */}
                             <Image source={image ? { uri: image } : User_image} style={{ borderRadius: 90, height: 180, width: 180, borderWidth: 2, borderColor: colors.MAIN_COLOR }} />
                             <TouchableOpacity style={styles.editIcon} onPress={OpenButtomSheet}>
                                 <SimpleLineIcons name="camera" size={20} color={colors.WHITE} />
@@ -178,7 +174,7 @@ const Editprofile = ({ navigation }) => {
                             <TextInput
                                 onFocus={() => setFocusName(!focusName)}
                                 onBlur={() => setFocusName(!focusName)}
-                                style={[styles.inputBox, { color: dark_mode ? colors.WHITE : colors.BLACK }]}
+                                style={[styles.inputBox, { color: darkMode ? colors.WHITE : colors.BLACK }]}
                                 value={data?.full_name}
                                 placeholder='Enter Name'
                                 placeholderTextColor="gray"
@@ -190,7 +186,7 @@ const Editprofile = ({ navigation }) => {
                             <TextInput
                                 onFocus={() => setFocuEmail(!focusEmail)}
                                 onBlur={() => setFocuEmail(!focusEmail)}
-                                style={[styles.inputBox, { color: dark_mode ? colors.WHITE : colors.BLACK }]}
+                                style={[styles.inputBox, { color: darkMode ? colors.WHITE : colors.BLACK }]}
                                 value={data?.email}
                                 placeholder='Enter Email'
                                 placeholderTextColor="gray"
@@ -203,7 +199,7 @@ const Editprofile = ({ navigation }) => {
                                 editable={false}
                                 onFocus={() => setFocusNumber(!focusNumber)}
                                 onBlur={() => setFocusNumber(!focusNumber)}
-                                style={[styles.inputBox, { color: dark_mode ? colors.WHITE : colors.BLACK }]}
+                                style={[styles.inputBox, { color: darkMode ? colors.WHITE : colors.BLACK }]}
                                 value={data?.phone}
                                 placeholder='Enter Mobile Number'
                                 placeholderTextColor="gray"
@@ -212,7 +208,7 @@ const Editprofile = ({ navigation }) => {
                             />
                         </View>
                         <Button
-                            buttonStyle={[loading === true ? styles.loadingButtonStyle : styles.buttonStyle, { backgroundColor: (dark_mode && loading) ? colors.BLACK : ((dark_mode || !dark_mode) && !loading) ? colors.MAIN_COLOR : colors.WHITE }]}
+                            buttonStyle={[loading === true ? styles.loadingButtonStyle : styles.buttonStyle, { backgroundColor: (darkMode && loading) ? colors.BLACK : ((darkMode || !darkMode) && !loading) ? colors.MAIN_COLOR : colors.WHITE }]}
                             title="Edit Profile"
                             textStyle={styles.textStyle}
                             activeOpacity={0.8}
@@ -327,10 +323,10 @@ const styles = StyleSheet.create({
         padding: 10
     },
     inputContainer: {
-        borderWidth: 2,
+        borderBottomWidth: 2,
         borderColor: colors.BLACK,
         width: width - 60,
-        borderRadius: 10,
+        borderRadius: 0,
         paddingHorizontal: 15,
         flexDirection: "row",
         justifyContent: "center",
@@ -338,10 +334,10 @@ const styles = StyleSheet.create({
         position: "relative"
     },
     FocusinputContainer: {
-        borderWidth: 2.5,
+        borderBottomWidth: 2.5,
         borderColor: colors.MAIN_COLOR,
         width: width - 60,
-        borderRadius: 10,
+        borderRadius: 0,
         paddingHorizontal: 15,
         flexDirection: "row",
         justifyContent: "center",
@@ -373,7 +369,7 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         justifyContent: "center",
         alignItems: "center",
-        borderWidth: 2,
+        borderBottomWidth: 2,
         borderColor: colors.MAIN_COLOR
 
     }

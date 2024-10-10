@@ -11,7 +11,7 @@ import { supabase } from '../lib/supabase'
 
 
 const ContactList = ({ navigation }) => {
-    const { user, savedContact } = useContext(AuthContext)
+    const { user, savedContact, darkMode } = useContext(AuthContext)
     const [data, setData] = useState()
     const { GetuserMessaged, messagedContact, SubscribeToContactChange } = useContext(ContactContext)
 
@@ -29,12 +29,12 @@ const ContactList = ({ navigation }) => {
             headerTitleStyle: {
                 fontFamily: Font.Bold,
                 fontSize: 20,
-                color: user.dark_mode ? colors.WHITE : colors.BLACK,
+                color: darkMode ? colors.WHITE : colors.BLACK,
             },
             headerStyle: {
-                backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE,
+                backgroundColor: darkMode ? colors.BLACK : colors.WHITE,
             },
-            headerTintColor: user.dark_mode ? colors.WHITE : colors.BLACK,
+            headerTintColor: darkMode ? colors.WHITE : colors.BLACK,
         });
     }, [navigation]);
 
@@ -43,9 +43,9 @@ const ContactList = ({ navigation }) => {
         return (
             <TouchableOpacity style={styles.addContact} onPress={() => navigation.navigate("AddContact")} activeOpacity={0.8}>
                 <View style={{ backgroundColor: colors.MAIN_COLOR, padding: 10, borderRadius: 50 }}>
-                    <Ionicons name="person-add" size={24} color={user.dark_mode ? colors.BLACK : colors.WHITE} />
+                    <Ionicons name="person-add" size={24} color={darkMode ? colors.BLACK : colors.WHITE} />
                 </View>
-                <Text style={{ fontFamily: Font.Medium, fontSize: 15, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>
+                <Text style={{ fontFamily: Font.Medium, fontSize: 15, color: darkMode ? colors.WHITE : colors.BLACK }}>
                     Add New Contact
                 </Text>
             </TouchableOpacity>
@@ -96,14 +96,14 @@ const ContactList = ({ navigation }) => {
                     <Image source={userImage ? { uri: userImage } : { uri: image }} style={{ height: 50, width: 50, borderRadius: 30, resizeMode: "cover" }} />
                 </View>
                 <View>
-                    <Text style={{ fontFamily: Font.Medium, fontSize: 15, color: user.dark_mode ? colors.WHITE : colors.BLACK }}>{data?.saved_name ? data.saved_name : data.profiles.phone}</Text>
+                    <Text style={{ fontFamily: Font.Medium, fontSize: 15, color: darkMode ? colors.WHITE : colors.BLACK }}>{data?.saved_name ? data.saved_name : data.profiles.phone}</Text>
                 </View>
             </TouchableOpacity>
         )
     }
 
     return (
-        <SafeAreaView style={[styles.contactListContainer, { backgroundColor: user.dark_mode ? colors.BLACK : colors.WHITE }]}>
+        <SafeAreaView style={[styles.contactListContainer, { backgroundColor: darkMode ? colors.BLACK : colors.WHITE }]}>
 
             <FlatList
                 data={data}
