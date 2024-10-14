@@ -20,24 +20,19 @@ import { colors } from "./Theme";
 const { height, width } = Dimensions.get("window");
 import Switch from "../common/Switch";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Settings = ({ navigation }) => {
   const { user, UpdateUser, uid, darkMode } = useContext(AuthContext);
-  const [hideTyping, setHideTyping] = useState();
-  const [hideActive, setHideActive] = useState();
-  const [hideLastseen, setHideLastseen] = useState();
+  const [hideTyping, setHideTyping] = useState(false);
+  const [hideActive, setHideActive] = useState(false);
+  const [hideLastseen, setHideLastseen] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      setHideActive(user.hideActive);
-      setHideTyping(user.hideTyping);
-      setHideLastseen(user.hideLastseen);
-    }
-    console.log("user.hideActive", user.hideActive)
-    console.log("user.hideTyping", user.hideTyping)
-    console.log("user.hideLastseen", user.hideLastseen)
-  }, [user]);
-
+    GetUserPreference("Active")
+    GetUserPreference("Typing")
+    GetUserPreference("Lastseen")
+  }, [])
 
   const Info = [
     {
@@ -60,17 +55,67 @@ const Settings = ({ navigation }) => {
   const OnSwitch = (value) => {
     if (value === "Active") {
       setHideActive(!hideActive);
+      SetUserPreference(value, !hideActive);
       UpdateUser(uid, { hideActive: !hideActive });
     }
     if (value === "Typing") {
       setHideTyping(!hideTyping);
+      SetUserPreference(value, !hideTyping);
       UpdateUser(uid, { hideTyping: !hideTyping });
     }
     if (value === "Lastseen") {
       setHideLastseen(!hideLastseen);
+      SetUserPreference(value, !hideLastseen);
       UpdateUser(uid, { hideLastseen: !hideLastseen });
     }
   };
+
+  const SetUserPreference = async (key, value) => {
+    try {
+      await AsyncStorage.setItem(key, value.toString());
+      GetUserPreference(key)
+    } catch (e) {
+      console.log('Error storing data:', e);
+    }
+  };
+
+
+  const GetUserPreference = async (key) => {
+    try {
+      const value = await AsyncStorage.getItem(key);
+      if (!value) {
+        switch (key) {
+          case "Active":
+            setHideActive(false)
+            UpdateUser(uid, { hideActive: false });
+          case "Typing":
+            setHideTyping(false)
+            UpdateUser(uid, { hideTyping: false });
+          case "Lastseen":
+            setHideLastseen(false)
+            UpdateUser(uid, { hideLastseen: false });
+        }
+      }
+      if (value) {
+        switch (key) {
+          case "Active":
+            if (value === "true") setHideActive(true)
+            if (value === "false") setHideActive(false)
+            return
+          case "Typing":
+            if (value === "true") setHideTyping(true)
+            if (value === "false") setHideTyping(false)
+            return
+          case "Lastseen":
+            if (value === "true") setHideLastseen(true)
+            if (value === "false") setHideLastseen(false)
+            return
+        }
+      }
+    } catch (e) {
+      console.log('Error reading data:', e);
+    }
+  }
 
   React.useLayoutEffect(() => {
     navigation.setOptions({

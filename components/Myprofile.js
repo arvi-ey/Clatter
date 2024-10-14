@@ -16,23 +16,7 @@ const Myprofile = ({ navigation }) => {
     const size = 24;
     const color = darkMode ? colors.CHAT_DESC_DARK : colors.CHAT_DESC;
     // const [image, setImage] = useState(null);
-    const [data, setData] = useState({
-        name: "",
-        email: "",
-        number: "",
-        profile_image: ""
-    })
     const User_image = require("../assets/user1.jpg")
-    useEffect(() => {
-        if (user) {
-            setData({
-                name: user.name,
-                email: user.email,
-                number: user.number,
-                profile_image: user.image?.data ? `data:${user.image.contentType};base64,${user.image.data}` : null,
-            })
-        }
-    }, [user])
     const profileListData = [
 
         {
@@ -108,8 +92,7 @@ const Myprofile = ({ navigation }) => {
             <View style={{ backgroundColor: darkMode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, }}>
                 <Image source={image ? { uri: image } : User_image} style={{ borderRadius: 80, borderWidth: 2, borderWidth: 2, borderColor: colors.MAIN_COLOR, height: 160, width: 160 }} />
                 <View style={styles.nameContainer}>
-                    <Text style={{ fontSize: 25, fontFamily: Font.Bold, color: darkMode ? colors.WHITE : colors.BLACK }}>{user.name}</Text>
-                    <Text style={{ color: darkMode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, fontFamily: Font.Regular }}>{user.email}</Text>
+                    <Text style={{ fontFamily: Font.Regular, color: darkMode ? colors.CHARCOLE_DARK : colors.CHAT_DESC, }}>@{user.user_name}</Text>
                 </View>
                 <Button
                     title="Edit profile"

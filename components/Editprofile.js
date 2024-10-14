@@ -18,13 +18,14 @@ import { supabase } from '../lib/supabase'
 
 
 const Editprofile = ({ navigation }) => {
-    const { user, UpdateUserData, darkMode, loading, uid, downloadImage, image, uploadImage, imageLoading } = useContext(AuthContext)
+    const { user, UpdateUserData, darkMode, uid, downloadImage, image, uploadImage, imageLoading } = useContext(AuthContext)
     const snapPoints = useMemo(() => ['25%'], []);
     const sheetRef = useRef(null);
     const [focusEmail, setFocuEmail] = useState(false)
     const [focusNumber, setFocusNumber] = useState(false)
     const [focusName, setFocusName] = useState(false)
     const [localImage, setLocalImage] = useState()
+    const [loading, setLoading] = useState(false)
     const [data, setData] = useState({
         full_name: "",
         email: "",
@@ -44,7 +45,7 @@ const Editprofile = ({ navigation }) => {
         }
     }, [])
     useEffect(() => {
-        if (user) downloadImage(user.profile_pic)
+        if (user && user.profile_pic) downloadImage(user.profile_pic)
     }, [user])
 
     const openCamera = async () => {
@@ -133,7 +134,7 @@ const Editprofile = ({ navigation }) => {
     }, [navigation, darkMode]);
 
 
-    const HandleUpdate = () => {
+    const HandleUpdate = async () => {
         const { full_name, email, phone } = data;
         const emailRegex = /^([a-z0-9._%+-]+)@([a-z0-9.-]+\.[a-z]{2,})$/;
         if (!full_name.trim()) {
@@ -146,7 +147,9 @@ const Editprofile = ({ navigation }) => {
             Alert.alert('Please enter your mobile phone');
         }
         else {
-            UpdateUserData(uid, data)
+            setLoading(true)
+            await UpdateUserData(uid, data)
+            setLoading(false)
         }
     }
 
@@ -169,8 +172,8 @@ const Editprofile = ({ navigation }) => {
                         </View>
                     </View>
                     <View style={{ gap: 25 }}>
-                        <View style={[(focusName || data?.full_name.length > 0) ? styles.FocusinputContainer : styles.inputContainer, {}]}>
-                            <Ionicons name="person-outline" size={24} color={(focusName || data.full_name.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
+                        <View style={[(focusName || data?.full_name?.length > 0) ? styles.FocusinputContainer : styles.inputContainer, {}]}>
+                            <Ionicons name="person-outline" size={24} color={(focusName || data.full_name?.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
                             <TextInput
                                 onFocus={() => setFocusName(!focusName)}
                                 onBlur={() => setFocusName(!focusName)}
@@ -181,8 +184,8 @@ const Editprofile = ({ navigation }) => {
                                 onChangeText={handleNameChange}
                             />
                         </View>
-                        <View style={(focusEmail || data?.email.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
-                            <MaterialCommunityIcons name="email-outline" size={24} color={(focusEmail || data.email.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
+                        <View style={(focusEmail || data?.email?.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
+                            <MaterialCommunityIcons name="email-outline" size={24} color={(focusEmail || data.email?.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
                             <TextInput
                                 onFocus={() => setFocuEmail(!focusEmail)}
                                 onBlur={() => setFocuEmail(!focusEmail)}
@@ -193,10 +196,10 @@ const Editprofile = ({ navigation }) => {
                                 onChangeText={handleEmailChange}
                             />
                         </View>
-                        <View style={(focusNumber || data?.phone.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
-                            <Ionicons name="phone-portrait-outline" size={24} color={(focusNumber || data.phone.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
+                        <View style={(focusNumber || data?.phone?.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
+                            <Ionicons name="phone-portrait-outline" size={24} color={(focusNumber || data?.phone?.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
                             <TextInput
-                                editable={false}
+                                // editable={false}
                                 onFocus={() => setFocusNumber(!focusNumber)}
                                 onBlur={() => setFocusNumber(!focusNumber)}
                                 style={[styles.inputBox, { color: darkMode ? colors.WHITE : colors.BLACK }]}
@@ -369,7 +372,7 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         justifyContent: "center",
         alignItems: "center",
-        borderBottomWidth: 2,
+        borderWidth: 2,
         borderColor: colors.MAIN_COLOR
 
     }

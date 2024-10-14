@@ -16,22 +16,20 @@ import { AuthContext } from './Context/Authprovider';
 import { Font } from '../common/font';
 import { useRoute } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// eas build - p android--profile preview
+// "eas build -p android --profile preview"
 
 const EntryPage = ({ navigation }) => {
-    const { loading, AddUser, user, GetUserOnce, downloadImage, uploadImage, imageLoading, image, darkMode } = useContext(AuthContext)
+    const { UpdateUser, user, GetUserOnce, downloadImage, uploadImage, imageLoading, image, darkMode } = useContext(AuthContext)
     const snapPoints = useMemo(() => ['25%'], []);
     const sheetRef = useRef(null);
-    // const [image, setImage] = useState(null);
-    const [focusEmail, setFocuEmail] = useState(false)
-    const [focusNumber, setFocusNumber] = useState(false)
     const [focusName, setFocusName] = useState(false)
     const [dataLoading, setDataLoading] = useState(true)
+    const [user_nameError, SetUser_nameError] = useState()
+    const [loading, setLoading] = useState(false)
     const [data, setData] = useState({
-        full_name: "",
-        email: "",
-        phone: "",
+        user_name: "",
     })
 
     useEffect(() => {
@@ -39,19 +37,22 @@ const EntryPage = ({ navigation }) => {
         setDataLoading(true)
     }, [])
 
+
+
     setTimeout(() => {
         setDataLoading(false)
-    }, 2000)
+    }, 1500)
 
     useEffect(() => {
         if (user) {
-            setData(prevData => ({
-                ...prevData,
-                phone: user.phone || "",
-                full_name: user.full_name || "",
-                email: user.email || ""
-            }));
-            downloadImage(user.profile_pic)
+            if (user.user_name) {
+                SetUser_nameError("valid")
+                setData(prevData => ({
+                    ...prevData,
+                    user_name: user.user_name
+                }));
+            }
+            if (user.profile_pic) downloadImage(user.profile_pic)
         }
     }, [user]);
     const User_image = require("../assets/user1.jpg")
@@ -90,6 +91,7 @@ const EntryPage = ({ navigation }) => {
         }
     };
 
+
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
@@ -116,33 +118,64 @@ const EntryPage = ({ navigation }) => {
     const renderBackdrop = (props) => (
         <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />
     );
-    const handleEmailChange = (value) => {
-        setData({ ...data, email: value })
+
+
+    const handleNameChange = (text) => {
+        const get_Validation = validateUsername(text)
+        SetUser_nameError(get_Validation)
+        setData({ ...data, user_name: text })
     }
 
-    const handleNumber = (value) => {
-        setData({ ...data, phone: value })
-    }
-    const handleNameChange = (value) => {
-        setData({ ...data, full_name: value })
-    }
-
-    const HandleUpdate = () => {
-        const { full_name, email, phone } = data;
-        const emailRegex = /^([a-z0-9._%+-]+)@([a-z0-9.-]+\.[a-z]{2,})$/;
-        if (!full_name.trim()) {
-            Alert.alert('Please enter your name');
-        } else if (!email.trim()) {
-            Alert.alert('Please enter your email');
-        } else if (!emailRegex.test(email)) {
-            Alert.alert('Please enter a valid email address');
-        } else if (!phone.trim()) {
-            Alert.alert('Please enter your mobile number');
+    const HandleUpdate = async () => {
+        const { user_name } = data;
+        if (!user_name.trim()) {
+            Alert.alert('Please enter a valid user name');
         }
         else {
-            AddUser(user.id, data, navigation)
+            setLoading(true)
+            await UpdateUser(user.id, data)
+            await AsyncStorage.setItem("loggedIN", "TRUE")
+            navigation.replace("Profile")
+            setLoading(false)
         }
     }
+
+
+    function validateUsername(username) {
+
+        const regex = /^[a-zA-Z0-9_.-]+$/;
+
+        if (!username || username.trim().length === 0) {
+            return "Username cannot be empty.";
+        }
+
+        if (username.length < 3 || username.length > 15) {
+            return "Username must be between 3 and 15 characters long.";
+        }
+
+        if (username.startsWith('_') || username.startsWith('-') || username.startsWith('.') ||
+            username.endsWith('_') || username.endsWith('-') || username.endsWith('.')) {
+            return "Username cannot start or end with a special character (_-.).";
+        }
+
+        if (!regex.test(username)) {
+            return "Username can only contain letters, numbers, underscores (_), hyphens (-), or periods (.).";
+        }
+
+        const restrictedWords = ["admin", "root", "support"];
+        if (restrictedWords.some(word => username.toLowerCase().includes(word))) {
+            return "Username cannot contain restricted words like 'admin', 'root', or 'support'.";
+        }
+
+        return "valid";
+    }
+
+
+    const username1 = "john_doe";
+    const username2 = "admin123";
+    const username3 = ".invalidUser";
+    const username4 = "validUser_";
+
 
 
     if (dataLoading) {
@@ -176,55 +209,50 @@ const EntryPage = ({ navigation }) => {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <View style={{ gap: 25 }}>
-                        <View style={[(focusName || data?.full_name?.length > 0) ? styles.FocusinputContainer : styles.inputContainer, {}]}>
-                            <Ionicons name="person-outline" size={24} color={(focusName || data?.full_name?.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
-                            <TextInput
-                                onFocus={() => setFocusName(!focusName)}
-                                onBlur={() => setFocusName(!focusName)}
-                                style={[styles.inputBox, { color: darkMode ? colors.WHITE : colors.BLACK }]}
-                                value={data?.full_name}
-                                placeholder='Enter Name'
-                                placeholderTextColor="gray"
-                                onChangeText={handleNameChange}
-                            />
+                    <View style={{ gap: 25, justifyContent: "center", alignItems: 'center' }}>
+                        <View style={{ flexDirection: 'row', alignItems: "center" }} >
+                            <View style={[(focusName || data?.user_name?.length > 0) ? styles.FocusinputContainer : styles.inputContainer, {}]}>
+                                <Ionicons name="person-outline" size={24} color={(focusName || data?.user_name?.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
+                                <TextInput
+                                    onFocus={() => setFocusName(!focusName)}
+                                    onBlur={() => setFocusName(!focusName)}
+                                    style={[styles.inputBox, { color: darkMode ? colors.WHITE : colors.BLACK }]}
+                                    value={data?.user_name}
+                                    placeholder='user_name'
+                                    placeholderTextColor="gray"
+                                    onChangeText={handleNameChange}
+                                />
+                            </View>
+                            <View style={{ width: 30, height: 30, marginTop: 15, justifyContent: 'center', alignItems: 'center' }} >
+                                {
+
+                                    user_nameError === "valid" ?
+                                        <AntDesign name="checkcircleo" size={24} color={colors.MAIN_COLOR} />
+                                        : null
+                                }
+                            </View>
                         </View>
-                        <View style={(focusEmail || data?.email?.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
-                            <MaterialCommunityIcons name="email-outline" size={24} color={(focusEmail || data?.email?.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
-                            <TextInput
-                                onFocus={() => setFocuEmail(!focusEmail)}
-                                onBlur={() => setFocuEmail(!focusEmail)}
-                                style={[styles.inputBox, { color: darkMode ? colors.WHITE : colors.BLACK }]}
-                                value={data?.email}
-                                placeholder='Enter Email'
-                                placeholderTextColor="gray"
-                                onChangeText={handleEmailChange}
-                            />
+                        <View style={{ width: width - 160, justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', }}>
+                            {
+                                user_nameError !== "valid" ?
+                                    <Text style={{ color: "red", fontSize: 12, fontFamily: Font.Medium }} >{user_nameError}</Text>
+                                    : null
+                            }
                         </View>
-                        <View style={(focusNumber || data?.phone?.length > 0) ? styles.FocusinputContainer : styles.inputContainer} >
-                            <Ionicons name="phone-portrait-outline" size={24} color={(focusNumber || data?.phone?.length > 0) ? colors.MAIN_COLOR : colors.CHAT_DESC} />
-                            <TextInput
-                                // editable={false}
-                                onFocus={() => setFocusNumber(!focusNumber)}
-                                onBlur={() => setFocusNumber(!focusNumber)}
-                                style={[styles.inputBox, { color: darkMode ? colors.WHITE : colors.BLACK }]}
-                                value={data?.phone}
-                                placeholder='Enter Mobile Number'
-                                placeholderTextColor="gray"
-                                onChangeText={handleNumber}
-                                keyboardType='number-pad'
-                            />
-                        </View>
-                        <Button
-                            buttonStyle={[loading && loading === true ? styles.loadingButtonStyle : styles.buttonStyle]}
-                            title="Continue"
-                            textStyle={styles.textStyle}
-                            activeOpacity={0.8}
-                            press={HandleUpdate}
-                            loading={loading}
-                            loaderColor={colors.MAIN_COLOR}
-                            loaderSize="large"
-                        />
+                        {
+                            user_nameError === "valid" ?
+                                <Button
+                                    buttonStyle={[loading && loading === true ? styles.loadingButtonStyle : styles.buttonStyle]}
+                                    title="Continue"
+                                    textStyle={styles.textStyle}
+                                    activeOpacity={0.8}
+                                    press={HandleUpdate}
+                                    loading={loading}
+                                    loaderColor={colors.MAIN_COLOR}
+                                    loaderSize="large"
+                                /> :
+                                null
+                        }
 
                     </View>
                 </View>
@@ -327,10 +355,9 @@ const styles = StyleSheet.create({
         padding: 10
     },
     inputContainer: {
-        borderWidth: 2,
+        borderBottomWidth: 2.5,
         borderColor: colors.BLACK,
-        width: width - 60,
-        borderRadius: 10,
+        width: width - 150,
         paddingHorizontal: 15,
         flexDirection: "row",
         justifyContent: "center",
@@ -338,10 +365,9 @@ const styles = StyleSheet.create({
         position: "relative"
     },
     FocusinputContainer: {
-        borderWidth: 2.5,
+        borderBottomWidth: 2.5,
         borderColor: colors.MAIN_COLOR,
-        width: width - 60,
-        borderRadius: 10,
+        width: width - 150,
         paddingHorizontal: 15,
         flexDirection: "row",
         justifyContent: "center",

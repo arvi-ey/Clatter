@@ -40,23 +40,45 @@ const Signinpage = () => {
         setMobileNumber(text)
     }
 
-    const HandleSignIn = async () => {
+    const FetchByPhone = async (phoneNumber) => {
         setLoading(true)
         try {
-            const { data, error } = await supabase.auth.signInWithOtp({
-                phone: `+${selectCountry.code}${mobileNumber}`,
-                // phone: `1234567891`,
-            })
-            if (!error) Navigation.navigate('Register', { phone: `+${selectCountry.code}${mobileNumber}` })
-            // if (!error) Navigation.navigate('Register', { phone: `1234567891` })
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('phone', phoneNumber)
+                .single();
+            if (data) return data
+            return null
+        } catch (error) {
+            console.error('Error fetching user by phone number:', error.message);
+            return null;
+        }
+    };
+
+    const HandleSignIn = async () => {
+        const data = await FetchByPhone(mobileNumber)
+        if (!data) {
+            Navigation.navigate('Signup', { code: `+${selectCountry.code}`, phone: `${mobileNumber}` })
             setLoading(false)
         }
-        catch (err) {
-            console.log(err)
-            setLoading(false)
-        }
-        finally {
-            setLoading(false)
+        if (true) {
+            setLoading(true)
+            try {
+                const { data, error } = await supabase.auth.signInWithOtp({
+                    phone: `+${selectCountry.code}${mobileNumber}`,
+                })
+                if (error) console.log(error)
+                if (!error) Navigation.navigate('Register', { phone: `${mobileNumber}`, code: `+${selectCountry.code}` })
+                setLoading(false)
+            }
+            catch (err) {
+                console.log(err)
+                setLoading(false)
+            }
+            finally {
+                setLoading(false)
+            }
         }
     }
 
@@ -136,9 +158,9 @@ const Signinpage = () => {
                         </View>
                     </View>
                     <View style={{ width, alignItems: 'center', }}>
-                        <Image source={require('../assets/use5.png')} style={{ height: 250, width: 250 }} />
+                        <Image source={require('../assets/use5.png')} style={{ height: 200, width: 200 }} />
                     </View>
-                    <View style={{ height: "90%", marginTop: 5, paddingLeft: 16 }}>
+                    <View style={{ height: "90%", marginTop: 5, paddingLeft: 16, }}>
                         <Text style={{ fontFamily: Font.Regular, color: colors.CHARCOLE }}>Enter mobile number to verify OTP</Text>
                         <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }} >
                             <TouchableOpacity style={[styles.CountryCode]} onPress={OpenButtomSheet} >
@@ -170,6 +192,20 @@ const Signinpage = () => {
                             loaderSize="large"
                             press={HandleSignIn}
                         />
+                        <View style={{ width: width - 20, alignItems: "center", justifyContent: 'center', gap: 10, marginTop: 10, flexDirection: 'row' }} >
+                            <Text style={{ fontFamily: Font.Light, color: colors.CHAT_DESC }}>New in Clatter?</Text>
+                            <TouchableOpacity onPress={() => Navigation.navigate('Signup')} >
+                                <Text style={{ fontFamily: Font.Medium, color: colors.MAIN_COLOR }}>Register now</Text>
+                            </TouchableOpacity>
+
+                        </View>
+                        <View style={{ width: width - 20, alignItems: "center", justifyContent: 'center', gap: 10, marginTop: 10, flexDirection: 'row' }} >
+                            <Text style={{ fontFamily: Font.Light, color: colors.CHAT_DESC }}>Already have an account?</Text>
+                            <TouchableOpacity onPress={() => Navigation.navigate('Login')} >
+                                <Text style={{ fontFamily: Font.Medium, color: colors.MAIN_COLOR }}>Log in with email</Text>
+                            </TouchableOpacity>
+
+                        </View>
                     </View>
                     {CountryListModal()}
                 </View >

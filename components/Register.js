@@ -24,7 +24,7 @@ AppState.addEventListener('change', (state) => {
 const Register = ({ navigation }) => {
     const { VerifyOTP, loading } = useContext(AuthContext)
     const route = useRoute()
-    const { phone } = route.params
+    const { phone, code } = route.params
     const [data, setData] = useState({
         code1: null,
         code2: null,
@@ -43,9 +43,10 @@ const Register = ({ navigation }) => {
     const otpRef4 = useRef()
 
     const Verify = async () => {
-        const uid = await VerifyOTP(phone, otp)
+        const phoneNumbr = `${code}${phone}`
+        const uid = await VerifyOTP(phoneNumbr, otp)
         if (uid) {
-            navigation.replace('Entry')
+            navigation.navigate('Entry')
         }
     }
 

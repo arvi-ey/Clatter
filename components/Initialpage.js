@@ -24,11 +24,13 @@ import StoryScreen from './StoryScreen';
 import Mystory from './Mystory';
 import { colors } from './Theme';
 const { height, width } = Dimensions.get("window");
+import SignUp from './SignUp';
+import Login from './Login';
 
 
 export default function Initialpage() {
     const Stack = createNativeStackNavigator();
-    const { firstLoad, session, darkMode, GetUserOnce, user, uid, loggedIn, } = useContext(AuthContext)
+    const { firstLoad, session, darkMode, GetUserOnce, user, uid, loggedIn, otpVerified } = useContext(AuthContext)
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const [newUser, setNewUser] = useState(false)
     // const logo = require("../assets/clatter_logo.png")
@@ -77,14 +79,17 @@ export default function Initialpage() {
                     }}
                 >
                     {newUser === false && <Stack.Screen name="Onboarding" component={Onboardingpage} options={{ headerShown: false }} />}
-                    {!uid && (
+                    {(!uid || otpVerified === false) &&
                         <>
                             <Stack.Screen name="Signin" component={Signinpage} options={{ headerShown: false }} />
+                            <Stack.Screen name="Signup" component={SignUp} options={{ headerShown: false }} />
+                            <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
                             <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
                         </>
-                    )}
-                    {
-                        loggedIn === false && <Stack.Screen name="Entry" component={EntryPage} options={{ headerShown: false }} />
+                    }
+
+                    {loggedIn === false &&
+                        <Stack.Screen name="Entry" component={EntryPage} options={{ headerShown: false }} />
                     }
                     <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
                     <Stack.Screen name="Chat" component={Chat} options={{ headerShown: false }} />

@@ -31,9 +31,11 @@ export default AuthProvider = ({ children }) => {
     const [storyContent, setStoryContent] = useState()
     const [contactStory, setContactStory] = useState()
     const [Viewerinfo, setViewerinfo] = useState()
+    const [otpVerified, setOtpVeriied] = useState()
 
     useEffect(() => {
         AppLoaded()
+        GetOtpState()
         LoggedIN()
         GetDarKModeStatus()
     }, [])
@@ -43,6 +45,7 @@ export default AuthProvider = ({ children }) => {
             subscribeToUserChanges(uid)
         }
         GetStoryInfo()
+        GetUserOnce()
         GetStoryViewedUserData()
     }, [uid])
 
@@ -96,10 +99,9 @@ export default AuthProvider = ({ children }) => {
                 .upsert({ id: userId, ...profileData }, { onConflict: ['id'] });
 
             if (error) {
-                throw error;
+                return error;
             }
-            if (!error) navigation.navigate("Profile")
-            await AsyncStorage.setItem("loggedIN", "TRUE")
+
             setLoading(false)
         } catch (error) {
             console.error('Error adding to profile:', error.message);
@@ -154,7 +156,6 @@ export default AuthProvider = ({ children }) => {
             const value = await AsyncStorage.getItem("darkMode");
             if (value === "true") setDarkMode(true)
             if (value === "false") setDarkMode(false)
-            console.log(value)
         } catch (e) {
             console.log('Error reading data:', e);
         }
@@ -358,7 +359,6 @@ export default AuthProvider = ({ children }) => {
             setuid(session?.user?.id)
         })
         if (!session?.user?.id) {
-            // console.log('User ID is null, cannot fetch user');
             return;
         }
         try {
@@ -368,6 +368,7 @@ export default AuthProvider = ({ children }) => {
                 .eq('id', session?.user?.id)
                 .single();
 
+            if (!data) return
             if (error) {
                 throw error;
             }
@@ -378,6 +379,30 @@ export default AuthProvider = ({ children }) => {
         }
     }
 
+
+    const StoreOTPState = async () => {
+        try {
+            await AsyncStorage.setItem("verifyOtp", "true");
+            GetOtpState()
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
+
+    const GetOtpState = async () => {
+        try {
+            const data = await AsyncStorage.getItem("verifyOtp")
+            if (data === "true") {
+                setOtpVeriied(true)
+            } else {
+                setOtpVeriied(false)
+            }
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
 
     const VerifyOTP = async (phone, otp) => {
         setLoading(true);
@@ -397,6 +422,7 @@ export default AuthProvider = ({ children }) => {
             if (session?.user.id) {
                 setSession(session);
                 setuid(session?.user.id);
+                StoreOTPState()
                 return session.user.id
             }
 
@@ -407,6 +433,75 @@ export default AuthProvider = ({ children }) => {
         }
     };
 
+    const SignUPAccount = async (data) => {
+        const { email, password } = data
+        setLoading(true)
+        try {
+
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+            })
+            if (error) Alert.alert(error.message)
+            if (session && session?.user.id) {
+                return session.user.id
+            }
+        }
+        catch (err) {
+            console.log(err)
+            setLoading(false)
+        }
+        finally {
+            setLoading(false)
+        }
+    }
+
+    const HandleSignIn = async (data) => {
+        const { email, password } = data
+        try {
+            setLoading(true)
+            const { error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            })
+
+            if (error) {
+                Alert.alert(error.message)
+                return false
+            }
+            const result = await GetSession()
+            if (result && result.session?.user?.id) {
+                setSession(result.session);
+                setuid(result.session?.user?.id);
+                StoreOTPState()
+                return result.session?.user?.id
+            }
+            setLoading(false)
+        }
+        catch (err) {
+            console.log(err)
+            setLoading(false)
+        }
+        finally {
+            setLoading(false)
+        }
+    }
+
+
+    const GetSession = async () => {
+        try {
+            const { data, error } = await supabase.auth.getSession()
+            if (error) return error
+            if (data) return data
+        }
+        catch (error) {
+            console.log(error)
+        }
+
+    }
 
 
     const AppLoaded = async () => {
@@ -640,7 +735,8 @@ export default AuthProvider = ({ children }) => {
     }
 
 
-    const value = { SetDarkmodeData, Viewerinfo, StatusViewed, contactStory, GetStoryInfo, storyContent, userStory, UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, UpdateUserData, AppLoaded, darkMode }
+
+    const value = { HandleSignIn, SignUPAccount, otpVerified, SetDarkmodeData, Viewerinfo, StatusViewed, contactStory, GetStoryInfo, storyContent, userStory, UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, UpdateUserData, AppLoaded, darkMode }
     return (
         <AuthContext.Provider value={value} >
             {children}
