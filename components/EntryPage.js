@@ -171,12 +171,6 @@ const EntryPage = ({ navigation }) => {
     }
 
 
-    const username1 = "john_doe";
-    const username2 = "admin123";
-    const username3 = ".invalidUser";
-    const username4 = "validUser_";
-
-
 
     if (dataLoading) {
         return (
@@ -190,6 +184,21 @@ const EntryPage = ({ navigation }) => {
                     source={require('../assets/otp_verified.json')}
                 />
             </View>
+        )
+    }
+
+    if (!data) {
+        return (
+            <SafeAreaView style={[styles.profileContainer, { backgroundColor: darkMode ? colors.BLACK : colors.WHITE }]}>
+                <View style={{ alignItems: 'center', gap: 25, backgroundColor: darkMode ? colors.BLACK : colors.WHITE }}>
+                    <View style={{ backgroundColor: darkMode ? colors.BLACK : colors.WHITE, alignItems: "center", gap: 8, }}>
+                        <View style={{ position: "relative", justifyContent: 'center', backgroundColor: darkMode ? colors.SKELETON_BG_DARK : colors.SKELETON_BG, height: 180, width: 180, borderRadius: 90, alignItems: "center", }}>
+                        </View>
+                    </View>
+                    <View style={{ gap: 25, justifyContent: "center", alignItems: 'center', height: 50, borderRadius: 25, width: width - 120, backgroundColor: darkMode ? colors.SKELETON_BG_DARK : colors.SKELETON_BG, }}>
+                    </View>
+                </View>
+            </SafeAreaView>
         )
     }
 

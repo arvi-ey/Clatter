@@ -137,6 +137,7 @@ export default Messageprovider = ({ children }) => {
                         DataARR[i].number = newData[0].number
                         DataARR[i].profile_pic = newData[0].profiles.profile_pic
                         DataARR[i].email = newData[0].profiles.email
+                        DataARR[i].user_name = newData[0].profiles.user_name
                     }
                 }
                 for (let i = 0; i < DataARR.length; i++) {
@@ -158,7 +159,7 @@ export default Messageprovider = ({ children }) => {
         try {
             let { data, error } = await supabase
                 .from('Savedcontact')
-                .select(`number,saved_name,profiles(phone,full_name,profile_pic,email)`)
+                .select(`number,saved_name,profiles(phone,full_name,profile_pic,email,user_name)`)
                 .match({
                     user_id: uid,
                     saved_id: userId

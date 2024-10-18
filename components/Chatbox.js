@@ -15,7 +15,7 @@ import { supabase } from '../lib/supabase'
 
 const Chatbox = ({ navigation }) => {
     const route = useRoute()
-    const { email, id, saved_name, profile_pic, number } = route.params || "";
+    const { email, id, saved_name, profile_pic, number, user_name } = route.params || "";
     const reciverId = id
     // console.log(data)
     const { uid, user, darkMode } = useContext(AuthContext);
@@ -298,7 +298,7 @@ const Chatbox = ({ navigation }) => {
                             <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: 20, gap: 10, backgroundColor: darkMode ? colors.ADD_CONTACT_BG_DARK : colors.ADD_CONTACT_BG, width: "70%", paddingVertical: 20, borderRadius: 12 }}>
                                 <Image source={userImage ? { uri: userImage } : image} style={{ height: 60, width: 60, borderRadius: 30, resizeMode: "cover" }} />
                                 {/* <Text style={{ fontFamily: Font.Bold, color: darkMode ? colors.WHITE : colors.BLACK }}>{full_name}</Text> */}
-                                <Text style={{ fontFamily: Font.Light, color: darkMode ? colors.WHITE : colors.BLACK }}>{email}</Text>
+                                <Text style={{ fontFamily: Font.Light, color: darkMode ? colors.WHITE : colors.BLACK }}>{user_name}</Text>
                                 <View style={{ flexDirection: 'row', gap: 20 }}>
                                     <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 3, }} onPress={() => navigation.navigate('AddContact', { number: number, uid: reciverId })}>
                                         <AntDesign name="adduser" size={22} color={colors.MAIN_COLOR} />

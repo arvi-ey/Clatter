@@ -9,6 +9,7 @@ import { supabase } from '../lib/supabase'
 import { useNavigation } from '@react-navigation/native';
 
 const Chat = ({ data }) => {
+    // console.log(data)
     const { darkMode, uid } = useContext(AuthContext)
     const navigation = useNavigation()
     const { FetchChat } = useContext(MessageContext)
@@ -20,7 +21,8 @@ const Chat = ({ data }) => {
             id: data.id,
             saved_name: data.saved_name,
             profile_pic: data.profile_pic,
-            number: data.number
+            number: data.number,
+            user_name: data.user_name
         });
     };
 

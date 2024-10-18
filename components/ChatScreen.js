@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, Alert, ScrollView, ActivityIndicator, TextInput, Dimensions, } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, Alert, ScrollView, ActivityIndicator, TextInput, Dimensions, Platform, } from 'react-native'
 import React from 'react'
 import { useContext, useEffect, useState, useRef, useMemo } from 'react';
 import { AuthContext } from "./Context/Authprovider"
@@ -14,14 +14,33 @@ const { height, width } = Dimensions.get("window");
 import { Ionicons } from '@expo/vector-icons';
 import { isLoading } from 'expo-font';
 import Chat from './Chat';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+    }),
+});
+
 
 const ChatScreen = ({ navigation }) => {
-    const { darkMode, uid, } = useContext(AuthContext)
+    const { darkMode, uid, UpdateUser } = useContext(AuthContext)
     const { GetuserMessaged, } = useContext(ContactContext)
     const { FetchChat, getvalue } = useContext(MessageContext)
     const [data, setData] = useState()
     const [searchContact, setSearchContact] = useState("")
     const [loading, setLoading] = useState(true)
+
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [channels, setChannels] = useState([]);
+    const [notification, setNotification] = useState();
+    const notificationListener = useRef();
+    const responseListener = useRef();
+
 
     useEffect(() => {
         SubscribeToContactChange()
@@ -32,6 +51,42 @@ const ChatScreen = ({ navigation }) => {
             setLoading(false)
         }, 2000)
     }, [])
+
+    useEffect(() => {
+        const ConfigurePushNotification = async () => {
+            const { status: permissionStatus } = await Notifications.getPermissionsAsync()
+            if (permissionStatus !== "granted") {
+                const { status: Permissionrecived } = await Notifications.requestPermissionsAsync()
+                if (Permissionrecived !== "granted") {
+                    Alert.alert("Permission required")
+                    return
+                }
+            }
+            try {
+                const token = await Notifications.getExpoPushTokenAsync()
+                if (token) setExpoPushToken(token)
+                if (Platform.OS === "android") {
+                    Notifications.setNotificationChannelAsync('default', {
+                        name: "default",
+                        importance: Notifications.AndroidImportance.DEFAULT
+                    })
+                }
+            }
+            catch (error) {
+
+            }
+        };
+        ConfigurePushNotification();
+    }, []);
+
+
+    useEffect(() => {
+        UpdateExpoToken()
+    }, [expoPushToken])
+    const UpdateExpoToken = async () => {
+        await UpdateUser(uid, { user_token: expoPushToken.data })
+    }
+
 
     const SubscribeToContactChange = () => {
         const subscription = supabase
