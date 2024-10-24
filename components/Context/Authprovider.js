@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext, useRef, } from 'react';
-import { AppState } from 'react-native';
+import { Alert, AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase'
 import country from '../../common/country';
@@ -32,6 +32,7 @@ export default AuthProvider = ({ children }) => {
     const [contactStory, setContactStory] = useState()
     const [Viewerinfo, setViewerinfo] = useState()
     const [otpVerified, setOtpVeriied] = useState()
+    const [emptyMessage, setEmptyMessage] = useState()
 
     useEffect(() => {
         AppLoaded()
@@ -44,6 +45,7 @@ export default AuthProvider = ({ children }) => {
         if (uid) {
             subscribeToUserChanges(uid)
         }
+        GetEmptyMessage()
         GetStoryInfo()
         GetUserOnce()
         GetStoryViewedUserData()
@@ -90,6 +92,20 @@ export default AuthProvider = ({ children }) => {
         }
     }
 
+    const GetEmptyMessage = async () => {
+        try {
+            console.log("running")
+            const { data, error } = await supabase
+                .from('message')
+                .select('*')
+                .or(`sender.eq.${uid},receiver.eq.${uid}`)
+            if (!error) setEmptyMessage(data)
+        }
+        catch (error) {
+            console.log(error)
+
+        }
+    }
 
     const AddUser = async (userId, profileData, navigation) => {
         setLoading(true)
@@ -736,7 +752,7 @@ export default AuthProvider = ({ children }) => {
 
 
 
-    const value = { HandleSignIn, SignUPAccount, otpVerified, SetDarkmodeData, Viewerinfo, StatusViewed, contactStory, GetStoryInfo, storyContent, userStory, UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, UpdateUserData, AppLoaded, darkMode }
+    const value = { GetEmptyMessage, emptyMessage, HandleSignIn, SignUPAccount, otpVerified, SetDarkmodeData, Viewerinfo, StatusViewed, contactStory, GetStoryInfo, storyContent, userStory, UploadStory, FetchSaVedContactData, setSavedContact, country, FetchCountry, savedContact, image, imageLoading, setImage, downloadImage, uploadImage, loggedIn, session, loading, VerifyOTP, firstLoad, AddUser, GetUserOnce, user, uid, UpdateUser, UpdateUserData, AppLoaded, darkMode }
     return (
         <AuthContext.Provider value={value} >
             {children}

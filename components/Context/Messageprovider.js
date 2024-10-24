@@ -65,7 +65,42 @@ export default Messageprovider = ({ children }) => {
         }
     };
 
-    // console.log("Render",user.full_name)
+    const CheckTypingData = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('Typing')
+                .select("*")
+                .eq('sender', uid)
+            if (error) throw error
+            if (data) return data
+        }
+        catch (err) {
+
+        }
+    }
+
+    const AddTyping = async (updatedData) => {
+        const Data = await CheckTypingData()
+        if (Data.length < 1) {
+            try {
+                const { data, error } = await supabase
+                    .from('Typing')
+                    .insert([{
+                        sender: uid,
+                        reciver: null,
+                        typing: false
+                    }])
+                if (error) {
+                    throw error;
+                }
+            } catch (error) {
+                console.error('Error updating user:', error.message);
+                return null;
+            }
+        }
+    };
+
+
 
     const TrackTyping = (userId) => {
 
@@ -98,7 +133,6 @@ export default Messageprovider = ({ children }) => {
 
 
     const FetchChat = async () => {
-        // console.log("TY function Calling")
         try {
             const { data, error } = await supabase
                 .from('message')
@@ -121,7 +155,6 @@ export default Messageprovider = ({ children }) => {
             const UniqueData = removeDuplicates(arr)
             if (UniqueData.length > 0) {
                 setShowdata(UniqueData)
-                // console.log(UniqueData)
                 let DataARR = []
                 let NewData = {}
                 for (let i = 0; i < UniqueData.length; i++) {
@@ -132,7 +165,6 @@ export default Messageprovider = ({ children }) => {
                 for (let i = 0; i < DataARR.length; i++) {
                     const newData = await FetchSaVedContact(DataARR[i].id)
                     if (newData && newData.length > 0) {
-                        // console.log(newData)
                         DataARR[i].saved_name = newData[0].saved_name
                         DataARR[i].number = newData[0].number
                         DataARR[i].profile_pic = newData[0].profiles.profile_pic
@@ -249,7 +281,7 @@ export default Messageprovider = ({ children }) => {
         return arr;
     }
 
-    const value = { FetchChat, getvalue, showdata, setShowdata, GetLatestMessage, message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping, typing }
+    const value = { AddTyping, FetchChat, getvalue, showdata, setShowdata, GetLatestMessage, message, SendMessage, GetMessage, setMessage, SubscribeToMessages, UpdateTyping, TrackTyping, typing }
     return (
         <MessageContext.Provider value={value} >
             {children}

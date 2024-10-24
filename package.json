@@ -43,7 +43,8 @@
     "socket.io-client": "^4.7.5",
     "toggle-switch-react-native": "^3.3.0",
     "expo-notifications": "~0.28.18",
-    "expo-device": "~6.0.2"
+    "expo-device": "~6.0.2",
+    "expo-network": "~6.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0"

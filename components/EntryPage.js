@@ -21,7 +21,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // "eas build -p android --profile preview"
 
 const EntryPage = ({ navigation }) => {
-    const { UpdateUser, user, GetUserOnce, downloadImage, uploadImage, imageLoading, image, darkMode } = useContext(AuthContext)
+    const { UpdateUser, user, GetUserOnce, GetEmptyMessage, downloadImage, uploadImage, imageLoading, image, darkMode } = useContext(AuthContext)
     const snapPoints = useMemo(() => ['25%'], []);
     const sheetRef = useRef(null);
     const [focusName, setFocusName] = useState(false)
@@ -45,6 +45,7 @@ const EntryPage = ({ navigation }) => {
 
     useEffect(() => {
         if (user) {
+            GetEmptyMessage()
             if (user.user_name) {
                 SetUser_nameError("valid")
                 setData(prevData => ({

@@ -56,8 +56,6 @@ const AddContact = ({ navigation }) => {
             Alert.alert('Enter name');
         } else if (!data.number.trim()) {
             Alert.alert('Enter mobile number');
-        } else if (data.number.length < 10) {
-            Alert.alert('Enter a Valid Mobile Number')
         }
         else {
             if (Route?.params?.number && Route?.params?.uid) {

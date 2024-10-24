@@ -167,13 +167,13 @@ const Mystory = () => {
             </Modal >
         );
     };
-
+    const User_image = require("../assets/user1.jpg")
     return (
         <>
             <View style={{ width: width - 30, marginLeft: 15, marginTop: 5, flexDirection: 'row', gap: 15, borderBottomWidth: 0.5, borderColor: darkMode ? colors.CHARCOLE_DARK : colors.GREY, paddingBottom: 10 }}>
                 <View style={{ gap: 5, justifyContent: 'center', width: 80, alignItems: 'center', }}>
                     <View style={{ height: 70, width: 70, justifyContent: 'center', alignItems: 'center', position: 'relative', }} >
-                        <Image source={{ uri: image }} style={{ borderRadius: 35, borderWidth: 1, borderColor: colors.BLACK, height: 70, width: 70 }} />
+                        <Image source={image ? { uri: image } : User_image} style={{ borderRadius: 35, borderWidth: 1, borderColor: colors.BLACK, height: 70, width: 70 }} />
                         <TouchableOpacity activeOpacity={0.5} onPress={pickImage} style={{ position: 'absolute', backgroundColor: colors.MAIN_COLOR, height: 25, width: 25, borderRadius: 20, alignItems: 'center', justifyContent: 'center', bottom: -4, right: -4 }} >
                             <SimpleLineIcons name="camera" size={15} color={colors.WHITE} />
                         </TouchableOpacity>

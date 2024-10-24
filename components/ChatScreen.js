@@ -16,7 +16,7 @@ import { isLoading } from 'expo-font';
 import Chat from './Chat';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-
+import * as Network from 'expo-network';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -28,9 +28,9 @@ Notifications.setNotificationHandler({
 
 
 const ChatScreen = ({ navigation }) => {
-    const { darkMode, uid, UpdateUser } = useContext(AuthContext)
+    const { darkMode, uid, UpdateUser, emptyMessage } = useContext(AuthContext)
     const { GetuserMessaged, } = useContext(ContactContext)
-    const { FetchChat, getvalue } = useContext(MessageContext)
+    const { FetchChat, getvalue, AddTyping } = useContext(MessageContext)
     const [data, setData] = useState()
     const [searchContact, setSearchContact] = useState("")
     const [loading, setLoading] = useState(true)
@@ -40,6 +40,7 @@ const ChatScreen = ({ navigation }) => {
     const [notification, setNotification] = useState();
     const notificationListener = useRef();
     const responseListener = useRef();
+    const [showempty, setShowempty] = useState()
 
 
     useEffect(() => {
@@ -50,7 +51,16 @@ const ChatScreen = ({ navigation }) => {
         setTimeout(() => {
             setLoading(false)
         }, 2000)
+        AddTyping()
     }, [])
+
+
+    useEffect(() => {
+        setTimeout(() => {
+            setShowempty(data)
+        }, 2000)
+    }, [data])
+
 
     useEffect(() => {
         const ConfigurePushNotification = async () => {
@@ -64,11 +74,14 @@ const ChatScreen = ({ navigation }) => {
             }
             try {
                 const token = await Notifications.getExpoPushTokenAsync()
-                if (token) setExpoPushToken(token)
+                if (token) {
+                    console.log(token.data)
+                    setExpoPushToken(token)
+                }
                 if (Platform.OS === "android") {
                     Notifications.setNotificationChannelAsync('default', {
                         name: "default",
-                        importance: Notifications.AndroidImportance.DEFAULT
+                        importance: Notifications.AndroidImportance.MAX
                     })
                 }
             }
@@ -119,6 +132,7 @@ const ChatScreen = ({ navigation }) => {
         };
     };
 
+    console.log(emptyMessage)
     useEffect(() => {
         setData(getvalue)
     }, [getvalue])
@@ -142,6 +156,8 @@ const ChatScreen = ({ navigation }) => {
     const FilteredContact = data?.filter(value =>
         value?.saved_name?.toLowerCase().includes(searchContact?.toLowerCase()) || value?.number?.toLowerCase().includes(searchContact?.toLowerCase())
     )
+
+    const Empty_Image = require("../assets/Empty_message.png")
 
     const Loading = () => {
         return (
@@ -179,16 +195,26 @@ const ChatScreen = ({ navigation }) => {
                         keyExtractor={(item, index) => index}
                     />
                     :
-                    <FlatList
-                        data={FilteredContact}
-                        renderItem={({ item }) => <Chat data={item} />}
-                        keyExtractor={(item, index) => index}
-                    />
+                    !data ?
+                        <View style={{ justifyContent: 'center', alignItems: 'center', width, }} >
+                            <Image source={Empty_Image} style={{ height: 250, width: 250, marginTop: 100 }} />
+                            <Text style={{ color: darkMode ? colors.WHITE : colors.CHARCOLE, fontFamily: Font.Medium }} >You have no conversations available at the moment</Text>
+                            <Text style={{ color: darkMode ? colors.WHITE : colors.CHARCOLE, fontFamily: Font.Medium }} > Please feel free to start a new conversation</Text>
+                        </View>
+                        :
+                        <FlatList
+                            data={FilteredContact}
+                            renderItem={({ item }) => <Chat data={item} />}
+                            keyExtractor={(item, index) => index}
+                        />
+
             }
             {AddContact()}
         </View>
     )
 }
+
+
 
 export default ChatScreen
 

@@ -11,6 +11,8 @@ import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import { useRoute } from '@react-navigation/native';
 const { height, width } = Dimensions.get('window');
 import { supabase } from '../lib/supabase'
+import { err } from 'react-native-svg';
+import * as Notifications from 'expo-notifications'
 
 
 const Chatbox = ({ navigation }) => {
@@ -32,7 +34,8 @@ const Chatbox = ({ navigation }) => {
     const [hideLastseen, setHideLastseen] = useState()
     const typingTimeoutRef = useRef(null);
     const [userImage, setuserImage] = useState()
-    const [full_name, setFullname] = useState()
+    const [userToken, setUsertoken] = useState()
+    const [getMysavedInfo, setGetMysavedInfo] = useState()
 
     const GetTime = (timestamp) => {
         const timeStampData = Number(timestamp)
@@ -45,8 +48,13 @@ const Chatbox = ({ navigation }) => {
         GetMessage(uid, reciverId)
         UserStatusChanges(reciverId)
         FetchReciverInfo(reciverId)
-        // UpdateMessageStatus()
+        GetSenderSavedName()
     }, [])
+
+
+    useEffect(() => {
+
+    }, [reciverId])
 
     useEffect(() => {
         if (profile_pic) downloadImage(profile_pic)
@@ -89,7 +97,7 @@ const Chatbox = ({ navigation }) => {
         try {
             const { data, error } = await supabase
                 .from('profiles')
-                .select('active,last_seen,hideActive,hideTyping,hideLastseen')
+                .select('active,last_seen,hideActive,hideTyping,hideLastseen,user_token')
                 .eq('id', reciverId)
                 .single();
             if (error) {
@@ -100,7 +108,7 @@ const Chatbox = ({ navigation }) => {
             setHideActive(data?.hideActive)
             setHideLastseen(data?.hideLastseen)
             setHideTyping(data?.hideTyping)
-            // setFullname(data?.full_name)
+            setUsertoken(data?.user_token)
         } catch (error) {
             console.error('Error fetching user by phone number:', error.message);
         }
@@ -147,9 +155,30 @@ const Chatbox = ({ navigation }) => {
             if (message.length < 1) AddToContactList(uid, id, user?.phone)
             await SendMessage(messageObj)
             setMassageText("")
-
+            sendPushNotification()
         }
     }
+
+    async function sendPushNotification() {
+        const message = {
+            to: userToken,
+            sound: 'default',
+            title: getMysavedInfo.saved_name ? getMysavedInfo.saved_name : getMysavedInfo.number,
+            body: messageText,
+            data: { sender_id: uid },
+        };
+
+        await fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Accept-encoding': 'gzip, deflate',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(message),
+        });
+    }
+
 
     const AddToContactList = async (saved_id, user_id, number) => {
         try {
@@ -174,6 +203,27 @@ const Chatbox = ({ navigation }) => {
         }
     };
 
+
+    // console.log(GetSenderSavedName)
+
+    const GetSenderSavedName = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('Savedcontact')
+                .select('number,user_id,saved_id,saved_name')
+                .match({
+                    saved_id: uid,
+                    user_id: reciverId
+                })
+            if (error) {
+                console.log(error)
+            }
+            setGetMysavedInfo(data[0])
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
 
     function formatTimestamp(data) {
         const timestamp = Number(data);
