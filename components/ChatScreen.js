@@ -132,7 +132,6 @@ const ChatScreen = ({ navigation }) => {
         };
     };
 
-    console.log(emptyMessage)
     useEffect(() => {
         setData(getvalue)
     }, [getvalue])
@@ -225,7 +224,7 @@ const styles = StyleSheet.create({
         padding: 20,
         right: 15,
         borderRadius: 25,
-        top: 550
+        top: height - 300
     },
     searchBarStyle: {
         height: 52,
