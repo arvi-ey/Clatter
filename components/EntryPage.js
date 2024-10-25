@@ -37,11 +37,9 @@ const EntryPage = ({ navigation }) => {
         setDataLoading(true)
     }, [])
 
-
-
     setTimeout(() => {
         setDataLoading(false)
-    }, 1500)
+    }, 2100)
 
     useEffect(() => {
         if (user) {

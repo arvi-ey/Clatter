@@ -94,7 +94,6 @@ export default AuthProvider = ({ children }) => {
 
     const GetEmptyMessage = async () => {
         try {
-            console.log("running")
             const { data, error } = await supabase
                 .from('message')
                 .select('*')

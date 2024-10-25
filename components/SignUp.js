@@ -141,25 +141,6 @@ const SignUp = ({ navigation }) => {
         }
     };
 
-    // const HandleSignIn = async (mobileNumber) => {
-    //     try {
-    //         console.log("Running")
-    //         const { data, error } = await supabase.auth.signInWithOtp({
-    //             phone: `${selectCountry}${mobileNumber}`,
-    //         })
-    //         if (error) console.log(error)
-    //         if (!error) navigation.navigate('Register', { phone: `${mobileNumber}`, code: `${selectCountry}` })
-    //         setLoading(false)
-    //     }
-    //     catch (err) {
-    //         console.log(err)
-    //         setLoading(false)
-    //     }
-    //     finally {
-    //         setLoading(false)
-    //     }
-    // }
-
     const SelectContryCode = (data) => {
         setSelectCountry(data)
         closeBottomSheet()
