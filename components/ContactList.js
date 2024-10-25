@@ -15,7 +15,7 @@ const ContactList = ({ navigation }) => {
     const [data, setData] = useState()
     const { GetuserMessaged, messagedContact, SubscribeToContactChange } = useContext(ContactContext)
 
-    const image = "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
+    const image = "https://i.pinimg.com/280x280_RS/e1/08/21/e10821c74b533d465ba888ea66daa30f.jpg";
 
     useEffect(() => {
         SubscribeToContactChange()
