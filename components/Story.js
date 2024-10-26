@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { useRef, useState, useMemo, useEffect, useContext } from 'react';
-import { StyleSheet, Text, View, Image, Dimensions, FlatList, Pressable, TouchableOpacity, Modal } from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions, FlatList, Pressable, TouchableOpacity, Modal, StatusBar } from 'react-native';
 import { colors } from './Theme';
 import { AntDesign } from '@expo/vector-icons';
 const { height, width } = Dimensions.get('window');
@@ -42,6 +42,11 @@ const Story = (item) => {
                 }}
             >
                 <View style={{ flex: 1, justifyContent: "center", alignItems: 'center', backgroundColor: colors.BLACK }}>
+                    <StatusBar
+                        backgroundColor={colors.BLACK}
+                        barStyle={'default'}
+                        hidden={false}
+                    />
                     <View style={{ width: width - 10, marginLeft: 10, alignItems: 'center', flexDirection: "row", gap: 10 }} >
                         <AntDesign name="arrowleft" size={28} color={colors.WHITE} onPress={() => setStoryView(false)} />
                         <Image source={{ uri: item.data.user_image }} style={{ width: 50, height: 50, borderRadius: 25, borderWidth: 1, borderColor: colors.MAIN_COLOR }} />
@@ -60,6 +65,7 @@ const Story = (item) => {
             </Modal>
         );
     };
+
 
     return (
         <TouchableOpacity style={{ width, flexDirection: 'row', alignItems: "center", gap: 12, marginVertical: 13 }} onPress={HandleView} >

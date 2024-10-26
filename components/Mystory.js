@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { useRef, useState, useMemo, useEffect, useContext } from 'react';
-import { StyleSheet, Text, View, Image, Dimensions, Modal, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions, Modal, TouchableOpacity, TextInput, StatusBar } from 'react-native';
 import { colors } from './Theme';
 import { SimpleLineIcons, Feather, AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -59,7 +59,6 @@ const Mystory = () => {
         setModal(false)
     }
 
-
     const StoryModal = () => {
         return (
 
@@ -113,7 +112,11 @@ const Mystory = () => {
                 }}
             >
                 <GestureHandlerRootView style={{ flex: 1 }}>
-
+                    <StatusBar
+                        backgroundColor={colors.BLACK}
+                        barStyle={'default'}
+                        hidden={false}
+                    />
                     <View style={{ flex: 1, justifyContent: "center", alignItems: 'center', backgroundColor: colors.BLACK }}>
                         <View style={{ width: width - 10, marginLeft: 10, alignItems: 'center', flexDirection: "row", gap: 10 }} >
                             <AntDesign name="arrowleft" size={28} color={colors.WHITE} onPress={() => setStoryView(false)} />
@@ -130,7 +133,7 @@ const Mystory = () => {
                             }
                             <TouchableOpacity activeOpacity={0.5} onPress={OpenButtomSheet} style={{ flexDirection: "row", height: "auto", marginTop: 40, alignItems: 'center', gap: 5 }} >
                                 <Feather name="eye" size={30} color={colors.WHITE} />
-                                <Text style={{ color: darkMode ? colors.WHITE : colors.BLACK, fontSize: 18, fontFamily: Font.Bold }}>{Viewerinfo ? Viewerinfo.length : 0}</Text>
+                                <Text style={{ color: darkMode ? colors.WHITE : colors.WHITE, fontSize: 18, fontFamily: Font.Bold }}>{Viewerinfo && Viewerinfo.length > 0 ? Viewerinfo.length : "0"}</Text>
 
                             </TouchableOpacity>
                         </View>

@@ -49,6 +49,8 @@ export default AuthProvider = ({ children }) => {
         GetStoryInfo()
         GetUserOnce()
         GetStoryViewedUserData()
+        FetchAllUpdates()
+        SubScribeToViewStatus()
     }, [uid])
 
     useEffect(() => {
@@ -538,8 +540,11 @@ export default AuthProvider = ({ children }) => {
             for (let contactData in savedContact) {
                 const UpdatedData = await FetchContactStory(savedContact[contactData].profiles.id)
                 if (UpdatedData[0] !== undefined) {
-                    StoryData.push(UpdatedData[0])
-                    StoryData[contactData].saved_name = savedContact[contactData].saved_name
+                    const obj = {}
+                    obj.saved_name = savedContact[contactData].saved_name
+                    const obj2 = UpdatedData[0]
+                    const newObj = { ...obj, ...obj2 }
+                    StoryData.push(newObj)
                 }
             }
             if (StoryData && StoryData.length > 0) {
@@ -636,6 +641,8 @@ export default AuthProvider = ({ children }) => {
             .on('postgres_changes', { event: '*', schema: 'public', table: 'story' }, (payload) => {
                 const newData = payload.new;
                 if (newData) {
+                    // console.log(`${newData}for ${uid}`)
+                    // console.log(newData.uploader)
                     const newStatus = GetnewStatus(newData.uploader)
                     if (newStatus) FetchAllUpdates()
                 }
@@ -643,6 +650,17 @@ export default AuthProvider = ({ children }) => {
             .subscribe();
     }
 
+    const SubScribeToViewStatus = async () => {
+        const subscription = supabase
+            .channel('public:statusView')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'statusView' }, (payload) => {
+
+                if (payload.new.status_owner === uid) {
+                    GetStoryViewedUserData()
+                }
+            })
+            .subscribe();
+    }
 
     const GetnewStatus = (data) => {
         for (let newData in savedContact) {

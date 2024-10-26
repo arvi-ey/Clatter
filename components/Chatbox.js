@@ -373,7 +373,7 @@ const Chatbox = ({ navigation }) => {
                                 <View
                                     style={[styles.MessageBox, {
                                         flexDirection: data.content.length < 32 ? "row" : "column",
-                                        marginBottom: 5,
+                                        // marginBottom: 5,
                                         alignSelf: data.sender === uid ? "flex-end" : "flex-start",
                                         marginHorizontal: 15,
                                         backgroundColor: (darkMode && data.sender !== uid) ?
@@ -472,6 +472,7 @@ const styles = StyleSheet.create({
     },
     MessageBox: {
         padding: 8,
+        marginTop: 10
     },
     MessageContent: {
         color: colors.WHITE,
